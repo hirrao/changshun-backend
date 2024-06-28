@@ -7,7 +7,7 @@ services:
     ports:
       - 10339:6379 # 指定宿主机端口与容器端口映射关系，宿主机：容器
     volumes:
-      - ./conf/redis.conf:/etc/redis/redis.conf # 映射配置文件目录，宿主机:容器
+      - ./config/redis.conf:/etc/redis/redis.conf # 映射配置文件目录，宿主机:容器
       - ./data:/data # 映射数据目录，宿主机:容器
     restart: always # 容器开机自启
     privileged: true # 获取宿主机root权限
