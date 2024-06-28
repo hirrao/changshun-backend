@@ -14,24 +14,11 @@
 
 #### 分支说明
 
-- jdk17: java17/21 + springboot 3.3 + springcloud 2023
-- master: java8 + springboot 2.7 + springcloud 2021
+- jdk17: java17/21 + springboot 3.3 + springcloud 2023 源自pig开源项目，基本项目架构
 
 #### 文档视频
 
 - 🔥 [ 配套文档 wiki.pig4cloud.com](https://wiki.pig4cloud.com)
-
-#### 其他产品
-
-- 👉🏻 [PIGX 在线体验](http://home.pig4cloud.com:38081)
-
-- 👉🏻 [自研BPMN工作流引擎](http://home.pig4cloud.com:38082)
-
-- 👉🏻 [大模型 RAG 知识库](http://home.pig4cloud.com:38083)
-
-## 微信群 [禁广告]
-
-<img src='https://minio.pigx.top/oss/202405/1717136749.png' alt='1717136749'/>
 
 ## 快速开始
 
@@ -80,7 +67,8 @@ pig
 
 ### 本地开发 运行
 
-pig 提供了详细的[部署文档 wiki.pig4cloud.com](https://www.yuque.com/pig4cloud/pig/vsdox9)，包括开发环境安装、服务端代码运行、前端代码运行等。
+pig 提供了详细的[部署文档 wiki.pig4cloud.com](https://www.yuque.com/pig4cloud/pig/vsdox9)
+，包括开发环境安装、服务端代码运行、前端代码运行等。
 
 请务必**完全按照**文档部署运行章节 进行操作，减少踩坑弯路！！
 
@@ -100,48 +88,3 @@ cd pig-ui && npm install -g cnpm --registry=https://registry.npm.taobao.org
 
 cnpm install && cnpm run build:docker && cd docker && docker-compose up -d
 ```
-
-## 免费公开课
-
-<table>
-  <tr>
-    <td><a href="https://www.bilibili.com/video/av45084065" target="_blank"><img src="https://minio.pigx.top/oss/1655474345.jpg"></a></td>
-    <td><a href="https://www.bilibili.com/video/av77344954" target="_blank"><img src="https://minio.pigx.top/oss/1656837143.jpg"></a></td>
-  </tr>
-    <tr>
-    <td><a href="https://www.bilibili.com/video/BV1J5411476V" target="_blank"><img src="https://minio.pigx.top/oss/1655474369.jpg"></a></td>
-    <td><a href="https://www.bilibili.com/video/BV14p4y197K5" target="_blank"><img src="https://minio.pigx.top/oss/1655474381.jpg"></a></td>
-  </tr>
-</table>
-
-## 开源共建
-
-### 开源协议
-
-pig 开源软件遵循 [Apache 2.0 协议](https://www.apache.org/licenses/LICENSE-2.0.html)。
-允许商业使用，但务必保留类作者、Copyright 信息。
-
-![](https://minio.pigx.top/oss/1655474288.jpg)
-
-### 其他说明
-
-1. 欢迎提交 [PR](https://dwz.cn/2KURd5Vf)，注意对应提交对应 `dev` 分支
-   代码规范 [spring-javaformat](https://github.com/spring-io/spring-javaformat)
-
-   <details>
-    <summary>代码规范说明</summary>
-
-    1. 由于 <a href="https://github.com/spring-io/spring-javaformat" target="_blank">spring-javaformat</a>
-       强制所有代码按照指定格式排版，未按此要求提交的代码将不能通过合并（打包）
-    2. 如果使用 IntelliJ IDEA
-       开发，请安装自动格式化软件 <a href="https://repo1.maven.org/maven2/io/spring/javaformat/spring-javaformat-intellij-idea-plugin/" target="_blank">
-       spring-javaformat-intellij-idea-plugin</a>
-    3. 其他开发工具，请参考 <a href="https://github.com/spring-io/spring-javaformat" target="_blank">
-       spring-javaformat</a>
-       说明，或`提交代码前`在项目根目录运行下列命令（需要开发者电脑支持`mvn`命令）进行代码格式化
-       ```
-       mvn spring-javaformat:apply
-       ```
-   </details>
-
-2. 欢迎提交 [issue](https://gitee.com/log4j/pig/issues)，请写清楚遇到问题的原因、开发环境、复显步骤。
