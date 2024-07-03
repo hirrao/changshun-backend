@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.PatientBaseMapper">
+
+  <resultMap id="patientBaseMap" type="com.pig4cloud.pig.patient.entity.PatientBaseEntity">
+        <id property="patientUid" column="patient_uid"/>
+        <id property="identificationNumber" column="identification_number"/>
+        <id property="patientName" column="patient_name"/>
+        <id property="sex" column="sex"/>
+        <id property="age" column="age"/>
+        <id property="phoneNumber" column="phone_number"/>
+        <id property="wxUid" column="wx_uid"/>
+  </resultMap>
+</mapper>
