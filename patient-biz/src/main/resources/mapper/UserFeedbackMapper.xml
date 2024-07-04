@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.UserFeedbackMapper">
+
+  <resultMap id="userFeedbackMap" type="com.pig4cloud.pig.patient.entity.UserFeedbackEntity">
+        <id property="prrId" column="prr_id"/>
+        <id property="patientUid" column="patient_uid"/>
+        <id property="remarkTitle" column="remark_title"/>
+        <id property="remark" column="remark"/>
+        <id property="remarkTime" column="remark_time"/>
+  </resultMap>
+</mapper>
