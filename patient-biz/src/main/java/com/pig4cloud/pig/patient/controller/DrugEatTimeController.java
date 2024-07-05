@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.DrugEatTimeEntity;
+import com.pig4cloud.pig.patient.entity.UserFeedbackEntity;
 import com.pig4cloud.pig.patient.service.DrugEatTimeService;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -166,4 +167,15 @@ public class DrugEatTimeController {
 		return drugEatTimeService.list(Wrappers.lambdaQuery(drugEatTime)
 		 .in(ArrayUtil.isNotEmpty(ids), DrugEatTimeEntity::getPepId, ids));
 	}
+
+
+	@Operation(summary = "全条件查询反馈信息", description = "全条件查询反馈信息")
+	@PostMapping("/getByDrugEatTimeObject")
+	@PreAuthorize("@pms.hasPermission('patient_drugEatTime_view')")
+	public R getByDrugEatTimeObject(@RequestBody DrugEatTimeEntity drugEatTime) {
+		LambdaQueryWrapper<DrugEatTimeEntity> wrapper = Wrappers.lambdaQuery();
+		wrapper.setEntity(drugEatTime);
+		return R.ok(drugEatTimeService.list(wrapper));
+	}
+
 }

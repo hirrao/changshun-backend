@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
+import com.pig4cloud.pig.patient.entity.DrugEatTimeEntity;
 import com.pig4cloud.pig.patient.entity.PatientBmiManaEntity;
 import com.pig4cloud.pig.patient.service.PatientBmiManaService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -115,5 +116,14 @@ public class PatientBmiManaController {
     @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_export')" )
     public List<PatientBmiManaEntity> export(PatientBmiManaEntity patientBmiMana,Long[] ids) {
         return patientBmiManaService.list(Wrappers.lambdaQuery(patientBmiMana).in(ArrayUtil.isNotEmpty(ids), PatientBmiManaEntity::getBmiUuid, ids));
+    }
+
+    @Operation(summary = "全条件查询反馈信息", description = "全条件查询反馈信息")
+    @PostMapping("/getByPatientBmiManaEntityObject")
+    @PreAuthorize("@pms.hasPermission('patient_patientBmiManaEntity_view')")
+    public R getByPatientBmiManaObject(@RequestBody PatientBmiManaEntity patientBmiMana) {
+        LambdaQueryWrapper<PatientBmiManaEntity> wrapper = Wrappers.lambdaQuery();
+        wrapper.setEntity(patientBmiMana);
+        return R.ok(patientBmiManaService.list(wrapper));
     }
 }
