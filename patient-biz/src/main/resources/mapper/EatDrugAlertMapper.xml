@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.EatDrugAlertMapper">
+
+  <resultMap id="eatDrugAlertMap" type="com.pig4cloud.pig.patient.entity.EatDrugAlertEntity">
+        <id property="pdeId" column="pde_id"/>
+        <id property="patientUid" column="patient_uid"/>
+        <id property="drugName" column="drug_name"/>
+        <id property="frequency" column="frequency"/>
+        <id property="unit" column="unit"/>
+        <id property="dose" column="dose"/>
+        <id property="isActive" column="is_active"/>
+  </resultMap>
+</mapper>
