@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.GptMessageMapper">
+
+  <resultMap id="gptMessageMap" type="com.pig4cloud.pig.patient.entity.GptMessageEntity">
+        <id property="messageId" column="message_id"/>
+        <id property="patientUid" column="patient_uid"/>
+        <id property="senderType" column="sender_type"/>
+        <id property="content" column="content"/>
+        <id property="sentTime" column="sent_time"/>
+  </resultMap>
+</mapper>
