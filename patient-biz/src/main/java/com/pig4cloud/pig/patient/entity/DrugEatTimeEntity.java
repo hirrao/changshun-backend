@@ -3,6 +3,7 @@ package com.pig4cloud.pig.patient.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.sql.Time;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
@@ -37,7 +38,7 @@ public class DrugEatTimeEntity extends Model<DrugEatTimeEntity> {
 	* 用药时间，24小时制
 	*/
     @Schema(description="用药时间，24小时制")
-    private Object eatTime;
+    private Time eatTime;
 
 	/**
 	* 用药管理表唯一id，依据此id可知该时间是哪个用药管理元素里面的
