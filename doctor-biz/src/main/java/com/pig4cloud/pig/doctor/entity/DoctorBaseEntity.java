@@ -55,4 +55,10 @@ public class DoctorBaseEntity extends Model<DoctorBaseEntity> {
 	*/
     @Schema(description="权限管理：医生、管理员")
     private String permission;
+
+	/**
+	 * 所属科室
+	 */
+	@Schema(description="所属科室")
+	private String department;
 }

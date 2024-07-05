@@ -116,4 +116,14 @@ public class DoctorBaseController {
     public List<DoctorBaseEntity> export(DoctorBaseEntity doctorBase,Long[] ids) {
         return doctorBaseService.list(Wrappers.lambdaQuery(doctorBase).in(ArrayUtil.isNotEmpty(ids), DoctorBaseEntity::getDoctorUid, ids));
     }
+
+    @Operation(summary = "全条件查询反馈信息", description = "全条件查询反馈信息")
+    @PostMapping("/getByDoctorBaseObject")
+    @PreAuthorize("@pms.hasPermission('patient_userFeedback_view')")
+    public R getByUserFeedbackObject(@RequestBody DoctorBaseEntity doctorBase) {
+        LambdaQueryWrapper<DoctorBaseEntity> wrapper = Wrappers.lambdaQuery();
+        wrapper.setEntity(doctorBase);
+        return R.ok(doctorBaseService.list(wrapper));
+    }
+
 }
