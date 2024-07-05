@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.SysMessageMapper">
+
+  <resultMap id="sysMessageMap" type="com.pig4cloud.pig.patient.entity.SysMessageEntity">
+        <id property="notificationId" column="notification_id"/>
+        <id property="doctorUid" column="doctor_uid"/>
+        <id property="patientUid" column="patient_uid"/>
+        <id property="messageType" column="message_type"/>
+        <id property="jsonText" column="json_text"/>
+        <id property="sentDate" column="sent_date"/>
+  </resultMap>
+</mapper>
