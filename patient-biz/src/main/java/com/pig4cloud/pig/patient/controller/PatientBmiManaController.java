@@ -120,10 +120,17 @@ public class PatientBmiManaController {
 
     @Operation(summary = "全条件查询反馈信息", description = "全条件查询反馈信息")
     @PostMapping("/getByPatientBmiManaEntityObject")
-    @PreAuthorize("@pms.hasPermission('patient_patientBmiManaEntity_view')")
+    @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_view')")
     public R getByPatientBmiManaObject(@RequestBody PatientBmiManaEntity patientBmiMana) {
         LambdaQueryWrapper<PatientBmiManaEntity> wrapper = Wrappers.lambdaQuery();
         wrapper.setEntity(patientBmiMana);
         return R.ok(patientBmiManaService.list(wrapper));
+    }
+
+    @Operation(summary = "获取患者的BMI状况", description = "获取患者的BMI状况")
+    @GetMapping("/{patientUid}/status")
+    @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_view')")
+    public R getPatientBmiStatus(@PathVariable("patientUid") Long patientUid){
+        return R.ok(patientBmiManaService.getPatientBmiStatus(patientUid));
     }
 }
