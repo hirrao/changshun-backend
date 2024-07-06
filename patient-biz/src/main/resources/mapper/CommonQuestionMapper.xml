@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.CommonQuestionMapper">
+
+  <resultMap id="commonQuestionMap" type="com.pig4cloud.pig.patient.entity.CommonQuestionEntity">
+        <id property="qaId" column="qa_id"/>
+        <id property="questionText" column="question_text"/>
+        <id property="answerText" column="answer_text"/>
+  </resultMap>
+</mapper>
