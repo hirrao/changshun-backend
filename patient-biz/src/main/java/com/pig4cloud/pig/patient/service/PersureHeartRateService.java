@@ -1,8 +1,9 @@
 package com.pig4cloud.pig.patient.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 
 public interface PersureHeartRateService extends IService<PersureHeartRateEntity> {
-
+    JSONObject classifyBloodPressure(Long patientUid);
 }
