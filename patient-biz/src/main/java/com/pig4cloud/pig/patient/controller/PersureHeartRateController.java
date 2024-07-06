@@ -61,6 +61,13 @@ public class PersureHeartRateController {
         return R.ok(persureHeartRateService.list(wrapper));
     }
 
+    // 统计不同分级的血压次数
+    @Operation(summary = "统计不同分级的血压次数", description = "统计不同分级的血压次数")
+    @GetMapping("/{patientUid}/grading")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R classifyBloodPressure(@PathVariable("patientUid") Long patientUid){
+        return R.ok(persureHeartRateService.classifyBloodPressure(patientUid));
+    }
 
     /**
      * 通过id查询血压心率展示
@@ -126,4 +133,5 @@ public class PersureHeartRateController {
     public List<PersureHeartRateEntity> export(PersureHeartRateEntity persureHeartRate,Long[] ids) {
         return persureHeartRateService.list(Wrappers.lambdaQuery(persureHeartRate).in(ArrayUtil.isNotEmpty(ids), PersureHeartRateEntity::getSdhId, ids));
     }
+
 }
