@@ -37,4 +37,10 @@ public class PatientDoctorEntity extends Model<PatientDoctorEntity> {
 	*/
     @Schema(description="doctorUid")
     private Long doctorUid;
+
+	/**
+	 * care
+	 */
+	@Schema(description="care")
+	private Integer care;
 }
