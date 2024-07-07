@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.PressureAnomalyLogsMapper">
+
+  <resultMap id="pressureAnomalyLogsMap" type="com.pig4cloud.pig.patient.entity.PressureAnomalyLogsEntity">
+        <id property="date" column="date"/>
+        <id property="severe" column="severe"/>
+        <id property="moderate" column="moderate"/>
+        <id property="mild" column="mild"/>
+        <id property="elevated" column="elevated"/>
+        <id property="allData" column="all_data"/>
+  </resultMap>
+</mapper>

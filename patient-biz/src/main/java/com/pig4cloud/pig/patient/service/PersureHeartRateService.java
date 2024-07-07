@@ -5,5 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 
 public interface PersureHeartRateService extends IService<PersureHeartRateEntity> {
-    JSONObject classifyBloodPressure(Long patientUid);
+    JSONObject classifyAllBloodPressure(Long patientUid);
+    String getCurrentRiskAssessment(Long patientUid);
+    String judgeRiskByBloodPressure(float systolic, float diastolic);
 }

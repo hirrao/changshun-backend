@@ -66,7 +66,15 @@ public class PersureHeartRateController {
     @GetMapping("/{patientUid}/grading")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R classifyBloodPressure(@PathVariable("patientUid") Long patientUid){
-        return R.ok(persureHeartRateService.classifyBloodPressure(patientUid));
+        return R.ok(persureHeartRateService.classifyAllBloodPressure(patientUid));
+    }
+
+    // 获取当前风险评估信息
+    @Operation(summary = "获取当前风险评估信息", description = "获取当前风险评估信息")
+    @PostMapping("/pressureAnomalyLogs")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getCurrentRiskAssessment(@RequestParam("patientUid") Long patientUid){
+        return R.ok(persureHeartRateService.getCurrentRiskAssessment(patientUid));
     }
 
     /**
