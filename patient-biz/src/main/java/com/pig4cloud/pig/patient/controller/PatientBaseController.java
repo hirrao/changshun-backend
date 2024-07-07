@@ -42,14 +42,15 @@ public class PatientBaseController {
 	@Operation(summary = "分页查询", description = "分页查询")
 	@GetMapping("/page")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
-	public ResponseEntity<IPage<PatientBaseEntity>> getPatientPage(
+	public R<IPage<PatientBaseEntity>> getPatientPage(
 			@RequestParam(value = "page", defaultValue = "1") Integer page,
 			@RequestParam(value = "size", defaultValue = "10") Integer size,
 			PatientDoctorEntity patientDoctor) {
 		Page<PatientBaseEntity> patientBasePage = new Page<>(page, size);
 		IPage<PatientBaseEntity> resultPage = patientBaseService.getPatientPage(patientBasePage, patientDoctor);
-		return ResponseEntity.ok(resultPage);
-		//public R getPatientBasePage(@ParameterObject Page page,
+		return R.ok(resultPage);
+	}
+	//public R getPatientBasePage(@ParameterObject Page page,
 								//@ParameterObject PatientBaseEntity patientBase, PatientDoctorEntity patientDoctor) {
 		//LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
 		//return R.ok(patientBaseService.page(page, wrapper));
@@ -57,7 +58,7 @@ public class PatientBaseController {
 		//Page<PatientBaseEntity> patientBasePage = new Page<>(page, size);
 		//IPage<PatientBaseEntity> resultPage = patientBaseService.getPatientPage(patientBasePage, patientDoctor);
 		//return R.ok(resultPage);
-	}
+
 	
 	
 	/**

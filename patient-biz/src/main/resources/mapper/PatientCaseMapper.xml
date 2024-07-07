@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.PatientCaseMapper">
+
+  <resultMap id="patientCaseMap" type="com.pig4cloud.pig.patient.entity.PatientCaseEntity">
+        <id property="caseId" column="case_id"/>
+        <id property="patientUid" column="patient_uid"/>
+        <id property="patientType" column="patient_type"/>
+        <id property="educationLevel" column="education_level"/>
+        <id property="insuranceType" column="insurance_type"/>
+        <id property="addressProvince" column="address_province"/>
+        <id property="addressCity" column="address_city"/>
+        <id property="addressCounty" column="address_county"/>
+        <id property="addressTown" column="address_town"/>
+        <id property="addressVillage" column="address_village"/>
+        <id property="addressDetail" column="address_detail"/>
+        <id property="occupation" column="occupation"/>
+        <id property="onsetDatetime" column="onset_datetime"/>
+        <id property="patientSource" column="patient_source"/>
+        <id property="temperature" column="temperature"/>
+        <id property="pulseRate" column="pulse_rate"/>
+        <id property="diastolicBp" column="diastolic_bp"/>
+        <id property="systolicBp" column="systolic_bp"/>
+        <id property="weight" column="weight"/>
+        <id property="illnessSeverity" column="illness_severity"/>
+        <id property="chiefComplaint" column="chief_complaint"/>
+        <id property="presentIllness" column="present_illness"/>
+        <id property="pastIllness" column="past_illness"/>
+        <id property="allergySymptom" column="allergy_symptom"/>
+        <id property="allergenName" column="allergen_name"/>
+        <id property="allergyType" column="allergy_type"/>
+        <id property="severityLevel" column="severity_level"/>
+        <id property="physicalExam" column="physical_exam"/>
+        <id property="auxiliaryExam" column="auxiliary_exam"/>
+        <id property="diagnosisName" column="diagnosis_name"/>
+        <id property="otherTreatment" column="other_treatment"/>
+        <id property="doctorAdvice" column="doctor_advice"/>
+  </resultMap>
+</mapper>
