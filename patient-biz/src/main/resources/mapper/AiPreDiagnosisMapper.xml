@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper">
+
+  <resultMap id="aiPreDiagnosisMap" type="com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity">
+        <id property="aiId" column="ai_id"/>
+        <id property="patientUid" column="patient_uid"/>
+        <id property="gender" column="gender"/>
+        <id property="birthday" column="birthday"/>
+        <id property="height" column="height"/>
+        <id property="weight" column="weight"/>
+        <id property="bloodPressureHigh" column="blood_pressure_high"/>
+        <id property="bloodPressureLow" column="blood_pressure_low"/>
+        <id property="pregnancyHistory" column="pregnancy_history"/>
+        <id property="diseasesList" column="diseases_list"/>
+        <id property="kidneyDiseases" column="kidney_diseases"/>
+        <id property="creatinineLevel" column="creatinine_level"/>
+        <id property="heartRate" column="heart_rate"/>
+        <id property="bloodDiseases" column="blood_diseases"/>
+        <id property="totalCholesterol" column="total_cholesterol"/>
+        <id property="beDiseases" column="be_diseases"/>
+        <id property="heartDiseases" column="heart_diseases"/>
+        <id property="vesselDiseases" column="vessel_diseases"/>
+        <id property="earlyCvdFamilyHistory" column="early_cvd_family_history"/>
+        <id property="geneticDiseaseInFamily" column="genetic_disease_in_family"/>
+        <id property="infectiousDiseaseHistory" column="infectious_disease_history"/>
+        <id property="foodAllergyHistory" column="food_allergy_history"/>
+        <id property="smokingStatus" column="smoking_status"/>
+        <id property="smokingDuration" column="smoking_duration"/>
+        <id property="dailySmokingAmount" column="daily_smoking_amount"/>
+        <id property="drinkingStatus" column="drinking_status"/>
+        <id property="drinkingDuration" column="drinking_duration"/>
+        <id property="dailyDrinkingAmount" column="daily_drinking_amount"/>
+  </resultMap>
+</mapper>
