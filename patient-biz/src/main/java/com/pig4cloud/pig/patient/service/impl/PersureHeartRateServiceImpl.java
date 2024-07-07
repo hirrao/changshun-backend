@@ -60,4 +60,14 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         return jsonObject;
     }
+
+    @Override
+    public PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMaxBloodPressure(patientUid);
+    }
+
+    @Override
+    public PersureHeartRateEntity getTodayMinHeartRate(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
+    }
 }

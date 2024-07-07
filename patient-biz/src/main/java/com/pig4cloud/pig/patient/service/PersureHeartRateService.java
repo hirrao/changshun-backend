@@ -6,4 +6,7 @@ import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 
 public interface PersureHeartRateService extends IService<PersureHeartRateEntity> {
     JSONObject classifyBloodPressure(Long patientUid);
+    PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
+
+    PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
 }

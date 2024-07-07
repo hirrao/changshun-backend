@@ -11,4 +11,22 @@
         <id property="uploadTime" column="upload_time"/>
         <id property="patientUid" column="patient_uid"/>
   </resultMap>
+
+    <select id="selectTodayMaxBloodPressure" resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
+        SELECT *
+        FROM persure_heart_rate
+        WHERE patient_uid = #{patientUid}
+          AND DATE(upload_time) = CURDATE()
+        ORDER BY systolic DESC
+            LIMIT 1
+    </select>
+
+    <select id="selectTodayMinHeartRate" resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
+        SELECT *
+        FROM persure_heart_rate
+        WHERE patient_uid = #{patientUid}
+          AND DATE(upload_time) = CURDATE()
+        ORDER BY heart_rate ASC
+            LIMIT 1
+    </select>
 </mapper>
