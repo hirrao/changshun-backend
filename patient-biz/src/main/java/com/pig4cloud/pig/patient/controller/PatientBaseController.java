@@ -3,11 +3,13 @@ package com.pig4cloud.pig.patient.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.service.PatientBaseService;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,15 +19,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 患者基本信息
@@ -42,20 +38,25 @@ public class PatientBaseController {
 	
 	private final PatientBaseService patientBaseService;
 	
-	/**
-	 * 分页查询
-	 *
-	 * @param page        分页对象
-	 * @param patientBase 患者基本信息
-	 * @return
-	 */
+
 	@Operation(summary = "分页查询", description = "分页查询")
 	@GetMapping("/page")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
-	public R getPatientBasePage(@ParameterObject Page page,
-	 @ParameterObject PatientBaseEntity patientBase) {
-		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
-		return R.ok(patientBaseService.page(page, wrapper));
+	public ResponseEntity<IPage<PatientBaseEntity>> getPatientPage(
+			@RequestParam(value = "page", defaultValue = "1") Integer page,
+			@RequestParam(value = "size", defaultValue = "10") Integer size,
+			PatientDoctorEntity patientDoctor) {
+		Page<PatientBaseEntity> patientBasePage = new Page<>(page, size);
+		IPage<PatientBaseEntity> resultPage = patientBaseService.getPatientPage(patientBasePage, patientDoctor);
+		return ResponseEntity.ok(resultPage);
+		//public R getPatientBasePage(@ParameterObject Page page,
+								//@ParameterObject PatientBaseEntity patientBase, PatientDoctorEntity patientDoctor) {
+		//LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
+		//return R.ok(patientBaseService.page(page, wrapper));
+		//return R.ok(patientBaseService.getPatientPage(page, patientDoctor));
+		//Page<PatientBaseEntity> patientBasePage = new Page<>(page, size);
+		//IPage<PatientBaseEntity> resultPage = patientBaseService.getPatientPage(patientBasePage, patientDoctor);
+		//return R.ok(resultPage);
 	}
 	
 	

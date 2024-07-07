@@ -12,4 +12,14 @@
         <id property="phoneNumber" column="phone_number"/>
         <id property="wxUid" column="wx_uid"/>
   </resultMap>
+    <select id="selectPatientPageWithCare" resultType="com.pig4cloud.pig.patient.entity.PatientBaseEntity">
+        SELECT pb.*
+        FROM patient_base pb
+                 JOIN (
+            SELECT patient_uid, care
+            FROM patient_doctor
+            ORDER BY care DESC
+        ) pd ON pb.patient_uid = pd.patient_uid
+            ${mybatis.plus.page}
+    </select>
 </mapper>
