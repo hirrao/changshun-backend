@@ -160,4 +160,19 @@ public class PersureHeartRateController {
         return persureHeartRateService.list(Wrappers.lambdaQuery(persureHeartRate).in(ArrayUtil.isNotEmpty(ids), PersureHeartRateEntity::getSdhId, ids));
     }
 
+
+    @Operation(summary = "患者当天最高血压展示" , description = "患者当天最高血压展示" )
+    @GetMapping("/blood-pressure/max/{patientUid}")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_max')" )
+    public PersureHeartRateEntity getTodayMaxBloodPressure(@PathVariable("patientUid") Long patientUid) {
+        return persureHeartRateService.getTodayMaxBloodPressure(patientUid);
+    }
+
+    @Operation(summary = "患者当天最低心率展示" , description = "患者当天最低心率展示" )
+    @GetMapping("/heart-rate/min/{patientUid}")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_min')" )
+    public PersureHeartRateEntity getTodayMinHeartRate(@PathVariable("patientUid") Long patientUid) {
+        return persureHeartRateService.getTodayMinHeartRate(patientUid);
+    }
+
 }

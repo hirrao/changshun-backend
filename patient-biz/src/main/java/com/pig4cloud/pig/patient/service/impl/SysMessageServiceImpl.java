@@ -5,6 +5,9 @@ import com.pig4cloud.pig.patient.entity.SysMessageEntity;
 import com.pig4cloud.pig.patient.mapper.SysMessageMapper;
 import com.pig4cloud.pig.patient.service.SysMessageService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 /**
  * 系统消息表
  *
@@ -13,4 +16,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMessageEntity> implements SysMessageService {
+    @Override
+    public boolean saveBatch(List<SysMessageEntity> entityList) {
+        // 这里使用Mybatis Plus提供的saveBatch方法进行批量插入
+        return saveBatch(entityList, 1000); // 这里的1000是批处理的大小，可以根据实际情况调整
+    }
 }

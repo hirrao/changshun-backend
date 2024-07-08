@@ -125,4 +125,11 @@ public class SysMessageController {
     public List<SysMessageEntity> export(SysMessageEntity sysMessage,Long[] ids) {
         return sysMessageService.list(Wrappers.lambdaQuery(sysMessage).in(ArrayUtil.isNotEmpty(ids), SysMessageEntity::getNotificationId, ids));
     }
+
+    @Operation(summary = "批量添加信息", description = "批量添加信息")
+    @PostMapping("/saveBatch")
+    @PreAuthorize("@pms.hasPermission('patient_sysMessage_view')")
+    public boolean saveBatch(@RequestBody List<SysMessageEntity> entityList) {
+        return sysMessageService.saveBatch(entityList);
+    }
 }
