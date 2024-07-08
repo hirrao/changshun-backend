@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
+import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.function.Function;
+import java.util.stream.Collectors;
 /**
  * 血压心率展示
  *
@@ -28,6 +34,8 @@ import java.util.Map;
 public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMapper, PersureHeartRateEntity> implements PersureHeartRateService {
     @Autowired
     private PersureHeartRateMapper persureHeartRateMapper;
+    @Autowired
+    private PatientBaseMapper patientBaseMapper;
 
     @Override
     public String judgeRiskByBloodPressure(float systolic, float diastolic){
@@ -149,5 +157,86 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     @Override
     public PersureHeartRateEntity getTodayMinHeartRate(Long patientUid) {
         return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
+    }
+
+    @Override
+    public JSONArray getDailyConsecutiveAbnormalities(){
+        LocalDate date = LocalDate.now();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+
+        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("upload_time", startOfDay, endOfDay);
+
+        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(queryWrapper);
+
+        // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
+        Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
+                .stream()
+                .collect(Collectors.toMap(PatientBaseEntity::getPatientUid, Function.identity()));
+
+        // 建立patient_uid和PersureHeartRateEntity之间的映射，便于后续按患者统计心率血压异常次数
+        Map<Long, List<PersureHeartRateEntity>> recordsByPatient = todayRecords.stream()
+                .collect(Collectors.groupingBy(PersureHeartRateEntity::getPatientUid));
+
+        JSONArray result = new JSONArray();
+
+        for(Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()){
+            Long patientUid = entry.getKey();
+            List<PersureHeartRateEntity> records = entry.getValue();
+            records.sort(Comparator.comparing(PersureHeartRateEntity::getUploadTime));
+
+            int consecutiveHighBp = 0; // 连续高压超过180的次数
+            int maxConsecutiveHighBp = 0; // 连续高压超过180的最大次数
+            int consecutiveLowHr = 0; // 连续低压超过110的次数
+            int maxConsecutiveLowHr = 0; // 连续低压超过110的最大次数
+
+            for(PersureHeartRateEntity record : records){
+                if(record.getSystolic() >= 180 || record.getDiastolic() >= 110){
+                    consecutiveHighBp++;
+                    maxConsecutiveHighBp = Math.max(maxConsecutiveLowHr, consecutiveLowHr);
+                } else {
+                    consecutiveHighBp = 0;
+                }
+
+                if(record.getHeartRate() < 55){
+                    consecutiveLowHr++;
+                    maxConsecutiveLowHr = Math.max(maxConsecutiveLowHr, consecutiveLowHr);
+                } else {
+                    consecutiveLowHr = 0;
+                }
+            }
+
+            if(maxConsecutiveHighBp > 1 || maxConsecutiveLowHr > 1){
+                JSONObject patientData = new JSONObject();
+                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                LocalDate birthday = patientBase.getBirthday();
+                LocalDate current = LocalDate.now();
+                int age = 0;
+                if (birthday != null && current != null) {
+                    age =  Period.between(birthday, current).getYears();
+                }
+
+                patientData.put("name", patientBase.getPatientName());
+                patientData.put("sex", patientBase.getSex());
+                patientData.put("age", age);
+
+                // 一个患者可能既血压高又心率低，这时这两种信息仍然存在一个JSON中
+                if(maxConsecutiveHighBp > 1){
+                    patientData.put("abnormality", "血压过高");
+                    patientData.put("count", maxConsecutiveHighBp);
+                }
+
+                if(maxConsecutiveLowHr > 1){
+                    patientData.put("abnormality", "心率过低");
+                    patientData.put("count", maxConsecutiveLowHr);
+                }
+
+                result.add(patientData);
+            }
+        }
+
+        result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
+        return result;
     }
 }

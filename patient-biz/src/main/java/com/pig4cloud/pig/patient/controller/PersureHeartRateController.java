@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -92,6 +93,14 @@ public class PersureHeartRateController {
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getMonthlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo) {
         JSONObject result = persureHeartRateService.getMonthlyPressureData(date, monthsAgo);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今天连续高血压和低心率的患者", description = "统计今天所有患者连续高血压或低心率的次数")
+    @GetMapping("/todayConsecutiveAbnormalities")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getTodayConsecutiveAbnormalities() {
+        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities();
         return R.ok(result);
     }
 

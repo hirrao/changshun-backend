@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.patient.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
@@ -16,4 +17,6 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
     JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo);
     JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo);
+
+    JSONArray getDailyConsecutiveAbnormalities();
 }

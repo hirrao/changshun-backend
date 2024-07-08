@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 /**
  * 患者基本信息
  *
@@ -45,10 +48,10 @@ public class PatientBaseEntity extends Model<PatientBaseEntity> {
     private String sex;
  
 	/**
-	* age
+	* birthday
 	*/
-    @Schema(description="age")
-    private Integer age;
+    @Schema(description="birthday")
+    private LocalDate birthday;
  
 	/**
 	* phoneNumber
