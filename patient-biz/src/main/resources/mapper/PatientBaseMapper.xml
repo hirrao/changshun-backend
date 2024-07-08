@@ -7,6 +7,7 @@
         <id property="patientUid" column="patient_uid"/>
         <id property="identificationNumber" column="identification_number"/>
         <id property="patientName" column="patient_name"/>
+        <id property="physicalStrength" column="physical_strength"/>
         <id property="sex" column="sex"/>
         <id property="age" column="age"/>
         <id property="phoneNumber" column="phone_number"/>
