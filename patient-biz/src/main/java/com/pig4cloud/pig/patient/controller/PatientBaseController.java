@@ -10,6 +10,7 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
+import com.pig4cloud.pig.patient.entity.UserFeedbackEntity;
 import com.pig4cloud.pig.patient.service.PatientBaseService;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,22 +43,18 @@ public class PatientBaseController {
 	@Operation(summary = "分页查询", description = "分页查询")
 	@GetMapping("/page")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
-	public R<IPage<PatientBaseEntity>> getPatientPage(
-			@RequestParam(value = "page", defaultValue = "1") Integer page,
-			@RequestParam(value = "size", defaultValue = "10") Integer size,
-			PatientDoctorEntity patientDoctor) {
-		Page<PatientBaseEntity> patientBasePage = new Page<>(page, size);
-		IPage<PatientBaseEntity> resultPage = patientBaseService.getPatientPage(patientBasePage, patientDoctor);
-		return R.ok(resultPage);
+	public R getPatientBasePageByCare(@ParameterObject Page<?> page) {
+		return R.ok(patientBaseService.pageByCare(page));
 	}
-	//public R getPatientBasePage(@ParameterObject Page page,
-								//@ParameterObject PatientBaseEntity patientBase, PatientDoctorEntity patientDoctor) {
-		//LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
-		//return R.ok(patientBaseService.page(page, wrapper));
-		//return R.ok(patientBaseService.getPatientPage(page, patientDoctor));
-		//Page<PatientBaseEntity> patientBasePage = new Page<>(page, size);
-		//IPage<PatientBaseEntity> resultPage = patientBaseService.getPatientPage(patientBasePage, patientDoctor);
-		//return R.ok(resultPage);
+
+	@Operation(summary = "全条件查询患者信息", description = "全条件查询患者信息")
+	@PostMapping("/getByPatientBaseObject")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
+	public R getByPatientBaseObject(@RequestBody PatientBaseEntity patientBase) {
+		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
+		wrapper.setEntity(patientBase);
+		return R.ok(patientBaseService.list(wrapper));
+	}
 
 	
 	

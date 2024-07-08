@@ -26,11 +26,16 @@ import java.util.stream.Collectors;
  */
 @Service
 public class PatientBaseServiceImpl extends ServiceImpl<PatientBaseMapper, PatientBaseEntity> implements PatientBaseService {
-    @Autowired
-    private PatientBaseMapper patientBaseMapper;
+    private final PatientBaseMapper patientBaseMapper;
+
+    public PatientBaseServiceImpl(PatientBaseMapper patientBaseMapper) {
+        this.patientBaseMapper = patientBaseMapper;
+    }
 
     @Override
-    public IPage<PatientBaseEntity> getPatientPage(Page<PatientBaseEntity> page, PatientDoctorEntity patientDoctor) {
-        return patientBaseMapper.selectPatientPageWithCare(page);
+    public IPage<PatientBaseEntity> pageByCare(Page<?> page) {
+        return patientBaseMapper.selectPatientBasePageByCare(page);
     }
+
+
 }
