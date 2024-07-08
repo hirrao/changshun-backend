@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 /**
  * 医患绑定表
  *
- * @author 袁钰涛
- * @date 2024-07-05 10:56:25
+ * @author wangwenche
+ * @date 2024-07-08 23:56:30
  */
 @Data
 @TableName("patient_doctor")
@@ -37,10 +37,10 @@ public class PatientDoctorEntity extends Model<PatientDoctorEntity> {
 	*/
     @Schema(description="doctorUid")
     private Long doctorUid;
-
+ 
 	/**
-	 * care
-	 */
-	@Schema(description="care")
-	private Integer care;
+	* care
+	*/
+    @Schema(description="care")
+    private Integer care;
 }

@@ -7,5 +7,6 @@
         <id property="pdId" column="pd_id"/>
         <id property="patientUid" column="patient_uid"/>
         <id property="doctorUid" column="doctor_uid"/>
+        <id property="care" column="care"/>
   </resultMap>
 </mapper>

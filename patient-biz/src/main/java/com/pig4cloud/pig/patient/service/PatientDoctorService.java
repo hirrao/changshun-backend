@@ -5,4 +5,5 @@ import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 
 public interface PatientDoctorService extends IService<PatientDoctorEntity> {
 
+    //boolean setPatientDoctorBinding(Long patientUid, Long doctorUid);
 }

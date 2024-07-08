@@ -20,12 +20,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 医患绑定表
  *
- * @author 袁钰涛
- * @date 2024-07-05 10:56:25
+ * @author wangwenche
+ * @date 2024-07-08 23:56:30
  */
 @RestController
 @RequiredArgsConstructor
@@ -35,15 +36,6 @@ import java.util.List;
 public class PatientDoctorController {
 
     private final  PatientDoctorService patientDoctorService;
-
-    @Operation(summary = "查询医患绑定信息", description = "查询医患绑定信息")
-    @PostMapping("/getByPatientDoctor")
-    @PreAuthorize("@pms.hasPermission('patient_patientDoctor_view')")
-    public R getByPatientDoctorPage(@RequestBody PatientDoctorEntity patientDoctor) {
-        LambdaQueryWrapper<PatientDoctorEntity> wrapper = Wrappers.lambdaQuery();
-        wrapper.setEntity(patientDoctor);
-        return R.ok(patientDoctorService.list(wrapper));
-    }
 
     /**
      * 分页查询
@@ -59,7 +51,22 @@ public class PatientDoctorController {
         return R.ok(patientDoctorService.page(page, wrapper));
     }
 
-
+    @Operation(summary = "全条件查询医生患者绑定信息", description = "全条件查询医生患者绑定信息")
+    @PostMapping("/getByPatientDoctor")
+    @PreAuthorize("@pms.hasPermission('patient_patientDoctor_view')")
+    public R getByPatientDoctorObject(@RequestBody PatientDoctorEntity patientDoctor) {
+        LambdaQueryWrapper<PatientDoctorEntity> wrapper = Wrappers.lambdaQuery();
+        wrapper.setEntity(patientDoctor);
+        return R.ok(patientDoctorService.list(wrapper));
+    }
+/*
+    @Operation(summary = "患者输入医生编号和医生绑定", description = "患者输入医生编号和医生绑定")
+    @GetMapping("/{patientUid}/{doctorUid}/binding")
+    @PreAuthorize("@pms.hasPermission('patient_userFeedback_view')")
+    public R setPatientDoctorBinding(@PathVariable("patientUid") Long patientUid, @PathVariable("doctorUid") Long doctorUid){
+        return R.ok(patientDoctorService.setPatientDoctorBinding(patientUid, doctorUid));
+    }
+*/
     /**
      * 通过id查询医患绑定表
      * @param pdId id
