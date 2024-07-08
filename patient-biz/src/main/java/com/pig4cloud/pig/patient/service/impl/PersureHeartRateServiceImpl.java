@@ -42,6 +42,11 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
+    public JSONObject classifyBloodPressure(Long patientUid) {
+        return null;
+    }//我也不知道是干啥的
+
+    @Override
     public JSONObject classifyAllBloodPressure(Long patientUid){
         LambdaQueryWrapper<PersureHeartRateEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PersureHeartRateEntity::getPatientUid, patientUid);
@@ -85,5 +90,15 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         float systolic = (persureHeartRateMapper.selectOne(queryWrapper)).getSystolic(); // 高压
         float diastolic = (persureHeartRateMapper.selectOne(queryWrapper)).getDiastolic(); // 低压
         return judgeRiskByBloodPressure(systolic, diastolic);
+    }
+
+    @Override
+    public PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMaxBloodPressure(patientUid);
+    }
+
+    @Override
+    public PersureHeartRateEntity getTodayMinHeartRate(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
     }
 }
