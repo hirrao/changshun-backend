@@ -177,4 +177,14 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
 
         return anomalyCounts;
     }
+
+    @Override
+    public PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMaxBloodPressure(patientUid);
+    }
+
+    @Override
+    public PersureHeartRateEntity getTodayMinHeartRate(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
+    }
 }
