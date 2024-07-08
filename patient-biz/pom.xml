@@ -23,6 +23,11 @@
             <artifactId>patient-api</artifactId>
             <version>3.8.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.pig4cloud.plugin</groupId>
+            <artifactId>websocket-spring-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
         <!--选配: orm 模块-->
         <dependency>
             <groupId>com.baomidou</groupId>

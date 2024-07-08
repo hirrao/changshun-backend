@@ -7,6 +7,7 @@ import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 public interface PatientBaseService extends IService<PatientBaseEntity> {
-    IPage<PatientBaseEntity> getPatientPage(Page<PatientBaseEntity> page, PatientDoctorEntity patientDoctor);
+    // 分页查询并按care字段降序排序
+    IPage<PatientBaseEntity> pageByCare(Page<?> page);
 
 }
