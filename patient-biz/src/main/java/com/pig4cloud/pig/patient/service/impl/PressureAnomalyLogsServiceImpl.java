@@ -88,4 +88,14 @@ public class PressureAnomalyLogsServiceImpl extends ServiceImpl<PressureAnomalyL
 
         return pressureAnomalyLogsMapper.updateById(record) > 0;
     }
+
+    @Override
+    public PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMaxBloodPressure(patientUid);
+    }
+
+    @Override
+    public PersureHeartRateEntity getTodayMinHeartRate(Long patientUid) {
+        return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
+    }
 }

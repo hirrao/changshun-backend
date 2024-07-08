@@ -8,4 +8,8 @@ public interface PressureAnomalyLogsService extends IService<PressureAnomalyLogs
     boolean createDailyRecord();
     int judgeBloodPressureAnomaly(long sdhId);
     boolean updateAnomalyCount(long sdhId);
+
+    PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
+
+    PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
 }
