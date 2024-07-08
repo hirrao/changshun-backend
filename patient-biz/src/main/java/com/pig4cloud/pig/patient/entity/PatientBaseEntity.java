@@ -37,6 +37,12 @@ public class PatientBaseEntity extends Model<PatientBaseEntity> {
 	*/
     @Schema(description="patientName")
     private String patientName;
+
+	/**
+	 * physical strength
+	 */
+	@Schema(description="physicalstrength")
+	private String physicalStrength;
  
 	/**
 	* sex
