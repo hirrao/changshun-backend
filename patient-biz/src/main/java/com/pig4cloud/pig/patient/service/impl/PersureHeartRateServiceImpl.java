@@ -1,7 +1,9 @@
 package com.pig4cloud.pig.patient.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
@@ -9,6 +11,9 @@ import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,5 +90,49 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         float systolic = (persureHeartRateMapper.selectOne(queryWrapper)).getSystolic(); // 高压
         float diastolic = (persureHeartRateMapper.selectOne(queryWrapper)).getDiastolic(); // 低压
         return judgeRiskByBloodPressure(systolic, diastolic);
+    }
+
+    @Override
+    public JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo) {
+        LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("upload_time", startOfWeek.atStartOfDay(), endOfWeek.atTime(23, 59, 59));
+
+        List<PersureHeartRateEntity> weeklyRecords = persureHeartRateMapper.selectList(queryWrapper);
+
+        JSONObject pressureData = new JSONObject();
+        pressureData.put("systolic", new JSONArray());
+        pressureData.put("diastolic", new JSONArray());
+
+        for (PersureHeartRateEntity record : weeklyRecords) {
+            pressureData.getJSONArray("systolic").add(record.getSystolic());
+            pressureData.getJSONArray("diastolic").add(record.getDiastolic());
+        }
+
+        return pressureData;
+    }
+
+    @Override
+    public JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo) {
+        LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
+        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+
+        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("upload_time", startOfMonth.atStartOfDay(), endOfMonth.atTime(23, 59, 59));
+
+        List<PersureHeartRateEntity> monthlyRecords = persureHeartRateMapper.selectList(queryWrapper);
+
+        JSONObject pressureData = new JSONObject();
+        pressureData.put("systolic", new JSONArray());
+        pressureData.put("diastolic", new JSONArray());
+
+        for (PersureHeartRateEntity record : monthlyRecords) {
+            pressureData.getJSONArray("systolic").add(record.getSystolic());
+            pressureData.getJSONArray("diastolic").add(record.getDiastolic());
+        }
+
+        return pressureData;
     }
 }

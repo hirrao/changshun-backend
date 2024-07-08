@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,6 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -75,6 +77,22 @@ public class PersureHeartRateController {
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getCurrentRiskAssessment(@RequestParam("patientUid") Long patientUid){
         return R.ok(persureHeartRateService.getCurrentRiskAssessment(patientUid));
+    }
+
+    @Operation(summary = "查询某一周的所有高压和低压", description = "查询某一周的所有高压和低压")
+    @GetMapping("/weeklyPressureData")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getWeeklyPressureData(@RequestParam LocalDate date, @RequestParam int weeksAgo) {
+        JSONObject result = persureHeartRateService.getWeeklyPressureData(date, weeksAgo);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询某一个月的所有高压和低压", description = "查询某一个月的所有高压和低压")
+    @GetMapping("/monthlyPressureData")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getMonthlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo) {
+        JSONObject result = persureHeartRateService.getMonthlyPressureData(date, monthsAgo);
+        return R.ok(result);
     }
 
     /**

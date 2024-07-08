@@ -8,22 +8,34 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
 
 /**
- * 血压异常信息统计
+ * 血压异常次数统计
  *
  * @author wangwenche
- * @date 2024-07-07 17:44:20
+ * @date 2024-07-08 11:20:07
  */
 @Data
-@TableName("pressure_anomaly_logs")
+@TableName("pressure_anomaly")
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "血压异常信息统计")
-public class PressureAnomalyLogsEntity extends Model<PressureAnomalyLogsEntity> {
+@Schema(description = "血压异常次数统计")
+public class PressureAnomalyEntity extends Model<PressureAnomalyEntity> {
 
+ 
+	/**
+	* paId
+	*/
+    @TableId(type = IdType.ASSIGN_ID)
+    @Schema(description="paId")
+    private Long paId;
+ 
+	/**
+	* patientUid
+	*/
+    @Schema(description="patientUid")
+    private Long patientUid;
  
 	/**
 	* date
 	*/
-    @TableId(type = IdType.ASSIGN_ID)
     @Schema(description="date")
     private LocalDate date;
  
@@ -52,14 +64,14 @@ public class PressureAnomalyLogsEntity extends Model<PressureAnomalyLogsEntity> 
     private Integer elevated;
  
 	/**
-	* allData
+	* low
 	*/
-    @Schema(description="allData")
-    private Integer allData;
-
+    @Schema(description="low")
+    private Integer low;
+ 
 	/**
-	 * low
-	 */
-	@Schema(description = "low")
-	private Integer low;
+	* allNum
+	*/
+    @Schema(description="allNum")
+    private Integer allNum;
 }
