@@ -10,5 +10,7 @@
         <id property="position" column="position"/>
         <id property="affiliatedHospital" column="affiliated_hospital"/>
         <id property="permission" column="permission"/>
+        <id property="department" column="department"/>
+
   </resultMap>
 </mapper>
