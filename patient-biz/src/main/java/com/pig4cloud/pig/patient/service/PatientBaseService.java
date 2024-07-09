@@ -17,4 +17,12 @@ public interface PatientBaseService extends IService<PatientBaseEntity> {
 
     int countFemalePatientsUnderEqual66(Long doctorUid);
 
+    int ccountMalePatientsOver55(Long doctorUid);
+
+    int ccountMalePatientsUnderEqual55(Long doctorUid);
+
+    int ccountFemalePatientsOver65(Long doctorUid);
+
+    int ccountFemalePatientsUnderEqual66(Long doctorUid);
+
 }

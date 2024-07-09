@@ -51,6 +51,18 @@ public class PatientBaseController {
 		return sb.toString();
 	}
 
+	@Operation(summary = "查询特别关心年龄性别", description = "查询特别关心年龄性别")
+	@GetMapping("/{doctorUid}/patient/bycarestats")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_caresex')")
+	public String getPatientbycareStatistics(@PathVariable("doctorUid") Long doctorUid) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("与医生绑定且care字段为1的男性大于55岁的患者数目: ").append(patientBaseService.ccountMalePatientsOver55(doctorUid)).append("\n");
+		sb.append("与医生绑定且care字段为1的男性小于等于55岁的患者数目: ").append(patientBaseService.ccountMalePatientsUnderEqual55(doctorUid)).append("\n");
+		sb.append("与医生绑定且care字段为1的女性大于65岁的患者数目: ").append(patientBaseService.ccountFemalePatientsOver65(doctorUid)).append("\n");
+		sb.append("与医生绑定且care字段为1的女性小于等于66岁的患者数目: ").append(patientBaseService.ccountFemalePatientsUnderEqual66(doctorUid));
+		return sb.toString();
+	}
+
 
 
 

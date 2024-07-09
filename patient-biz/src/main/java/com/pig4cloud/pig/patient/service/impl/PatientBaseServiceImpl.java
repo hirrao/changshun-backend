@@ -62,5 +62,25 @@ public class PatientBaseServiceImpl extends ServiceImpl<PatientBaseMapper, Patie
         return patientBaseMapper.countFemalePatientsUnderEqual66(doctorUid);
     }
 
+    @Override
+    public int ccountMalePatientsOver55(Long doctorUid) {
+        return patientBaseMapper.ccountMalePatientsOver55(doctorUid);
+    }
+
+    @Override
+    public int ccountMalePatientsUnderEqual55(Long doctorUid) {
+        return patientBaseMapper.ccountMalePatientsUnderEqual55(doctorUid);
+    }
+
+    @Override
+    public int ccountFemalePatientsOver65(Long doctorUid) {
+        return patientBaseMapper.ccountFemalePatientsOver65(doctorUid);
+    }
+
+    @Override
+    public int ccountFemalePatientsUnderEqual66(Long doctorUid) {
+        return patientBaseMapper.ccountFemalePatientsUnderEqual66(doctorUid);
+    }
+
 
 }
