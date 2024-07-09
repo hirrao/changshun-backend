@@ -19,3 +19,12 @@ values (1720094542466,1720094542462, 'patient_persureHeartRate_del', '1', null, 
 
 insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
 values (1720094542467,1720094542462, 'patient_persureHeartRate_export', '1', null, '1',  '0', null, '3', null, '导入导出');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720094542468,1720094542462, 'patient_persureHeartRate_export', '1', null, '1',  '0', null, '3', null, '最高心率');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720094542469,1720094542462, 'patient_persureHeartRate_export', '1', null, '1',  '0', null, '3', null, '最低心率');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720094542470,1720094542462, 'patient_persureHeartRate_view', '1', null, '1',  '0', null, '3', null, '查询心率类型人数');

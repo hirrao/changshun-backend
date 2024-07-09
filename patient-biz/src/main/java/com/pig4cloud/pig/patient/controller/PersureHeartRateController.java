@@ -41,6 +41,21 @@ public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
 
+    @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
+    @GetMapping("/{doctorUid}/patient/heartRate/stats")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')" )
+    public String getHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("与医生绑定且当天心率过缓的患者数目: ").append(persureHeartRateService.countPatientsWithLowHeartRate(doctorUid)).append("\n");
+        sb.append("与医生绑定且当天心率正常的患者数目: ").append(persureHeartRateService.countPatientsWithNormalHeartRate(doctorUid)).append("\n");
+        sb.append("与医生绑定且当天心率过急的患者数目: ").append(persureHeartRateService.countPatientsWithHighHeartRate(doctorUid));
+        return sb.toString();
+    }
+
+
+
+
+
     /**
      * 分页查询
      * @param page 分页对象

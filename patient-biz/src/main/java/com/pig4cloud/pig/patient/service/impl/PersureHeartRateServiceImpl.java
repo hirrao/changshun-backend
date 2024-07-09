@@ -239,4 +239,20 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
         return result;
     }
+
+
+    @Override
+    public int countPatientsWithLowHeartRate(Long doctorUid) {
+        return persureHeartRateMapper.countPatientsWithLowHeartRate(doctorUid);
+    }
+
+    @Override
+    public int countPatientsWithNormalHeartRate(Long doctorUid) {
+        return persureHeartRateMapper.countPatientsWithNormalHeartRate(doctorUid);
+    }
+
+    @Override
+    public int countPatientsWithHighHeartRate(Long doctorUid) {
+        return persureHeartRateMapper.countPatientsWithHighHeartRate(doctorUid);
+    }
 }
