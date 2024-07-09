@@ -38,7 +38,21 @@ import org.springframework.web.bind.annotation.*;
 public class PatientBaseController {
 	
 	private final PatientBaseService patientBaseService;
-	
+
+	@Operation(summary = "查询年龄性别", description = "查询年龄性别")
+	@GetMapping("/{doctorUid}/patient/stats")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_sex')")
+	public String getPatientStatistics(@PathVariable("doctorUid") Long doctorUid) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("与医生绑定的男性大于55岁的患者数目: ").append(patientBaseService.countMalePatientsOver55(doctorUid)).append("\n");
+		sb.append("与医生绑定的男性小于等于55岁的患者数目: ").append(patientBaseService.countMalePatientsUnderEqual55(doctorUid)).append("\n");
+		sb.append("与医生绑定的女性大于65岁的患者数目: ").append(patientBaseService.countFemalePatientsOver65(doctorUid)).append("\n");
+		sb.append("与医生绑定的女性小于等于66岁的患者数目: ").append(patientBaseService.countFemalePatientsUnderEqual66(doctorUid));
+		return sb.toString();
+	}
+
+
+
 
 	@Operation(summary = "分页查询", description = "分页查询")
 	@GetMapping("/page")
