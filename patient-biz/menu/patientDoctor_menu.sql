@@ -19,3 +19,6 @@ values (1720454190784,1720454190780, 'patient_patientDoctor_del', '1', null, '1'
 
 insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
 values (1720454190785,1720454190780, 'patient_patientDoctor_export', '1', null, '1',  '0', null, '3', null, '导入导出');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720454190786,1720454190780, 'patient_patientDoctor_view', '1', null, '1',  '0', null, '3', null, '查询特别关心心率类别人数');

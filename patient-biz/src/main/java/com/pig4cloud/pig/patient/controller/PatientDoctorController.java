@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
+import com.pig4cloud.pig.patient.dto.HeartRateStatsDTO;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.service.PatientDoctorService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +37,14 @@ import java.util.Objects;
 public class PatientDoctorController {
 
     private final  PatientDoctorService patientDoctorService;
+
+
+    @Operation(summary = "查询特别关心心率类别人数" , description = "查询特别关心心率类别人数" )
+    @GetMapping("/heart-rate-stats")
+    @PreAuthorize("@pms.hasPermission('patient_patientDoctor_view')" )
+    public HeartRateStatsDTO getHeartRateStats(@RequestParam("doctorUid") Long doctorUid) {
+        return patientDoctorService.getHeartRateStats(doctorUid);
+    }
 
     /**
      * 分页查询
