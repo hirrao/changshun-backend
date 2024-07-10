@@ -188,4 +188,15 @@ public class AiPreDiagnosisEntity extends Model<AiPreDiagnosisEntity> {
 	*/
     @Schema(description="dailyDrinkingAmount")
     private Float dailyDrinkingAmount;
+
+	/**
+	 * dangerReason
+	 */
+	@Schema(description="dangerReason")
+	private Integer dangerReason;
+	/**
+	 * isClinical
+	 */
+	@Schema(description="isClinical")
+	private Boolean isClinical;
 }

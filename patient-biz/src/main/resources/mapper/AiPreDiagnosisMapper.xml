@@ -32,6 +32,8 @@
         <id property="drinkingStatus" column="drinking_status"/>
         <id property="drinkingDuration" column="drinking_duration"/>
         <id property="dailyDrinkingAmount" column="daily_drinking_amount"/>
+        <id property="dangerReason" column="danger_reason"/>
+      <id property="isClinical" column="is_clinical"/>
   </resultMap>
 
       <select id="countPatientsWithHypertensionFamilyHistory" resultType="int">

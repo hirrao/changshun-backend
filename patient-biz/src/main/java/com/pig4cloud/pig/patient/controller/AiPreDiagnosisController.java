@@ -151,7 +151,7 @@ public class AiPreDiagnosisController {
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_add')" )
     public R save(@RequestBody AiPreDiagnosisEntity aiPreDiagnosis) {
-        return R.ok(aiPreDiagnosisService.save(aiPreDiagnosis));
+        return R.ok(aiPreDiagnosisService.saveAiPreDiagnosis(aiPreDiagnosis));
     }
 
     /**
@@ -164,7 +164,7 @@ public class AiPreDiagnosisController {
     @PutMapping
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_edit')" )
     public R updateById(@RequestBody AiPreDiagnosisEntity aiPreDiagnosis) {
-        return R.ok(aiPreDiagnosisService.updateById(aiPreDiagnosis));
+        return R.ok(aiPreDiagnosisService.updateAiPreDiagnosis(aiPreDiagnosis));
     }
 
     /**

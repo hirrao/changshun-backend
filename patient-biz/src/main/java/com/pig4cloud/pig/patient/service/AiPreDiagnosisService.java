@@ -30,4 +30,10 @@ public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
 
     int ccountPatientsWithFoodAllergyHistory(Long doctorUid);
 
+    boolean saveAiPreDiagnosis(AiPreDiagnosisEntity aiPreDiagnosis);
+
+    boolean updateAiPreDiagnosis(AiPreDiagnosisEntity aiPreDiagnosis);
+
+    Boolean calculateIsClinical(AiPreDiagnosisEntity aiPreDiagnosis);
+
 }
