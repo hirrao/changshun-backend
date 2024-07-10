@@ -52,6 +52,17 @@ public class PersureHeartRateController {
         return sb.toString();
     }
 
+    @Operation(summary = "查询特别关系心率类型人数" , description = "查询特别关系心率类型人数" )
+    @GetMapping("/{doctorUid}/carepatient/heartRate/stats")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartCare_view')" )
+    public String getcareHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("与医生绑定特别关心且当天心率过缓的患者数目: ").append(persureHeartRateService.ccountPatientsWithLowHeartRate(doctorUid)).append("\n");
+        sb.append("与医生绑定特别关心且当天心率正常的患者数目: ").append(persureHeartRateService.ccountPatientsWithNormalHeartRate(doctorUid)).append("\n");
+        sb.append("与医生绑定特别关心且当天心率过急的患者数目: ").append(persureHeartRateService.ccountPatientsWithHighHeartRate(doctorUid));
+        return sb.toString();
+    }
+
 
 
 

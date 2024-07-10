@@ -28,3 +28,6 @@ values (1720094542469,1720094542462, 'patient_persureHeartRate_export', '1', nul
 
 insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
 values (1720094542470,1720094542462, 'patient_persureHeartRate_view', '1', null, '1',  '0', null, '3', null, '查询心率类型人数');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720094542471,1720094542462, 'patient_persureHeartCare_view', '1', null, '1',  '0', null, '3', null, '查询特别关系心率类型人数');

@@ -25,4 +25,10 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     int countPatientsWithNormalHeartRate(Long doctorUid);
 
     int countPatientsWithHighHeartRate(Long doctorUid);
+
+    int ccountPatientsWithLowHeartRate(Long doctorUid);
+
+    int ccountPatientsWithNormalHeartRate(Long doctorUid);
+
+    int ccountPatientsWithHighHeartRate(Long doctorUid);
 }

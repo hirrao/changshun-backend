@@ -255,4 +255,19 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     public int countPatientsWithHighHeartRate(Long doctorUid) {
         return persureHeartRateMapper.countPatientsWithHighHeartRate(doctorUid);
     }
+
+    @Override
+    public int ccountPatientsWithLowHeartRate(Long doctorUid) {
+        return persureHeartRateMapper.ccountPatientsWithLowHeartRate(doctorUid);
+    }
+
+    @Override
+    public int ccountPatientsWithNormalHeartRate(Long doctorUid) {
+        return persureHeartRateMapper.ccountPatientsWithNormalHeartRate(doctorUid);
+    }
+
+    @Override
+    public int ccountPatientsWithHighHeartRate(Long doctorUid) {
+        return persureHeartRateMapper.ccountPatientsWithHighHeartRate(doctorUid);
+    }
 }
