@@ -87,27 +87,27 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
     @Override
     public int ccountPatientsWithHypertensionFamilyHistory(Long doctorUid) {
-        return aiPreDiagnosisMapper.countPatientsWithHypertensionFamilyHistory(doctorUid);
+        return aiPreDiagnosisMapper.ccountPatientsWithHypertensionFamilyHistory(doctorUid);
     }
 
     @Override
     public int ccountPatientsWithSmokingHistory(Long doctorUid) {
-        return aiPreDiagnosisMapper.countPatientsWithSmokingHistory(doctorUid);
+        return aiPreDiagnosisMapper.ccountPatientsWithSmokingHistory(doctorUid);
     }
 
     @Override
     public int ccountPatientsWithDrinkingHistory(Long doctorUid) {
-        return aiPreDiagnosisMapper.countPatientsWithDrinkingHistory(doctorUid);
+        return aiPreDiagnosisMapper.ccountPatientsWithDrinkingHistory(doctorUid);
     }
 
     @Override
     public int ccountPatientsWithInfectiousHistory(Long doctorUid) {
-        return aiPreDiagnosisMapper.countPatientsWithInfectiousHistory(doctorUid);
+        return aiPreDiagnosisMapper.ccountPatientsWithInfectiousHistory(doctorUid);
     }
 
     @Override
     public int ccountPatientsWithFoodAllergyHistory(Long doctorUid) {
-        return aiPreDiagnosisMapper.countPatientsWithFoodAllergyHistory(doctorUid);
+        return aiPreDiagnosisMapper.ccountPatientsWithFoodAllergyHistory(doctorUid);
     }
 
     @Override

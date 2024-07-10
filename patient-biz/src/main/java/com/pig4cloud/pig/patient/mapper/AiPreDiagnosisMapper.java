@@ -23,24 +23,84 @@ public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
     int countPatientsWithDisease(@Param("doctorUid") Long doctorUid, @Param("disease") String disease);
 
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE early_cvd_family_history = 1 " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} " +
+            ")")
     int countPatientsWithHypertensionFamilyHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE (smoking_status = '是' OR smoking_status = '已戒烟') " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} " +
+            ")")
     int countPatientsWithSmokingHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE (drinking_status = '是' OR drinking_status = '已戒酒') " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} " +
+            ")")
     int countPatientsWithDrinkingHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE infectious_disease_history IS NOT NULL AND infectious_disease_history != '无' " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} " +
+            ")")
     int countPatientsWithInfectiousHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE food_allergy_history IS NOT NULL AND food_allergy_history != '无' " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} " +
+            ")")
     int countPatientsWithFoodAllergyHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE early_cvd_family_history = 1 " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
+            ")")
     int ccountPatientsWithHypertensionFamilyHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE (smoking_status = '是' OR smoking_status = '已戒烟') " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
+            ")")
     int ccountPatientsWithSmokingHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE (drinking_status = '是' OR drinking_status = '已戒酒') " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
+            ")")
     int ccountPatientsWithDrinkingHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE infectious_disease_history IS NOT NULL AND infectious_disease_history != '无' " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
+            ")")
     int ccountPatientsWithInfectiousHistory(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+            "WHERE food_allergy_history IS NOT NULL AND food_allergy_history != '无' " +
+            "AND patient_uid IN (" +
+            "   SELECT patient_uid FROM patient_doctor " +
+            "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
+            ")")
     int ccountPatientsWithFoodAllergyHistory(@Param("doctorUid") Long doctorUid);
 
 }
