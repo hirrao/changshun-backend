@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 
+import java.util.Map;
+
 public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
 
-    int nocountPatientsWithDiseases(Long doctorUid);
+    Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid);
 
-    int countPatientsWithDiseases(Long doctorUid);
+    Map<String, Integer> countPatientsWithDiseases(Long doctorUid);
 
     int countPatientsWithHypertensionFamilyHistory(Long doctorUid);
 

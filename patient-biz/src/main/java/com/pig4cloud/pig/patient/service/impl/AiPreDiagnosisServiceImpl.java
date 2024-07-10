@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * AI预问诊
@@ -28,13 +32,31 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     }
 
     @Override
-    public int nocountPatientsWithDiseases(Long doctorUid) {
-        return aiPreDiagnosisMapper.nocountPatientsWithDiseases(doctorUid);
+    public Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid) {
+        List<String> diseaseNames = Arrays.asList("血脂异常", "脑血管病", "心脏疾病", "肾脏疾病",
+                "周围血管病", "视网膜病变", "糖尿病", "其他");
+
+        Map<String, Integer> diseaseCounts = new HashMap<>();
+        for (String disease : diseaseNames) {
+            int count = aiPreDiagnosisMapper.nocountPatientsWithDisease(doctorUid, disease);
+            diseaseCounts.put(disease, count);
+        }
+
+        return diseaseCounts;
     }
 
     @Override
-    public int countPatientsWithDiseases(Long doctorUid) {
-        return aiPreDiagnosisMapper.countPatientsWithDiseases(doctorUid);
+    public Map<String, Integer> countPatientsWithDiseases(Long doctorUid) {
+        List<String> diseaseNames = Arrays.asList("血脂异常", "脑血管病", "心脏疾病", "肾脏疾病",
+                "周围血管病", "视网膜病变", "糖尿病", "其他");
+
+        Map<String, Integer> diseaseCounts = new HashMap<>();
+        for (String disease : diseaseNames) {
+            int count = aiPreDiagnosisMapper.countPatientsWithDisease(doctorUid, disease);
+            diseaseCounts.put(disease, count);
+        }
+
+        return diseaseCounts;
     }
 
     @Override

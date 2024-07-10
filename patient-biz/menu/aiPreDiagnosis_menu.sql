@@ -31,3 +31,6 @@ values (1720324510239,1720324510231, 'patient_aiPreDiagnosis_hiscount', '1', nul
 
 insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
 values (1720324510240,1720324510231, 'patient_aiPreDiagnosis_hisccount', '1', null, '1',  '0', null, '3', null, '得到特别关心客观病史');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720324510242,1720324510231, 'patient_aiPreDiagnosis_count', '1', null, '1',  '0', null, '3', null, '得到伴随疾病1');

@@ -90,18 +90,18 @@ public class AiPreDiagnosisController {
     @Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
     @GetMapping("/count-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_carecount')")
-    public R<Integer> countPatientsWithDiseases(@PathVariable Long doctorUid) {
-        int count = aiPreDiagnosisService.countPatientsWithDiseases(doctorUid);
-        return R.ok(count);
+    public ResponseEntity<Map<String, Integer>> countPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
+        Map<String, Integer> diseaseCounts = aiPreDiagnosisService.countPatientsWithDiseases(doctorUid);
+        return ResponseEntity.ok(diseaseCounts);
     }
 
 
-    @Operation(summary = "得到伴随疾病", description = "得到伴随疾病")
-    @GetMapping("/device-diseases-count")
+    @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
+    @GetMapping("/countnocare-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_count')")
-    public R<Integer> nocountPatientsWithDiseases(@PathVariable Long doctorUid) {
-        int count = aiPreDiagnosisService.nocountPatientsWithDiseases(doctorUid);
-        return R.ok(count);
+    public ResponseEntity<Map<String, Integer>> nocountPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
+        Map<String, Integer> diseaseCounts = aiPreDiagnosisService.nocountPatientsWithDiseases(doctorUid);
+        return ResponseEntity.ok(diseaseCounts);
     }
 
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")
