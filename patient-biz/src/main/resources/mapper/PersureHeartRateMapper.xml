@@ -10,6 +10,7 @@
         <id property="heartRate" column="heart_rate"/>
         <id property="uploadTime" column="upload_time"/>
         <id property="patientUid" column="patient_uid"/>
+        <id property="sdhClassification" column="sdh_classification"/>
   </resultMap>
 
     <select id="selectTodayMaxBloodPressure" resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
