@@ -270,4 +270,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     public int ccountPatientsWithHighHeartRate(Long doctorUid) {
         return persureHeartRateMapper.ccountPatientsWithHighHeartRate(doctorUid);
     }
+
+    @Override
+    public void updateSdhClassification(Long sdhId, Long patientUid) {
+        persureHeartRateMapper.updateSdhClassification(sdhId, patientUid);
+    }
 }

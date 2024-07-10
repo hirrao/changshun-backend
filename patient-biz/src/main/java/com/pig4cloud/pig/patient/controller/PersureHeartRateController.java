@@ -12,6 +12,7 @@ import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.PatientNowDiseaseEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -151,8 +152,12 @@ public class PersureHeartRateController {
     @SysLog("新增血压心率展示" )
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
-    public R save(@RequestBody PersureHeartRateEntity persureHeartRate) {
-        return R.ok(persureHeartRateService.save(persureHeartRate));
+    public R save(@Valid @RequestBody PersureHeartRateEntity persureHeartRate) {
+        boolean saved = persureHeartRateService.save(persureHeartRate);
+        if (saved) {
+            persureHeartRateService.updateSdhClassification(persureHeartRate.getSdhId(), persureHeartRate.getPatientUid());
+        }
+        return R.ok(saved);
     }
 
     /**
@@ -164,9 +169,14 @@ public class PersureHeartRateController {
     @SysLog("修改血压心率展示" )
     @PutMapping
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_edit')" )
-    public R updateById(@RequestBody PersureHeartRateEntity persureHeartRate) {
-        return R.ok(persureHeartRateService.updateById(persureHeartRate));
+    public R updateById(@Valid @RequestBody PersureHeartRateEntity persureHeartRate) {
+        boolean updated = persureHeartRateService.updateById(persureHeartRate);
+        if (updated) {
+            persureHeartRateService.updateSdhClassification(persureHeartRate.getSdhId(), persureHeartRate.getPatientUid());
+        }
+        return R.ok(updated);
     }
+
 
     /**
      * 通过id删除血压心率展示
