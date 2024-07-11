@@ -164,4 +164,12 @@ public class PressureAnomalyController {
         return R.ok(result);
     }
 
+    // 医生端获取所管理的所有患者的血压异常统计
+    @Operation(summary = "获取医生管理的所有患者的血压异常统计", description = "根据医生ID获取其管理的所有患者的血压异常统计")
+    @GetMapping("/getAnomalyStatsByDoctorUid")
+    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    public R getAnomalyStatsByDoctorUid(@RequestParam Long doctorUid) {
+        JSONObject result = pressureAnomalyService.getAnomalyCountByDoctorUid(doctorUid);
+        return R.ok(result);
+    }
 }

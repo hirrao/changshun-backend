@@ -3,8 +3,10 @@ package com.pig4cloud.pig.patient.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.alibaba.fastjson.JSONObject;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.entity.PressureAnomalyEntity;
+import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
 import com.pig4cloud.pig.patient.mapper.PressureAnomalyMapper;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
@@ -33,6 +35,9 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
 
     @Autowired
     private PersureHeartRateMapper persureHeartRateMapper;
+
+    @Autowired
+    private PatientDoctorMapper patientDoctorMapper;
 
     @Override
     public PressureAnomalyEntity createDailyRecord(long patient_uid){
@@ -186,5 +191,41 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
     @Override
     public PersureHeartRateEntity getTodayMinHeartRate(Long patientUid) {
         return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
+    }
+
+    @Override
+    public JSONObject getAnomalyCountByDoctorUid(Long doctorUid) {
+        QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("doctor_uid", doctorUid);
+        List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(queryWrapper);
+
+        int severe = 0, moderate = 0, mild = 0, elevated = 0, low = 0, all = 0;
+
+        for(PatientDoctorEntity patientDoctorEntity : patientDoctorEntities){
+            QueryWrapper<PressureAnomalyEntity> queryWrapper1 = new QueryWrapper<>();
+            LocalDate now = LocalDate.now();
+            queryWrapper1.eq("patient_uid", patientDoctorEntity.getPatientUid())
+                    .eq("date", now);
+            List<PressureAnomalyEntity> anomalyRecords = pressureAnomalyMapper.selectList(queryWrapper1);
+
+            for(PressureAnomalyEntity anomalyRecord : anomalyRecords){
+                severe += anomalyRecord.getSevere();
+                moderate += anomalyRecord.getModerate();
+                mild += anomalyRecord.getMild();
+                elevated += anomalyRecord.getElevated();
+                low += anomalyRecord.getLow();
+                all += anomalyRecord.getAllNum();
+            }
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("severe", severe);
+        result.put("moderate", moderate);
+        result.put("mild", mild);
+        result.put("elevated", elevated);
+        result.put("low", low);
+        result.put("all", all);
+
+        return result;
     }
 }

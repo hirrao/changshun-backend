@@ -55,11 +55,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject classifyBloodPressure(Long patientUid) {
-        return null;
-    }//我也不知道是干啥的
-
-    @Override
     public JSONObject classifyAllBloodPressure(Long patientUid){
         LambdaQueryWrapper<PersureHeartRateEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PersureHeartRateEntity::getPatientUid, patientUid);

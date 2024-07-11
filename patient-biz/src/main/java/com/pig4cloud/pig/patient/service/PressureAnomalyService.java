@@ -15,4 +15,6 @@ public interface PressureAnomalyService extends IService<PressureAnomalyEntity> 
     JSONObject getMonthAnomalyCount(LocalDate date, int monthAgo);
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
+
+    JSONObject getAnomalyCountByDoctorUid(Long doctorUid);
 }
