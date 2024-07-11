@@ -125,6 +125,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			userRole.setRoleId(roleId);
 			return userRole;
 		}).forEach(sysUserRoleMapper::insert);
+		
+		// 重新赋值，保证能够得到插入后的用户id
+		userDto.setUserId(sysUser.getUserId());
 		return Boolean.TRUE;
 	}
 
