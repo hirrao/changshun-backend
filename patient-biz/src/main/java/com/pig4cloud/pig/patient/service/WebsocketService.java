@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.patient.service;
 
+import com.pig4cloud.plugin.websocket.config.WebSocketMessageSender;
 import com.pig4cloud.plugin.websocket.handler.PlanTextMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,15 @@ public class WebsocketService implements PlanTextMessageHandler {
 	public void handle(WebSocketSession session, String message) {
 		// TODO: 业务逻辑处理
 		log.info("session_id :{} ,接收到的message: {}", session.getId(), message);
+	}
+	
+	public boolean sendMsg(String userName, String message) {
+		try {
+			WebSocketMessageSender.send(userName, message);
+			return true;
+		} catch (Exception e) {
+			log.error("发送消息失败", e);
+			return false;
+		}
 	}
 }
