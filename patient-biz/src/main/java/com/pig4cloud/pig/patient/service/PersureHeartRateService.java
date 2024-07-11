@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 public interface PersureHeartRateService extends IService<PersureHeartRateEntity> {
     JSONObject classifyAllBloodPressure(Long patientUid);
@@ -33,4 +35,8 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     int ccountPatientsWithHighHeartRate(Long doctorUid);
 
     void updateSdhClassification(Long sdhId, Long patientUid);
+
+    List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid);
+
+    List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid);
 }

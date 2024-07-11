@@ -13,6 +13,8 @@ import com.pig4cloud.pig.patient.entity.PatientNowDiseaseEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -41,6 +44,23 @@ import java.util.Objects;
 public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
+
+
+    @Operation(summary = "查询特别关心高血压病情" , description = "查询特别关心高血压病情" )
+    @GetMapping("/count-sdh-careclassification")
+    @PreAuthorize("@pms.hasPermission('patient_persureCareRate_view')" )
+    public ResponseEntity<?> countSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
+        List<Map<String, Object>> result = persureHeartRateService.countSdhClassificationByDoctorAndCare(doctorUid);
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "查询高血压病情" , description = "查询高血压病情" )
+    @GetMapping("/count-sdh-classification")
+    @PreAuthorize("@pms.hasPermission('patient_persureRate_view')" )
+    public ResponseEntity<?> nocountSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
+        List<Map<String, Object>> result = persureHeartRateService.nocountSdhClassificationByDoctorAndCare(doctorUid);
+        return ResponseEntity.ok(result);
+    }
 
     @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
     @GetMapping("/{doctorUid}/patient/heartRate/stats")
