@@ -7,6 +7,10 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
 @Mapper
 public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntity> {
     PersureHeartRateEntity selectTodayMaxBloodPressure(@Param("patientUid") Long patientUid);
@@ -108,6 +112,24 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
             "END " +
             "WHERE phr.sdh_id = #{sdhId}")
     void updateSdhClassification(@Param("sdhId") Long sdhId, @Param("patientUid") Long patientUid);
+
+    @Select("SELECT sdh_classification, COUNT(*) AS count " +
+            "FROM persure_heart_rate phr " +
+            "JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+            "WHERE pd.doctor_uid = #{doctorUid} " +
+            "  AND pd.care = 1 " +
+            "  AND DATE(phr.upload_time) = CURDATE() " +
+            "GROUP BY sdh_classification")
+    List<Map<String, Object>> countSdhClassificationByDoctorAndCare(@Param("doctorUid") Long doctorUid);
+
+    @Select("SELECT sdh_classification, COUNT(*) AS count " +
+            "FROM persure_heart_rate phr " +
+            "JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+            "WHERE pd.doctor_uid = #{doctorUid} " +
+            "  AND DATE(phr.upload_time) = CURDATE() " +
+            "GROUP BY sdh_classification")
+    List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(@Param("doctorUid") Long doctorUid);
+
 
 
 

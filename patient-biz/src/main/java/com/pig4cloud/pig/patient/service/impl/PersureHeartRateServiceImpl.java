@@ -275,4 +275,14 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     public void updateSdhClassification(Long sdhId, Long patientUid) {
         persureHeartRateMapper.updateSdhClassification(sdhId, patientUid);
     }
+
+    @Override
+    public List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid) {
+        return persureHeartRateMapper.countSdhClassificationByDoctorAndCare(doctorUid);
+    }
+
+    @Override
+    public List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid) {
+        return persureHeartRateMapper.nocountSdhClassificationByDoctorAndCare(doctorUid);
+    }
 }
