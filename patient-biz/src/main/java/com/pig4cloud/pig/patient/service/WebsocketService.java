@@ -1,8 +1,10 @@
 package com.pig4cloud.pig.patient.service;
 
+import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.plugin.websocket.config.WebSocketMessageSender;
 import com.pig4cloud.plugin.websocket.handler.PlanTextMessageHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -16,7 +18,8 @@ import org.springframework.web.socket.WebSocketSession;
 @Service
 @Slf4j
 public class WebsocketService implements PlanTextMessageHandler {
-	
+	@Autowired
+	private PatientBaseService patientBaseService;
 	/**
 	 * 普通文本消息处理，客制化自己的对于接收消息的时的操作
 	 *
@@ -37,5 +40,16 @@ public class WebsocketService implements PlanTextMessageHandler {
 			log.error("发送消息失败", e);
 			return false;
 		}
+	}
+	
+	public boolean sendMsg(Long patientUid,String message) {
+		//	查表根据患者id获取患者的userName
+		PatientBaseEntity tmp = patientBaseService.getById(patientUid);
+		if (tmp == null) {
+			log.error("患者不存在");
+			return false;
+		}
+		String userName = tmp.getUsername();
+		return sendMsg(userName, message);
 	}
 }

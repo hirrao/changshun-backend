@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.pig4cloud.pig.patient.mapper.PatientBaseMapper">
 
-  <resultMap id="patientBaseMap" type="com.pig4cloud.pig.patient.entity.PatientBaseEntity">
+    <resultMap id="patientBaseMap" type="com.pig4cloud.pig.patient.entity.PatientBaseEntity">
         <id property="patientUid" column="patient_uid"/>
         <id property="identificationNumber" column="identification_number"/>
         <id property="patientName" column="patient_name"/>
         <id property="physicalStrength" column="physical_strength"/>
         <id property="sex" column="sex"/>
-        <id property="age" column="age"/>
+        <id property="birthday" column="birthday"/>
         <id property="phoneNumber" column="phone_number"/>
         <id property="wxUid" column="wx_uid"/>
-  </resultMap>
-    <select id="selectPatientPageWithCare" resultType="com.pig4cloud.pig.patient.entity.PatientBaseEntity">
-        SELECT pb.*
-        FROM patient_base pb
-                 JOIN (
-            SELECT patient_uid, care
-            FROM patient_doctor
-            ORDER BY care DESC
-        ) pd ON pb.patient_uid = pd.patient_uid
-            ${mybatis.plus.page}
-    </select>
+        <id property="username" column="username"/>
+    </resultMap>
 </mapper>
