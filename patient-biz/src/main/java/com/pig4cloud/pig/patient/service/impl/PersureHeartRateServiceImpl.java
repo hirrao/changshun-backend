@@ -101,48 +101,115 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo) {
+    public JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo, long patientUid) {
         LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
         QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.between("upload_time", startOfWeek.atStartOfDay(), endOfWeek.atTime(23, 59, 59));
+        queryWrapper.between("upload_time", startOfWeek.atStartOfDay(), endOfWeek.atTime(23, 59, 59))
+                .eq("patient_uid", patientUid);
 
         List<PersureHeartRateEntity> weeklyRecords = persureHeartRateMapper.selectList(queryWrapper);
 
-        JSONObject pressureData = new JSONObject();
-        pressureData.put("systolic", new JSONArray());
-        pressureData.put("diastolic", new JSONArray());
+        Map<LocalDate, List<PersureHeartRateEntity>> recordsByDate = weeklyRecords.stream()
+                .collect(Collectors.groupingBy(record -> record.getUploadTime().toLocalDate()));
 
-        for (PersureHeartRateEntity record : weeklyRecords) {
-            pressureData.getJSONArray("systolic").add(record.getSystolic());
-            pressureData.getJSONArray("diastolic").add(record.getDiastolic());
+        JSONObject pressureData = new JSONObject();
+
+        for (Map.Entry<LocalDate, List<PersureHeartRateEntity>> entry : recordsByDate.entrySet()) {
+            LocalDate recordDate = entry.getKey();
+            JSONArray systolicArray = new JSONArray();
+            JSONArray diastolicArray = new JSONArray();
+
+            for (PersureHeartRateEntity record : entry.getValue()) {
+                systolicArray.add(record.getSystolic());
+                diastolicArray.add(record.getDiastolic());
+            }
+
+            JSONObject dailyData = new JSONObject();
+            dailyData.put("systolic", systolicArray);
+            dailyData.put("diastolic", diastolicArray);
+
+            pressureData.put(recordDate.toString(), dailyData);
         }
 
         return pressureData;
     }
 
     @Override
-    public JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo) {
+    public JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo, long patientUid) {
         LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
         LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
 
         QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.between("upload_time", startOfMonth.atStartOfDay(), endOfMonth.atTime(23, 59, 59));
+        queryWrapper.between("upload_time", startOfMonth.atStartOfDay(), endOfMonth.atTime(23, 59, 59))
+                .eq("patient_uid", patientUid);
 
         List<PersureHeartRateEntity> monthlyRecords = persureHeartRateMapper.selectList(queryWrapper);
 
-        JSONObject pressureData = new JSONObject();
-        pressureData.put("systolic", new JSONArray());
-        pressureData.put("diastolic", new JSONArray());
+        Map<LocalDate, List<PersureHeartRateEntity>> recordsByDate = monthlyRecords.stream()
+                .collect(Collectors.groupingBy(record -> record.getUploadTime().toLocalDate()));
 
-        for (PersureHeartRateEntity record : monthlyRecords) {
-            pressureData.getJSONArray("systolic").add(record.getSystolic());
-            pressureData.getJSONArray("diastolic").add(record.getDiastolic());
+        JSONObject pressureData = new JSONObject();
+
+
+        for (Map.Entry<LocalDate, List<PersureHeartRateEntity>> entry : recordsByDate.entrySet()) {
+            LocalDate recordDate = entry.getKey();
+            JSONArray systolicArray = new JSONArray();
+            JSONArray diastolicArray = new JSONArray();
+
+            for (PersureHeartRateEntity record : entry.getValue()) {
+                systolicArray.add(record.getSystolic());
+                diastolicArray.add(record.getDiastolic());
+            }
+
+            JSONObject dailyData = new JSONObject();
+            dailyData.put("systolic", systolicArray);
+            dailyData.put("diastolic", diastolicArray);
+
+            pressureData.put(recordDate.toString(), dailyData);
         }
 
         return pressureData;
     }
+
+    @Override
+    public JSONObject getYearlyPressureData(LocalDate date, int yearsAgo, long patientUid) {
+        LocalDate startOfYear = date.minusYears(yearsAgo).withDayOfYear(1);
+        LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
+
+        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("upload_time", startOfYear.atStartOfDay(), endOfYear.atTime(23, 59, 59))
+                .eq("patient_uid", patientUid);
+
+        List<PersureHeartRateEntity> yearLyRecords = persureHeartRateMapper.selectList(queryWrapper);
+
+        Map<LocalDate, List<PersureHeartRateEntity>> recordsByDate = yearLyRecords.stream()
+                .collect(Collectors.groupingBy(record -> record.getUploadTime().toLocalDate()));
+
+        JSONObject pressureData = new JSONObject();
+
+
+        for (Map.Entry<LocalDate, List<PersureHeartRateEntity>> entry : recordsByDate.entrySet()) {
+            LocalDate recordDate = entry.getKey();
+            JSONArray systolicArray = new JSONArray();
+            JSONArray diastolicArray = new JSONArray();
+
+            for (PersureHeartRateEntity record : entry.getValue()) {
+                systolicArray.add(record.getSystolic());
+                diastolicArray.add(record.getDiastolic());
+            }
+
+            JSONObject dailyData = new JSONObject();
+            dailyData.put("systolic", systolicArray);
+            dailyData.put("diastolic", diastolicArray);
+
+            pressureData.put(recordDate.toString(), dailyData);
+        }
+
+        return pressureData;
+    }
+
 
     @Override
     public PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid) {
@@ -234,6 +301,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
         return result;
     }
+
 
 
     @Override

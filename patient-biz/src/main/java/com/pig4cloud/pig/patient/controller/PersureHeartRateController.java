@@ -130,16 +130,24 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一周的所有高压和低压", description = "查询某一周的所有高压和低压")
     @GetMapping("/weeklyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getWeeklyPressureData(@RequestParam LocalDate date, @RequestParam int weeksAgo) {
-        JSONObject result = persureHeartRateService.getWeeklyPressureData(date, weeksAgo);
+    public R getWeeklyPressureData(@RequestParam LocalDate date, @RequestParam int weeksAgo, @RequestParam long patientUid) {
+        JSONObject result = persureHeartRateService.getWeeklyPressureData(date, weeksAgo, patientUid);
         return R.ok(result);
     }
 
     @Operation(summary = "查询某一个月的所有高压和低压", description = "查询某一个月的所有高压和低压")
     @GetMapping("/monthlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getMonthlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo) {
-        JSONObject result = persureHeartRateService.getMonthlyPressureData(date, monthsAgo);
+    public R getMonthlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo, @RequestParam long patientUid) {
+        JSONObject result = persureHeartRateService.getMonthlyPressureData(date, monthsAgo, patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询某一年的所有高压和低压", description = "查询某一年的所有高压和低压")
+    @GetMapping("/yearlyPressureData")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getYearlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo, @RequestParam long patientUid) {
+        JSONObject result = persureHeartRateService.getYearlyPressureData(date, monthsAgo, patientUid);
         return R.ok(result);
     }
 

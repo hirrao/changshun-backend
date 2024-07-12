@@ -16,8 +16,9 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
 
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
-    JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo);
-    JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo);
+    JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo, long patientUid);
+    JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo, long patientUid);
+    JSONObject getYearlyPressureData(LocalDate date, int yearsAgo, long patientUid);
 
     JSONArray getDailyConsecutiveAbnormalities();
 
