@@ -53,4 +53,34 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
         // 通过 WebSocket 发送消息
         return websocketService.sendMsg(patientUid, message);
     }
+
+
+    @Override
+    public void sendMessage(Long doctorUid, Long patientUid, String messageType, String jsonText) {
+        SysMessageEntity message = new SysMessageEntity();
+        message.setDoctorUid(doctorUid);
+        message.setPatientUid(patientUid);
+        message.setMessageType(messageType);
+        message.setJsonText(jsonText);
+        message.setSentDate(LocalDateTime.now());
+
+        sysMessageMapper.insert(message);
+
+        // 发送消息到 WebSocket
+        websocketService.sendMsg(patientUid, jsonText);
+    }
+
+    @Override
+    public List<SysMessageEntity> getUnreadMessages(Long patientUid) {
+        return sysMessageMapper.selectUnreadMessages(patientUid);
+    }
+
+    @Override
+    public void markMessageAsRead(Long notificationId) {
+        SysMessageEntity message = sysMessageMapper.selectById(notificationId);
+        if (message != null) {
+            message.setIsRead(true);
+            sysMessageMapper.updateById(message);
+        }
+    }
 }

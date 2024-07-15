@@ -38,6 +38,14 @@ public class EatDrugAlertController {
 
     private final  EatDrugAlertService eatDrugAlertService;
 
+
+    //@Operation(summary = "用药提醒" , description = "用药提醒" )
+    @GetMapping("/alerts/active")
+    //@PreAuthorize("@pms.hasPermission('patient_DrugAlert_view')" )
+    public List<EatDrugAlertEntity> getActiveAlerts() {
+        return eatDrugAlertService.getActiveAlerts();
+    }
+
     /**
      * 分页查询
      * @param page 分页对象

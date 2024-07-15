@@ -39,6 +39,18 @@ public class SysMessageController {
 
     private final  SysMessageService sysMessageService;
 
+
+
+    @GetMapping("/unread/{patientUid}")
+    public List<SysMessageEntity> getUnreadMessages(@PathVariable Long patientUid) {
+        return sysMessageService.getUnreadMessages(patientUid);
+    }
+
+    @PostMapping("/read/{notificationId}")
+    public void markMessageAsRead(@PathVariable Long notificationId) {
+        sysMessageService.markMessageAsRead(notificationId);
+    }
+
     @Operation(summary = "医生发送消息", description = "医生发送消息")
     @PostMapping("/send")
     @PreAuthorize("@pms.hasPermission('patient_send_view')")
