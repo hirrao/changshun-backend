@@ -46,6 +46,13 @@ public class PersureHeartRateController {
     private final  PersureHeartRateService persureHeartRateService;
 
 
+    @Operation(summary = "查询最近十天血压统计次数" , description = "查询最近十天血压统计次数" )
+    @GetMapping("/recent-ten-days/{doctorUid}")
+    @PreAuthorize("@pms.hasPermission('patient_persurecount_view')" )
+    public List<Map<String, Object>> getRecentTenDaysStatistics(@PathVariable Long doctorUid) {
+        return persureHeartRateService.getRecentTenDaysStatistics(doctorUid);
+    }
+
     @Operation(summary = "查询特别关心高血压病情" , description = "查询特别关心高血压病情" )
     @GetMapping("/count-sdh-careclassification")
     @PreAuthorize("@pms.hasPermission('patient_persureCareRate_view')" )

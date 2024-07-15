@@ -39,4 +39,6 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid);
 
     List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid);
+
+    List<Map<String, Object>> getRecentTenDaysStatistics(Long doctorUid);
 }

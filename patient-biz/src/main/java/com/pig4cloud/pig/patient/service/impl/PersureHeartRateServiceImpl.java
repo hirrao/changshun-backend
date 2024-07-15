@@ -348,4 +348,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     public List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid) {
         return persureHeartRateMapper.nocountSdhClassificationByDoctorAndCare(doctorUid);
     }
+
+    @Override
+    public List<Map<String, Object>> getRecentTenDaysStatistics(Long doctorUid) {
+        return baseMapper.getRecentTenDaysStatistics(doctorUid);
+    }
 }
