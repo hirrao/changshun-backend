@@ -56,4 +56,7 @@ public class SysMessageEntity extends Model<SysMessageEntity> {
 	*/
     @Schema(description="通知发送日期和时间")
     private LocalDateTime sentDate;
+
+	@Schema(description = "是否已读")
+	private Boolean isRead = false; // 新增字段，用于标记是否已读
 }

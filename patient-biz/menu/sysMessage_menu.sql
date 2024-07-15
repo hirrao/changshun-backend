@@ -19,3 +19,6 @@ values (1720194768340,1720194768336, 'patient_sysMessage_del', '1', null, '1',  
 
 insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
 values (1720194768341,1720194768336, 'patient_sysMessage_export', '1', null, '1',  '0', null, '3', null, '导入导出');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720194768343,1720194768336, 'patient_send_view', '1', null, '1',  '0', null, '3', null, '医生发送消息');

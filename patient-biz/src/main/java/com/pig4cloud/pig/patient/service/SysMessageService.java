@@ -8,4 +8,5 @@ import java.util.List;
 public interface SysMessageService extends IService<SysMessageEntity> {
     boolean saveBatch(List<SysMessageEntity> entityList);
 
+    boolean sendMessage(Long doctorUid, Long patientUid, String message);
 }
