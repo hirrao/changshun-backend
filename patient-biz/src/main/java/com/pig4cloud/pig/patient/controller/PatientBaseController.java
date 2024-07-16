@@ -9,6 +9,7 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PatientDeviceEntity;
 import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
 import com.pig4cloud.pig.patient.service.PatientBaseService;
 import com.pig4cloud.plugin.excel.annotation.RequestExcel;
@@ -79,11 +80,21 @@ public class PatientBaseController {
 	}
 	
 	
-	@Operation(summary = "分页查询", description = "分页查询")
-	@GetMapping("/page")
+	@Operation(summary = "自定义分页查询", description = "分页查询")
+	@GetMapping("/page_custom")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
 	public R getPatientBasePageByCare(@ParameterObject Page<?> page) {
 		return R.ok(patientBaseService.pageByCare(page));
+	}
+	
+	@Operation(summary = "代码生成分页查询", description = "代码生成分页查询")
+	@GetMapping("/page")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
+	public R getPage(@ParameterObject Page page,
+	 @ParameterObject PatientDeviceEntity patientDevice) {
+		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
+		return R.ok(patientBaseService.page(page, wrapper));
+		
 	}
 	
 	@Operation(summary = "全条件查询患者信息", description = "全条件查询患者信息")

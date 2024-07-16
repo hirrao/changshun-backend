@@ -22,7 +22,13 @@ spring:
     username: changshun
     password: changshun88
     url: jdbc:mysql://pig-mysql:10336/changshun_server?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
-
+    connection-timeout: 10000
+    validation-timeout: 3000
+    idle-timeout: 60000
+    login-timeout: 5
+    max-lifetime: 60000
+    maximum-pool-size: 10
+    minimum-idle: 5
   mybatis-plus:
     mapper-locations: classpath:/mapper/*.xml
 
