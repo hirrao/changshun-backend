@@ -130,24 +130,24 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一周的所有高压和低压", description = "查询某一周的所有高压和低压")
     @GetMapping("/weeklyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getWeeklyPressureData(@RequestParam LocalDate date, @RequestParam int weeksAgo, @RequestParam long patientUid) {
-        JSONObject result = persureHeartRateService.getWeeklyPressureData(date, weeksAgo, patientUid);
+    public R getWeeklyPressureData(@RequestParam int weeksAgo, @RequestParam long patientUid) {
+        JSONObject result = persureHeartRateService.getWeeklyPressureData(weeksAgo, patientUid);
         return R.ok(result);
     }
 
     @Operation(summary = "查询某一个月的所有高压和低压", description = "查询某一个月的所有高压和低压")
     @GetMapping("/monthlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getMonthlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo, @RequestParam long patientUid) {
-        JSONObject result = persureHeartRateService.getMonthlyPressureData(date, monthsAgo, patientUid);
+    public R getMonthlyPressureData(@RequestParam int monthsAgo, @RequestParam long patientUid) {
+        JSONObject result = persureHeartRateService.getMonthlyPressureData(monthsAgo, patientUid);
         return R.ok(result);
     }
 
     @Operation(summary = "查询某一年的所有高压和低压", description = "查询某一年的所有高压和低压")
     @GetMapping("/yearlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getYearlyPressureData(@RequestParam LocalDate date, @RequestParam int monthsAgo, @RequestParam long patientUid) {
-        JSONObject result = persureHeartRateService.getYearlyPressureData(date, monthsAgo, patientUid);
+    public R getYearlyPressureData(@RequestParam int monthsAgo, @RequestParam long patientUid) {
+        JSONObject result = persureHeartRateService.getYearlyPressureData(monthsAgo, patientUid);
         return R.ok(result);
     }
 
@@ -158,6 +158,131 @@ public class PersureHeartRateController {
         JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities();
         return R.ok(result);
     }
+
+    @Operation(summary = "统计今天收缩压的最高最低和平均值", description = "统计今天收缩压的最高最低和平均值")
+    @GetMapping("/todayMaxMinAvgSystolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getDailyMaxMinAvgSystolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getDailyMaxMinAvgSystolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今天舒张压的最高最低和平均值", description = "统计今天舒张压的最高最低和平均值")
+    @GetMapping("/todayMaxMinAvgDiastolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getDailyMaxMinAvgDiastolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getDailyMaxMinAvgDiastolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计本周收缩压的最高最低和平均值", description = "统计本周收缩压的最高最低和平均值")
+    @GetMapping("/WeekMaxMinAvgSystolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getWeeklyMaxMinAvgSystolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getWeeklyMaxMinAvgSystolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计本周舒张压的最高最低和平均值", description = "统计本周舒张压的最高最低和平均值")
+    @GetMapping("/WeekMaxMinAvgDiastolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getWeeklyMaxMinAvgDiastolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getWeeklyMaxMinAvgDiastolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计本月收缩压的最高最低和平均值", description = "统计本月收缩压的最高最低和平均值")
+    @GetMapping("/MonthMaxMinAvgSystolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getMonthlyMaxMinAvgSystolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getMonthlyMaxMinAvgSystolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计本月舒张压的最高最低和平均值", description = "统计本月舒张压的最高最低和平均值")
+    @GetMapping("/MonthMaxMinAvgDiastolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getMonthlyMaxMinAvgDiastolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getMonthlyMaxMinAvgDiastolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今年收缩压的最高最低和平均值", description = "统计今年收缩压的最高最低和平均值")
+    @GetMapping("/YearMaxMinAvgSystolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getYearlyMaxMinAvgSystolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getYearlyMaxMinAvgSystolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今年舒张压的最高最低和平均值", description = "统计今年舒张压的最高最低和平均值")
+    @GetMapping("/YearMaxMinAvgDiastolic")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getYearlyMaxMinAvgDiastolic(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getYearlyMaxMinAvgDiastolic(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今天脉压差的最高最低和平均值", description = "统计今天脉压差的最高最低和平均值")
+    @GetMapping("/todayMaxMinAvgPressureDiff")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getDailyMaxMinAvgPressureDiff(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getDailyMaxMinAvgPressureDiff(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计本周脉压差的最高最低和平均值", description = "统计本周脉压差的最高最低和平均值")
+    @GetMapping("/WeekMaxMinAvgPressureDiff")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getWeeklyMaxMinAvgPressureDiff(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getWeeklyMaxMinAvgPressureDiff(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计本月脉压差的最高最低和平均值", description = "统计本月脉压差的最高最低和平均值")
+    @GetMapping("/MonthMaxMinAvgPressureDiff")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getMonthlyMaxMinAvgPressureDiff(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getMonthlyMaxMinAvgPressureDiff(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今年脉压差的最高最低和平均值", description = "统计今年脉压差的最高最低和平均值")
+    @GetMapping("/YearMaxMinAvgPressureDiff")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getYearlyMaxMinAvgPressureDiff(@RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getYearlyMaxMinAvgPressureDiff(patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询某一天的某位患者的高压和低压的平均值", description = "查询某一天的某位患者的高压和低压的平均值")
+    @GetMapping("/dailyAvgPressure")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getDailyAveragePressure(@RequestParam LocalDate date, @RequestParam Long patientUid) {
+        JSONObject result = persureHeartRateService.getDailyAveragePressure(date, patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询某一周的某位患者的高压和低压的平均值", description = "查询某一周的某位患者的高压和低压的平均值")
+    @GetMapping("/weeklyAvgPressureByDay")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public JSONObject getWeeklyAveragePressureByDay(@RequestParam long patientUid) {
+        return persureHeartRateService.getWeeklyAveragePressureByDay(patientUid);
+    }
+
+    @Operation(summary = "查询某一个月的某位患者的每周段的高压和低压的平均值", description = "查询某一个月的某位患者的每周段的高压和低压的平均值")
+    @GetMapping("/monthlyAvgPressureByWeek")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public JSONObject getMonthlyAveragePressureByWeek(@RequestParam long patientUid) {
+        return persureHeartRateService.getMonthlyAveragePressureByWeek(patientUid);
+    }
+
+    @Operation(summary = "查询某一年的每个月的高压和低压的平均值", description = "查询某一年的每个月的高压和低压的平均值")
+    @GetMapping("/yearlyAveragePressureByMonth")
+    public JSONObject getYearlyAveragePressureByMonth(@RequestParam long patientUid) {
+        return persureHeartRateService.getYearlyAveragePressureByMonth(patientUid);
+    }
+
 
     /**
      * 通过id查询血压心率展示

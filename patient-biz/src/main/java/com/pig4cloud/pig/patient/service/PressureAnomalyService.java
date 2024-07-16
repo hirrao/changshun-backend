@@ -11,8 +11,10 @@ public interface PressureAnomalyService extends IService<PressureAnomalyEntity> 
     PressureAnomalyEntity createDailyRecord(long patient_uid);
     int judgeBloodPressureAnomaly(long sdhId);
     boolean updateAnomalyCount(long sdhId);
-    JSONObject getWeekAnomalyCount(LocalDate date, int weekAgo);
-    JSONObject getMonthAnomalyCount(LocalDate date, int monthAgo);
+    JSONObject getWeekAnomalyCount(int weekAgo);
+    JSONObject getMonthAnomalyCount(int monthAgo);
+    JSONObject getYearAnomalyCount(int yearAgo);
+    JSONObject getLastSevenDaysAnomalyCount();
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
 

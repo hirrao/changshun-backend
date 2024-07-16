@@ -12,6 +12,7 @@ import com.pig4cloud.pig.patient.mapper.PressureAnomalyMapper;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import com.pig4cloud.pig.patient.service.PressureAnomalyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -107,7 +108,8 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
     }
 
     @Override
-    public JSONObject getWeekAnomalyCount(LocalDate date, int weekAgo){
+    public JSONObject getWeekAnomalyCount(int weekAgo){
+        LocalDate date = LocalDate.now();
         LocalDate startOfWeek = date.minusWeeks(weekAgo).with(DayOfWeek.MONDAY);
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
@@ -145,7 +147,8 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
     }
 
     @Override
-    public JSONObject getMonthAnomalyCount(LocalDate date, int monthAgo){
+    public JSONObject getMonthAnomalyCount(int monthAgo){
+        LocalDate date = LocalDate.now();
         YearMonth yearMonth = YearMonth.from(date).minusMonths(monthAgo);
         LocalDate startOfMonth = yearMonth.atDay(1);
         LocalDate endOfMonth = yearMonth.atEndOfMonth();
@@ -172,6 +175,74 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
 
         // 统计每个级别的次数
         for (PressureAnomalyEntity record : monthlyRecords) {
+            anomalyCounts.put("Severe", anomalyCounts.getInteger("Severe") + record.getSevere());
+            anomalyCounts.put("Moderate", anomalyCounts.getInteger("Moderate") + record.getModerate());
+            anomalyCounts.put("Mild", anomalyCounts.getInteger("Mild") + record.getMild());
+            anomalyCounts.put("Elevated", anomalyCounts.getInteger("Elevated") + record.getElevated());
+            anomalyCounts.put("Low", anomalyCounts.getInteger("Low") + record.getLow());
+            anomalyCounts.put("AllNum", anomalyCounts.getInteger("AllNum") + record.getAllNum());
+        }
+
+        return anomalyCounts;
+    }
+
+    @Override
+    public JSONObject getYearAnomalyCount(int yearAgo) {
+        LocalDate date = LocalDate.now();
+        YearMonth yearMonth = YearMonth.from(date).minusYears(yearAgo);
+        LocalDate startOfYear = yearMonth.atDay(1);
+        LocalDate endOfYear = yearMonth.atEndOfMonth();
+
+        QueryWrapper<PressureAnomalyEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("date", startOfYear, endOfYear);
+
+        List<PressureAnomalyEntity> yearlyRecords = pressureAnomalyMapper.selectList(queryWrapper);
+
+        JSONObject anomalyCounts = new JSONObject();
+        anomalyCounts.put("Severe", 0);
+        anomalyCounts.put("Moderate", 0);
+        anomalyCounts.put("Mild", 0);
+        anomalyCounts.put("Elevated", 0);
+        anomalyCounts.put("Low", 0);
+        anomalyCounts.put("AllNum", 0);
+
+        // 检查是否有记录
+        if (yearlyRecords.isEmpty()) {
+            anomalyCounts.put("message", "该年没有任何血压数据！");
+            return anomalyCounts;
+        }
+
+        for (PressureAnomalyEntity record : yearlyRecords) {
+            anomalyCounts.put("Severe", anomalyCounts.getInteger("Severe") + record.getSevere());
+            anomalyCounts.put("Moderate", anomalyCounts.getInteger("Moderate") + record.getModerate());
+            anomalyCounts.put("Mild", anomalyCounts.getInteger("Mild") + record.getMild());
+            anomalyCounts.put("Elevated", anomalyCounts.getInteger("Elevated") + record.getElevated());
+            anomalyCounts.put("Low", anomalyCounts.getInteger("Low") + record.getLow());
+            anomalyCounts.put("AllNum", anomalyCounts.getInteger("AllNum") + record.getAllNum());
+        }
+
+        return anomalyCounts;
+    }
+
+    @Override
+    public JSONObject getLastSevenDaysAnomalyCount() {
+        LocalDate date = LocalDate.now();
+        LocalDate start = date.minusDays(7);
+        LocalDate end = date.minusDays(1);
+
+        QueryWrapper<PressureAnomalyEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("date", start, end);
+        List<PressureAnomalyEntity> lastSevenDaysRecords = pressureAnomalyMapper.selectList(queryWrapper);
+
+        JSONObject anomalyCounts = new JSONObject();
+        anomalyCounts.put("Severe", 0);
+        anomalyCounts.put("Moderate", 0);
+        anomalyCounts.put("Mild", 0);
+        anomalyCounts.put("Elevated", 0);
+        anomalyCounts.put("Low", 0);
+        anomalyCounts.put("AllNum", 0);
+
+        for(PressureAnomalyEntity record : lastSevenDaysRecords){
             anomalyCounts.put("Severe", anomalyCounts.getInteger("Severe") + record.getSevere());
             anomalyCounts.put("Moderate", anomalyCounts.getInteger("Moderate") + record.getModerate());
             anomalyCounts.put("Mild", anomalyCounts.getInteger("Mild") + record.getMild());

@@ -14,11 +14,30 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     String getCurrentRiskAssessment(Long patientUid);
     String judgeRiskByBloodPressure(float systolic, float diastolic);
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
-
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
-    JSONObject getWeeklyPressureData(LocalDate date, int weeksAgo, long patientUid);
-    JSONObject getMonthlyPressureData(LocalDate date, int monthsAgo, long patientUid);
-    JSONObject getYearlyPressureData(LocalDate date, int yearsAgo, long patientUid);
+    JSONObject getWeeklyPressureData(int weeksAgo, Long patientUid);
+    JSONObject getMonthlyPressureData(int monthsAgo, Long patientUid);
+    JSONObject getYearlyPressureData(int yearsAgo, Long patientUid);
+
+    JSONObject getDailyMaxMinAvgSystolic(Long patientUid);
+    JSONObject getWeeklyMaxMinAvgSystolic(Long patientUid);
+    JSONObject getMonthlyMaxMinAvgSystolic(Long patientUid);
+    JSONObject getYearlyMaxMinAvgSystolic(Long patientUid);
+
+    JSONObject getDailyMaxMinAvgDiastolic(Long patientUid);
+    JSONObject getWeeklyMaxMinAvgDiastolic(Long patientUid);
+    JSONObject getMonthlyMaxMinAvgDiastolic(Long patientUid);
+    JSONObject getYearlyMaxMinAvgDiastolic(Long patientUid);
+
+    JSONObject getDailyMaxMinAvgPressureDiff(Long patientUid);
+    JSONObject getWeeklyMaxMinAvgPressureDiff(Long patientUid);
+    JSONObject getMonthlyMaxMinAvgPressureDiff(Long patientUid);
+    JSONObject getYearlyMaxMinAvgPressureDiff(Long patientUid);
+
+    JSONObject getDailyAveragePressure(LocalDate date, Long patientUid);
+    JSONObject getWeeklyAveragePressureByDay(Long patientUid);
+    JSONObject getMonthlyAveragePressureByWeek(Long patientUid);
+    JSONObject getYearlyAveragePressureByMonth(Long patientUid);
 
     JSONArray getDailyConsecutiveAbnormalities();
 

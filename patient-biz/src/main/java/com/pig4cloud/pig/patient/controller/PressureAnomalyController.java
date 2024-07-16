@@ -150,8 +150,8 @@ public class PressureAnomalyController {
     @Operation(summary = "查询指定周的血压异常次数", description= "查询指定周的血压异常次数")
     @GetMapping("/weekAnomalyCount")
     @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
-    public R getWeekAnomalyCount(@RequestParam LocalDate date, @RequestParam int weeksAgo){
-        JSONObject result = pressureAnomalyService.getWeekAnomalyCount(date, weeksAgo);
+    public R getWeekAnomalyCount(@RequestParam int weeksAgo){
+        JSONObject result = pressureAnomalyService.getWeekAnomalyCount(weeksAgo);
         return R.ok(result);
     }
 
@@ -159,8 +159,26 @@ public class PressureAnomalyController {
     @Operation(summary = "查询指定月的血压异常次数", description = "查询指定月的各个级别的血压异常次数")
     @GetMapping("/monthAnomalyCount")
     @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
-    public R getMonthAnomalyCount(@RequestParam LocalDate date, @RequestParam int monthsAgo) {
-        JSONObject result = pressureAnomalyService.getMonthAnomalyCount(date, monthsAgo);
+    public R getMonthAnomalyCount(@RequestParam int monthsAgo) {
+        JSONObject result = pressureAnomalyService.getMonthAnomalyCount(monthsAgo);
+        return R.ok(result);
+    }
+
+    // 查询指定年的血压异常次数
+    @Operation(summary = "查询指定年的血压异常次数", description = "查询指定年的血压异常次数")
+    @GetMapping("/yearAnomalyCount")
+    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    public R getYearAnomalyCount(@RequestParam int yearsAgo) {
+        JSONObject result = pressureAnomalyService.getYearAnomalyCount(yearsAgo);
+        return R.ok(result);
+    }
+
+    // 查询过去7天的血压异常次数
+    @Operation(summary = "查询过去7天的血压异常次数", description = "查询过去7天的血压异常次数")
+    @GetMapping("/lastSevenDaysAnomalyCount")
+    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    public R getLastSevenDaysAnomalyCount() {
+        JSONObject result = pressureAnomalyService.getLastSevenDaysAnomalyCount();
         return R.ok(result);
     }
 
