@@ -9,7 +9,9 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
 import com.pig4cloud.pig.patient.service.PatientBaseService;
+import com.pig4cloud.plugin.excel.annotation.RequestExcel;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -166,4 +169,16 @@ public class PatientBaseController {
 		return patientBaseService.list(Wrappers.lambdaQuery(patientBase)
 		 .in(ArrayUtil.isNotEmpty(ids), PatientBaseEntity::getPatientUid, ids));
 	}
+	
+	/**
+	 * 通过Excel批量导入患者病历，仅支持xls、xlsx格式
+	 */
+	@Operation(summary = "通过Excel批量导入患者病例", description = "通过Excel批量导入患者病例")
+	@PostMapping("/import")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_export')")
+	public R importPatientCase(@RequestExcel List<ImportPatientBaseListRequest> excelList,
+	 BindingResult bindingResult) {
+		return patientBaseService.importPatientBaseList(excelList, bindingResult);
+	}
+	
 }

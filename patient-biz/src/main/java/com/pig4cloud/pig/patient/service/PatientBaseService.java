@@ -1,10 +1,13 @@
 package com.pig4cloud.pig.patient.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
-import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
+import java.util.List;
+import org.springframework.validation.BindingResult;
 
 public interface PatientBaseService extends IService<PatientBaseEntity> {
     // 分页查询并按care字段降序排序
@@ -24,5 +27,7 @@ public interface PatientBaseService extends IService<PatientBaseEntity> {
     int ccountFemalePatientsOver65(Long doctorUid);
 
     int ccountFemalePatientsUnderEqual66(Long doctorUid);
-
+    
+    R importPatientBaseList(List<ImportPatientBaseListRequest> excelVOList,
+     BindingResult bindingResult);
 }

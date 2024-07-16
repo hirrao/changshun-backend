@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <h3>patient</h3>
@@ -20,6 +21,11 @@ import org.springframework.web.socket.WebSocketSession;
 public class WebsocketService implements PlanTextMessageHandler {
 	@Autowired
 	private PatientBaseService patientBaseService;
+
+	// 存储 WebSocket 会话的映射
+	private final ConcurrentHashMap<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+
+
 	/**
 	 * 普通文本消息处理，客制化自己的对于接收消息的时的操作
 	 *
@@ -30,6 +36,8 @@ public class WebsocketService implements PlanTextMessageHandler {
 	public void handle(WebSocketSession session, String message) {
 		// TODO: 业务逻辑处理
 		log.info("session_id :{} ,接收到的message: {}", session.getId(), message);
+
+		sessions.put(session.getAttributes().get("userName").toString(), session);
 	}
 	
 	public boolean sendMsg(String userName, String message) {
@@ -51,5 +59,10 @@ public class WebsocketService implements PlanTextMessageHandler {
 		}
 		String userName = tmp.getUsername();
 		return sendMsg(userName, message);
+	}
+
+	// 新增方法来检查会话是否存在
+	public boolean sessionExists(String userName) {
+		return sessions.containsKey(userName);
 	}
 }

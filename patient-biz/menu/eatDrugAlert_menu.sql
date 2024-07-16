@@ -19,3 +19,6 @@ values (1720115445650,1720115445646, 'patient_eatDrugAlert_del', '1', null, '1',
 
 insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
 values (1720115445651,1720115445646, 'patient_eatDrugAlert_export', '1', null, '1',  '0', null, '3', null, '导入导出');
+
+insert into sys_menu ( menu_id,parent_id, permission, menu_type, path, icon, del_flag, create_time, sort_order, update_time, name)
+values (1720115445652,1720115445646, 'patient_DrugAlert_view', '1', null, '1',  '0', null, '3', null, '用药提醒');

@@ -2,11 +2,13 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
+import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.patient.entity.SysMessageEntity;
 import com.pig4cloud.pig.patient.service.SysMessageService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +38,35 @@ import java.util.Objects;
 public class SysMessageController {
 
     private final  SysMessageService sysMessageService;
+
+
+
+    @GetMapping("/unread/{patientUid}")
+    public List<SysMessageEntity> getUnreadMessages(@PathVariable Long patientUid) {
+        return sysMessageService.getUnreadMessages(patientUid);
+    }
+
+    @PostMapping("/read/{notificationId}")
+    public void markMessageAsRead(@PathVariable Long notificationId) {
+        sysMessageService.markMessageAsRead(notificationId);
+    }
+
+    @Operation(summary = "医生发送消息", description = "医生发送消息")
+    @PostMapping("/send")
+    @PreAuthorize("@pms.hasPermission('patient_send_view')")
+    public R sendMessage(@RequestBody JSONObject jsonObject) {
+
+        String message = jsonObject.getString("message");
+        Long doctorUid = jsonObject.getLong("doctorUid");
+        Long patientUid = jsonObject.getLong("patientUid");
+        boolean success = sysMessageService.sendMessage(doctorUid, patientUid, message);
+        if (success) {
+            return R.ok("消息发送成功");
+        } else {
+            return R.failed("消息发送失败");
+        }
+    }
+
 
     @Operation(summary = "查询系统消息", description = "查询系统消息")
     @PostMapping("/getSysMessageById")

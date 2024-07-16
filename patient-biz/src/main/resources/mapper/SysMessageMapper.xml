@@ -10,5 +10,6 @@
         <id property="messageType" column="message_type"/>
         <id property="jsonText" column="json_text"/>
         <id property="sentDate" column="sent_date"/>
+        <id property="isRead" column="is_read"/>
   </resultMap>
 </mapper>
