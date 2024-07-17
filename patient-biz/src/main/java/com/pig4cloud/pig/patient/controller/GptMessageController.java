@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -113,6 +114,28 @@ public class GptMessageController {
     public R deleteAllMessagesByPatientUid(@PathVariable("patientUid") Long patientUid){
         boolean result = gptMessageService.deleteAllMessagesByPatientUid(patientUid);
         return result ? R.ok() : R.failed("删除失败");
+    }
+
+    @Operation(summary = "保存问答记录", description = "保存问答记录")
+    @PostMapping("/ask")
+    @PreAuthorize("@pms.hasPermission('patient_gptMessage_view')")
+    public R askQuestion(@RequestParam long patientUid, @RequestParam String question){
+        gptMessageService.saveMessage(patientUid, "USER", question);
+
+        String answer = "这是测试字符串";
+
+        gptMessageService.saveMessage(patientUid, "GPT", answer);
+        return R.ok();
+    }
+
+    @Operation(summary = "处理点击您可能想问的问题的逻辑", description = "处理点击您可能想问的问题的逻辑")
+    @GetMapping("/common-question/{qaId}")
+    @PreAuthorize("@pms.hasPermission('patient_gptMessage_add') && @pms.hasPermission('patient_commonQuestion_view')")
+    public R handleCommonQuestionClick(
+            @PathVariable long qaId,
+            @RequestParam long patientUid) {
+        JSONObject response = gptMessageService.handleCommonQuestionClick(qaId, patientUid);
+        return R.ok(response);
     }
 
     /**

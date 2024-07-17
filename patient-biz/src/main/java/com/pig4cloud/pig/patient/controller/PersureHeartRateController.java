@@ -277,21 +277,21 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一周的某位患者的高压和低压的平均值", description = "查询某一周的某位患者的高压和低压的平均值")
     @GetMapping("/weeklyAvgPressureByDay")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public JSONObject getWeeklyAveragePressureByDay(@RequestParam long patientUid) {
-        return persureHeartRateService.getWeeklyAveragePressureByDay(patientUid);
+    public R getWeeklyAveragePressureByDay(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
+        return R.ok(persureHeartRateService.getWeeklyAveragePressureByDay(weeksAgo, patientUid));
     }
 
     @Operation(summary = "查询某一个月的某位患者的每周段的高压和低压的平均值", description = "查询某一个月的某位患者的每周段的高压和低压的平均值")
     @GetMapping("/monthlyAvgPressureByWeek")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public JSONObject getMonthlyAveragePressureByWeek(@RequestParam long patientUid) {
-        return persureHeartRateService.getMonthlyAveragePressureByWeek(patientUid);
+    public R getMonthlyAveragePressureByWeek(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
+        return R.ok(persureHeartRateService.getMonthlyAveragePressureByWeek(monthsAgo, patientUid));
     }
 
     @Operation(summary = "查询某一年的每个月的高压和低压的平均值", description = "查询某一年的每个月的高压和低压的平均值")
     @GetMapping("/yearlyAveragePressureByMonth")
-    public JSONObject getYearlyAveragePressureByMonth(@RequestParam long patientUid) {
-        return persureHeartRateService.getYearlyAveragePressureByMonth(patientUid);
+    public R getYearlyAveragePressureByMonth(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
+        return R.ok(persureHeartRateService.getYearlyAveragePressureByMonth(yearsAgo, patientUid));
     }
 
 

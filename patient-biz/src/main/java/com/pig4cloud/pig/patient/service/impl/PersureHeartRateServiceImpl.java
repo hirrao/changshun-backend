@@ -260,7 +260,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     consecutiveHighBp = 0;
                 }
 
-                if(record.getHeartRate() < 55){
+                if(record.getHeartRate() < 60){
                     consecutiveLowHr++;
                     maxConsecutiveLowHr = Math.max(maxConsecutiveLowHr, consecutiveLowHr);
                 } else {
@@ -502,16 +502,18 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getWeeklyAveragePressureByDay(Long patientUid) {
+    public JSONArray getWeeklyAveragePressureByDay(int weeksAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
-        LocalDate startOfWeek = date.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = date.with(DayOfWeek.SUNDAY);
+        LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
 
-        JSONObject result = new JSONObject();
+        JSONArray result = new JSONArray();
 
         for (LocalDate currentDate = startOfWeek; !currentDate.isAfter(endOfWeek); currentDate = currentDate.plusDays(1)) {
             JSONObject dailyAverage = getDailyAveragePressure(currentDate, patientUid);
-            result.put(currentDate.toString(), dailyAverage);
+            dailyAverage.put("date", currentDate);
+
+            result.add(dailyAverage);
         }
 
         return result;
@@ -519,13 +521,12 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
     @Override
     // 一个月的开头和结尾几天可能不是完整的一周，也算作一周
-    public JSONObject getMonthlyAveragePressureByWeek(Long patientUid) {
+    public JSONArray getMonthlyAveragePressureByWeek(int monthsAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
-        LocalDate startOfMonth = date.withDayOfMonth(1);
-        LocalDate endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+        LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
+        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
 
-        JSONObject monthlyPressureData = new JSONObject();
-        int weekCount = 1;
+        JSONArray monthlyPressureData = new JSONArray();
 
         LocalDate startOfWeek = startOfMonth;
         while (!startOfWeek.isAfter(endOfMonth)) {
@@ -552,25 +553,29 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     .summaryStatistics();
 
             JSONObject weeklyAverage = new JSONObject();
+            weeklyAverage.put("start_date", startOfWeek.toString());
+            weeklyAverage.put("end_date", endOfWeek.toString());
             weeklyAverage.put("avg_systolic", systolicStats.getAverage());
             weeklyAverage.put("avg_diastolic", diastolicStats.getAverage());
 
-            monthlyPressureData.put("Week " + weekCount, weeklyAverage);
+            monthlyPressureData.add(weeklyAverage);
 
             // 下一周
             startOfWeek = endOfWeek.plusDays(1);
-            weekCount++;
         }
 
         return monthlyPressureData;
     }
 
     @Override
-    public JSONObject getYearlyAveragePressureByMonth(Long patientUid) {
+    public JSONArray getYearlyAveragePressureByMonth(int yearsAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
-        JSONObject yearlyPressureData = new JSONObject();
+        LocalDate startOfYear = date.minusYears(yearsAgo).withDayOfYear(1);
+        int year = startOfYear.getYear();
+
+        JSONArray yearlyPressureData = new JSONArray();
         for (int month = 1; month <= 12; month++) {
-            LocalDate startOfMonth = LocalDate.of(date.getYear(), month, 1);
+            LocalDate startOfMonth = LocalDate.of(year, month, 1);
             LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
 
             LocalDateTime startDateTime = startOfMonth.atStartOfDay();
@@ -593,8 +598,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             JSONObject monthlyAverage = new JSONObject();
             monthlyAverage.put("avg_systolic", systolicStats.getAverage());
             monthlyAverage.put("avg_diastolic", diastolicStats.getAverage());
+            monthlyAverage.put("month", startOfMonth.getMonth().toString());
 
-            yearlyPressureData.put(startOfMonth.getMonth().toString(), monthlyAverage);
+            yearlyPressureData.add(monthlyAverage);
         }
         return yearlyPressureData;
     }
