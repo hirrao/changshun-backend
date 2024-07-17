@@ -58,6 +58,7 @@ public class DoctorBaseController {
 	public R getDoctorBasePage(@ParameterObject Page page,
 	 @ParameterObject DoctorBaseEntity doctorBase) {
 		LambdaQueryWrapper<DoctorBaseEntity> wrapper = Wrappers.lambdaQuery();
+		wrapper.setEntity(doctorBase);
 		return R.ok(doctorBaseService.page(page, wrapper));
 	}
 	
