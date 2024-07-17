@@ -123,7 +123,7 @@ public class PatientDoctorController {
 	@PutMapping
 	@PreAuthorize("@pms.hasPermission('patient_patientDoctor_edit')")
 	public R updateById(@RequestBody PatientDoctorEntity patientDoctor) {
-		return R.ok(patientDoctorService.updateItem(patientDoctor));
+		return patientDoctorService.updateItem(patientDoctor);
 	}
 	
 	/**
