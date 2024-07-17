@@ -41,4 +41,11 @@ public class PatientListController {
 	public R getPatientList(@ParameterObject Page page,@ParameterObject PatientiListDTO patientiListDTO) {
 		return R.ok(patientListService.getPatientList(page,patientiListDTO));
 	}
+	
+	@Operation(summary = "分页查询血压异常记录")
+	@GetMapping("/abnormal_page")
+	@PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+	public R getAbnormalPage(@ParameterObject Page page) {
+		return R.ok();
+	}
 }

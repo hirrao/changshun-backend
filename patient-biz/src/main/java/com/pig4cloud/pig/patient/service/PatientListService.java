@@ -19,8 +19,15 @@ public class PatientListService {
 	@Autowired
 	private PersureHeartRateMapper persureHeartRateMapper;
 	
+	@Autowired
+	private PersureHeartRateService persureHeartRateService;
+	
 	//	分页查询患者列表，需要结合患者基本信息，患者病情，患者血压心率记录
 	public Page<PatientiListDTO> getPatientList(Page page, PatientiListDTO patientiListDTO) {
-		return persureHeartRateMapper.selectPatientList(page,patientiListDTO);
+		return persureHeartRateMapper.selectPatientList(page, patientiListDTO);
 	}
+	
+	//	分页查询血压异常记录
+	//public Page getAbnormalPage(Page page, AbnormalBloodDTO abnormalBloodDTO) {
+	//}
 }
