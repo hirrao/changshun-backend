@@ -1,6 +1,7 @@
 package com.pig4cloud.pig.patient.dto;
 
-import java.time.LocalDateTime;
+import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -11,20 +12,8 @@ import lombok.Data;
  * @date 2024-07-17 20:54
  **/
 @Data
-public class AbnormalBloodDTO {
+public class AbnormalBloodDTO extends PersureHeartRateEntity {
 	
-	private Long patientUid;
-	
-	// 记录日期
-	private LocalDateTime uploadTime;
-	// 病情
-	private String sdhClassification;
-	private Float systolic;
-	private Float diastolic;
-	private Long sdhId;
-	private Integer heartRate;
-	
-	// 风险评估
-	private String riskLevel;
-	
+	//	单独添加查询日期，方便查看一天内所有数据
+	private LocalDate queryDate;
 }

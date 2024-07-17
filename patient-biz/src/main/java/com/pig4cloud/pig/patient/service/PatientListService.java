@@ -1,6 +1,7 @@
 package com.pig4cloud.pig.patient.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pig4cloud.pig.patient.dto.AbnormalBloodDTO;
 import com.pig4cloud.pig.patient.dto.PatientiListDTO;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class PatientListService {
 	}
 	
 	//	分页查询血压异常记录
-	//public Page getAbnormalPage(Page page, AbnormalBloodDTO abnormalBloodDTO) {
-	//}
+	public Page<AbnormalBloodDTO> getAbnormalPage(Page page, AbnormalBloodDTO abnormalBloodDTO) {
+		//	如果查询日期不为空，查询当天所有数据
+		return persureHeartRateMapper.selectAbnormalBloodList(page, abnormalBloodDTO);
+	}
 }

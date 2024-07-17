@@ -13,6 +13,7 @@
         <id property="uploadTime" column="upload_time"/>
         <id property="patientUid" column="patient_uid"/>
         <id property="sdhClassification" column="sdh_classification"/>
+        <id property="riskAssessment" column="risk_assessment"/>
     </resultMap>
 
     <select id="selectTodayMaxBloodPressure"
@@ -33,6 +34,23 @@
           AND DATE (upload_time) = CURDATE()
         ORDER BY heart_rate ASC
             LIMIT 1
+    </select>
+
+    <select id="selectAbnormalBloodList"
+      resultType="com.pig4cloud.pig.patient.dto.AbnormalBloodDTO">
+        SELECT * FROM persure_heart_rate
+        <where>
+            risk_assessment IS NOT NULL AND risk_assessment NOT LIKE '正常'
+            <if test="query.sdhClassification != null and query.sdhClassification != ''">
+                AND sdh_classification LIKE CONCAT('%', #{query.sdhClassification}, '%')
+            </if>
+            <if test="query.queryDate != null">
+                AND TO_DAYS(upload_time) = TO_DAYS(#{query.queryDate})
+            </if>
+            <if test="query.riskAssessment != null and query.riskAssessment != ''">
+                AND risk_assessment LIKE CONCAT('%', #{query.riskAssessment}, '%')
+            </if>
+        </where>
     </select>
 
     <select id="selectPatientList" resultType="com.pig4cloud.pig.patient.dto.PatientiListDTO">
