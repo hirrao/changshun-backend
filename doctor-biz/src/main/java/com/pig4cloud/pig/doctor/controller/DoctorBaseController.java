@@ -135,7 +135,7 @@ public class DoctorBaseController {
 	
 	@Operation(summary = "全条件查询反馈信息", description = "全条件查询反馈信息")
 	@PostMapping("/getByDoctorBaseObject")
-	@PreAuthorize("@pms.hasPermission('patient_userFeedback_view')")
+	@PreAuthorize("@pms.hasPermission('doctor_doctorBase_view')")
 	public R getByUserFeedbackObject(@RequestBody DoctorBaseEntity doctorBase) {
 		LambdaQueryWrapper<DoctorBaseEntity> wrapper = Wrappers.lambdaQuery();
 		wrapper.setEntity(doctorBase);
