@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.patient.service.WebsocketService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RequestMapping("/msg")
 @RestController
+@Tag(description = "websocket msg", name = "websocket 信息")
 public class WebsocketController {
 	
 	@Autowired

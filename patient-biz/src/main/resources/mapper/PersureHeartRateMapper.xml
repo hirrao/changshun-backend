@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper">
 
-  <resultMap id="persureHeartRateMap" type="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
+    <resultMap id="persureHeartRateMap"
+      type="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
         <id property="sdhId" column="sdh_id"/>
         <id property="systolic" column="systolic"/>
         <id property="diastolic" column="diastolic"/>
@@ -11,23 +13,82 @@
         <id property="uploadTime" column="upload_time"/>
         <id property="patientUid" column="patient_uid"/>
         <id property="sdhClassification" column="sdh_classification"/>
-  </resultMap>
+    </resultMap>
 
-    <select id="selectTodayMaxBloodPressure" resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
+    <select id="selectTodayMaxBloodPressure"
+      resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
         SELECT *
         FROM persure_heart_rate
         WHERE patient_uid = #{patientUid}
-          AND DATE(upload_time) = CURDATE()
+          AND DATE (upload_time) = CURDATE()
         ORDER BY systolic DESC
             LIMIT 1
     </select>
 
-    <select id="selectTodayMinHeartRate" resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
+    <select id="selectTodayMinHeartRate"
+      resultType="com.pig4cloud.pig.patient.entity.PersureHeartRateEntity">
         SELECT *
         FROM persure_heart_rate
         WHERE patient_uid = #{patientUid}
-          AND DATE(upload_time) = CURDATE()
+          AND DATE (upload_time) = CURDATE()
         ORDER BY heart_rate ASC
             LIMIT 1
+    </select>
+
+    <select id="selectPatientList" resultType="com.pig4cloud.pig.patient.dto.PatientiListDTO">
+        SELECT DISTINCT
+        pb.patient_uid,
+        pb.identification_number,
+        pb.patient_name,
+        pb.phone_number,
+        ph.systolic,
+        ph.diastolic,
+        ph.heart_rate,
+        ph.sdh_classification,
+        ph.upload_time,
+        pd.care
+        FROM
+        patient_base pb
+        JOIN
+        patient_doctor pd ON pb.patient_uid = pd.patient_uid
+        JOIN
+        (SELECT
+        ph1.patient_uid,
+        ph1.systolic,
+        ph1.diastolic,
+        ph1.heart_rate,
+        ph1.sdh_classification,
+        ph1.upload_time
+        FROM
+        persure_heart_rate ph1
+        JOIN
+        (SELECT
+        patient_uid,
+        MAX(upload_time) AS latest_time
+        FROM
+        persure_heart_rate
+        GROUP BY
+        patient_uid) ph2
+        ON
+        ph1.patient_uid = ph2.patient_uid
+        AND ph1.upload_time = ph2.latest_time) ph
+        ON
+        pb.patient_uid = ph.patient_uid
+        <where>
+            <if test="query.doctorUid != null">
+                pd.doctor_uid = #{query.doctorUid}
+            </if>
+            <if test="query.patientName != null and query.patientName != ''">
+                AND pb.patient_name LIKE CONCAT('%', #{query.patientName}, '%')
+            </if>
+            <if test="query.identificationNumber != null and query.identificationNumber != ''">
+                and pb.identification_number LIKE CONCAT('%', #{query.identificationNumber}, '%')
+            </if>
+            <if test="query.phoneNumber != null and query.phoneNumber != ''">
+                AND pb.phone_number LIKE CONCAT('%', #{query.phoneNumber}, '%')
+            </if>
+        </where>
+        ORDER BY
+        ph.upload_time DESC
     </select>
 </mapper>
