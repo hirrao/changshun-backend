@@ -45,7 +45,7 @@ public class WebsocketService implements PlanTextMessageHandler {
 			WebSocketMessageSender.send(userName, message);
 			return true;
 		} catch (Exception e) {
-			log.error("发送消息失败", e);
+			log.error("发送消息失败，用户没有建立连接");
 			return false;
 		}
 	}
