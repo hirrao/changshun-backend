@@ -50,6 +50,8 @@ public class PersureHeartRateController {
     private final  PersureHeartRateService persureHeartRateService;
 
 
+
+
     @Operation(summary = "查询最近十天血压统计次数" , description = "查询最近十天血压统计次数" )
     @GetMapping("/recent-ten-days/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_persurecount_view')" )

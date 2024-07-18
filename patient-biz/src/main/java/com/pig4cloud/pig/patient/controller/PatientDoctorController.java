@@ -44,6 +44,20 @@ public class PatientDoctorController {
 	
 	private final PatientDoctorService patientDoctorService;
 
+	@Operation(summary = "昨日统计异常患者次数", description = "昨日统计异常患者次数")
+	@GetMapping("/blood-pressure/yesterday/abnormal/count/{doctorUid}")
+	@PreAuthorize("@pms.hasPermission('patient_patientDoctor_view')")
+	public long countYesterdayAbnormalBloodPressureRecords(@PathVariable Long doctorUid) {
+		return patientDoctorService.countYesterdayAbnormalBloodPressureRecordsByDoctorId(doctorUid);
+	}
+
+	@Operation(summary = "昨日统计次数", description = "昨日统计次数")
+	@GetMapping("/blood-pressure/count/{doctorUid}")
+	@PreAuthorize("@pms.hasPermission('patient_patientDoctor_view')")
+	public long countBloodPressureRecords(@PathVariable Long doctorUid) {
+		return patientDoctorService.countBloodPressureRecordsByDoctorId(doctorUid);
+	}
+
 
 	@Operation(summary = "特别关心患者总数", description = "特别关心患者总数")
 	@GetMapping("/count/care/{doctorUid}")
