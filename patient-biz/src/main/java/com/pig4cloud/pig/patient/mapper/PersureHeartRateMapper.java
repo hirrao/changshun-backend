@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pig4cloud.pig.patient.dto.AbnormalBloodDTO;
 import com.pig4cloud.pig.patient.dto.PatientiListDTO;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import java.util.List;
@@ -157,5 +158,8 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	Page<PatientiListDTO> selectPatientList(Page page,
 	 @Param("query") PatientiListDTO patientiListDTO);
 	
+	//	查询异常血压记录
+	Page<AbnormalBloodDTO> selectAbnormalBloodList(Page page,
+	 @Param("query") AbnormalBloodDTO abnormalBloodDTO);
 	
 }

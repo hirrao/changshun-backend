@@ -62,4 +62,7 @@ public class PersureHeartRateEntity extends Model<PersureHeartRateEntity> {
 	 */
 	@Schema(description="自动生成，具体分为：一级高血压低危，一级高血压中危，一级高血压高危，二级高血压中危，二级高血压高危，三级高血压高危")
 	private String sdhClassification;
+	
+	@Schema(description="riskAssessment")
+	private String riskAssessment;
 }
