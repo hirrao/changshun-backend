@@ -14,4 +14,7 @@ public interface PatientDoctorService extends IService<PatientDoctorEntity> {
 	R addItem(PatientDoctorEntity patientDoctor);
 	
 	R updateItem(PatientDoctorEntity patientDoctor);
+	long countPatientsByDoctorId(Long doctorUid);
+
+	long countPatientsByDoctorIdAndCare(Long doctorUid);
 }

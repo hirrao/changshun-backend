@@ -1,6 +1,7 @@
 package com.pig4cloud.pig.patient.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.dto.HeartRateStatsDTO;
@@ -59,5 +60,19 @@ public class PatientDoctorServiceImpl extends
 			return R.ok("更新成功");
 		}
 		return R.failed("医生和患者已经绑定");
+	}
+
+	@Override
+	public long countPatientsByDoctorId(Long doctorUid) {
+		QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("doctor_uid", doctorUid);
+		return this.count(queryWrapper);
+	}
+
+	@Override
+	public long countPatientsByDoctorIdAndCare(Long doctorUid) {
+		QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("doctor_uid", doctorUid).eq("care", 1);
+		return this.count(queryWrapper);
 	}
 }
