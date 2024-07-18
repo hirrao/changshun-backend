@@ -73,4 +73,15 @@ public class DoctorBaseServiceImpl extends
 		}
 		return R.ok();
 	}
+
+
+	@Override
+	public boolean deleteBatch(List<Long> doctorUids) {
+		return this.removeByIds(doctorUids);
+	}
+
+	@Override
+	public boolean updateBatch(List<DoctorBaseEntity> doctors) {
+		return this.updateBatchById(doctors);
+	}
 }

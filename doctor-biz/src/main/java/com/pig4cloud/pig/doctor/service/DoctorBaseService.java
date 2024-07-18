@@ -11,5 +11,8 @@ public interface DoctorBaseService extends IService<DoctorBaseEntity> {
 	
 	R importDoctorBaseList(List<ImportDoctorBaseListRequest> excelVOList,
 	 BindingResult bindingResult);
+
+	boolean deleteBatch(List<Long> doctorUids);
+	boolean updateBatch(List<DoctorBaseEntity> doctors);
 	
 }

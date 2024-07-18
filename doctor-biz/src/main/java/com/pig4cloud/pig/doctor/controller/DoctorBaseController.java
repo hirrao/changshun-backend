@@ -19,6 +19,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +45,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class DoctorBaseController {
 	
 	private final DoctorBaseService doctorBaseService;
+
+	@Operation(summary = "批量删除", description = "批量删除")
+	@DeleteMapping("/batchdel")
+	@PreAuthorize("@pms.hasPermission('doctor_doctorBase_view')")
+	public R deleteBatch(@RequestBody List<Long> doctorUids) {
+		boolean success = doctorBaseService.deleteBatch(doctorUids);
+		return success ? R.ok() : R.failed("删除失败");
+	}
+
+
+	@Operation(summary = "批量修改", description = "批量修改")
+	@PutMapping("/batchupd")
+	@PreAuthorize("@pms.hasPermission('doctor_doctorBase_view')")
+	public R updateBatch(@RequestBody List<DoctorBaseEntity> doctors) {
+		boolean success = doctorBaseService.updateBatch(doctors);
+		return success ? R.ok() : R.failed("更新失败");
+	}
 	
 	/**
 	 * 分页查询
