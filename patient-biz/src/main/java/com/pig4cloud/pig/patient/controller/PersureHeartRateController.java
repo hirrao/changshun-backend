@@ -319,7 +319,7 @@ public class PersureHeartRateController {
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
     public R save(@Valid @RequestBody PersureHeartRateEntity persureHeartRate) {
-        boolean saved = persureHeartRateService.save(persureHeartRate);
+        boolean saved = persureHeartRateService.savePersureHeartRate(persureHeartRate);
         if (saved) {
             persureHeartRateService.updateSdhClassification(persureHeartRate.getSdhId(), persureHeartRate.getPatientUid());
         }

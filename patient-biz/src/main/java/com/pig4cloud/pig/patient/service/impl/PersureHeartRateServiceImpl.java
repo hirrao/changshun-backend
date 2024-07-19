@@ -34,6 +34,13 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     private PatientBaseMapper patientBaseMapper;
 
     @Override
+    public boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate) {
+        String riskAssessment = judgeRiskByBloodPressure(persureHeartRate.getSystolic(), persureHeartRate.getDiastolic());
+        persureHeartRate.setRiskAssessment(riskAssessment);
+        return save(persureHeartRate);
+    }
+
+    @Override
     public String judgeRiskByBloodPressure(float systolic, float diastolic){
         if(systolic >= 180 || diastolic >= 110){
             return "重度";

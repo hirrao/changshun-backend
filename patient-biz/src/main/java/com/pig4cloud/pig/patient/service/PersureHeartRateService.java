@@ -54,6 +54,10 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     int ccountPatientsWithHighHeartRate(Long doctorUid);
 
     void updateSdhClassification(Long sdhId, Long patientUid);
+    boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
+
+
+
 
     List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid);
 

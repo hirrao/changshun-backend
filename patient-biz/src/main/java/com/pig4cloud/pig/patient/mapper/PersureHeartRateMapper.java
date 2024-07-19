@@ -161,5 +161,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	//	查询异常血压记录
 	Page<AbnormalBloodDTO> selectAbnormalBloodList(Page page,
 	 @Param("query") AbnormalBloodDTO abnormalBloodDTO);
+
+	void updateRiskAssessment(@Param("sdhId") Long sdhId, @Param("riskAssessment") String riskAssessment);
 	
 }
