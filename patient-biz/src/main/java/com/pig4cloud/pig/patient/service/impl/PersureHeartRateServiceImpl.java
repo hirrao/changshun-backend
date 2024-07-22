@@ -742,7 +742,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         // Initialize map with 0 counts for the last 10 days
         LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
 
         for (int i = 0; i < 10; i++) {
             String dateKey = today.minusDays(i).format(formatter);
@@ -752,8 +752,10 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         // Fill in actual counts from database results
         for (Map<String, Object> result : resultList) {
             String date = result.get("date").toString();
-            Long count = (Long) result.get("count");
-            statisticsMap.put(date, count);
+            LocalDate localDate = LocalDate.parse(date); // Assuming the date is in yyyy-MM-dd format
+            String formattedDate = localDate.format(formatter);
+            Long count = ((Number) result.get("count")).longValue();
+            statisticsMap.put(formattedDate, count);
         }
 
         return statisticsMap;
