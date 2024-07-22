@@ -39,29 +39,29 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	 "AND DATE(upload_time) = CURDATE() " +
 	 "AND heart_rate > 100")
 	int countPatientsWithHighHeartRate(@Param("doctorUid") Long doctorUid);
-	
-	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
-	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
-	 +
-	 "AND DATE(upload_time) = CURDATE() " +
-	 "AND heart_rate < 60" +
-	 "AND care = 1")
+
+	@Select("SELECT COUNT(*) FROM persure_heart_rate phr " +
+			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND DATE(phr.upload_time) = CURDATE() " +
+			"AND phr.heart_rate < 60 " +
+			"AND pd.care = 1")
 	int ccountPatientsWithLowHeartRate(@Param("doctorUid") Long doctorUid);
-	
-	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
-	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
-	 +
-	 "AND DATE(upload_time) = CURDATE() " +
-	 "AND heart_rate >= 60 AND heart_rate <= 100" +
-	 "AND care = 1")
+
+	@Select("SELECT COUNT(*) FROM persure_heart_rate phr " +
+			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND DATE(phr.upload_time) = CURDATE() " +
+			"AND phr.heart_rate >= 60 AND phr.heart_rate <= 100 " +
+			"AND pd.care = 1")
 	int ccountPatientsWithNormalHeartRate(@Param("doctorUid") Long doctorUid);
-	
-	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
-	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
-	 +
-	 "AND DATE(upload_time) = CURDATE() " +
-	 "AND heart_rate > 100" +
-	 "AND care = 1")
+
+	@Select("SELECT COUNT(*) FROM persure_heart_rate phr " +
+			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND DATE(phr.upload_time) = CURDATE() " +
+			"AND phr.heart_rate > 100 " +
+			"AND pd.care = 1")
 	int ccountPatientsWithHighHeartRate(@Param("doctorUid") Long doctorUid);
 	
 	@Update("UPDATE persure_heart_rate phr " +
