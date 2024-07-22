@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.function.Function;
@@ -735,7 +736,26 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public List<Map<String, Object>> getRecentTenDaysStatistics(Long doctorUid) {
-        return baseMapper.getRecentTenDaysStatistics(doctorUid);
+    public Map<String, Long> getDailyStatistics(Long doctorUid) {
+        List<Map<String, Object>> resultList = persureHeartRateMapper.selectDailyStatistics(doctorUid);
+        Map<String, Long> statisticsMap = new HashMap<>();
+
+        // Initialize map with 0 counts for the last 10 days
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (int i = 0; i < 10; i++) {
+            String dateKey = today.minusDays(i).format(formatter);
+            statisticsMap.put(dateKey, 0L);
+        }
+
+        // Fill in actual counts from database results
+        for (Map<String, Object> result : resultList) {
+            String date = result.get("date").toString();
+            Long count = (Long) result.get("count");
+            statisticsMap.put(date, count);
+        }
+
+        return statisticsMap;
     }
 }

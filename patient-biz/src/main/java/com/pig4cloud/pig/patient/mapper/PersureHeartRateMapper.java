@@ -144,15 +144,15 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	 "GROUP BY sdh_classification")
 	List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(
 	 @Param("doctorUid") Long doctorUid);
-	
+
 	@Select("SELECT DATE(p.upload_time) AS date, COUNT(*) AS count " +
-	 "FROM persure_heart_rate p " +
-	 "JOIN patient_doctor pd ON p.patient_uid = pd.patient_uid " +
-	 "WHERE pd.doctor_uid = #{doctorUid} " +
-	 "AND p.upload_time >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) " +
-	 "GROUP BY DATE(p.upload_time) " +
-	 "ORDER BY DATE(p.upload_time)")
-	List<Map<String, Object>> getRecentTenDaysStatistics(@Param("doctorUid") Long doctorUid);
+			"FROM persure_heart_rate p " +
+			"JOIN patient_doctor pd ON p.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND p.upload_time >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) " +
+			"GROUP BY DATE(p.upload_time) " +
+			"ORDER BY DATE(p.upload_time)")
+	List<Map<String, Object>> selectDailyStatistics(@Param("doctorUid") Long doctorUid);
 	
 	// 查询所有患者的血压病例数据
 	Page<PatientiListDTO> selectPatientList(Page page,
