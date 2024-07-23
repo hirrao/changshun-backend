@@ -41,6 +41,9 @@
         SELECT * FROM persure_heart_rate
         <where>
             risk_assessment IS NOT NULL AND risk_assessment NOT LIKE '正常'
+            <if test="query.patientUid != null">
+                AND patient_uid = #{query.patientUid}
+            </if>
             <if test="query.sdhClassification != null and query.sdhClassification != ''">
                 AND sdh_classification LIKE CONCAT('%', #{query.sdhClassification}, '%')
             </if>
