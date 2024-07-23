@@ -15,9 +15,9 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     String judgeRiskByBloodPressure(float systolic, float diastolic);
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
-    JSONObject getWeeklyPressureData(int weeksAgo, Long patientUid);
-    JSONObject getMonthlyPressureData(int monthsAgo, Long patientUid);
-    JSONObject getYearlyPressureData(int yearsAgo, Long patientUid);
+    JSONArray getWeeklyPressureHeartRateData(int weeksAgo, Long patientUid);
+    JSONArray getMonthlyPressureHeartRateData(int monthsAgo, Long patientUid);
+    JSONArray getYearlyPressureHeartRateData(int yearsAgo, Long patientUid);
 
     JSONObject getDailyMaxMinAvgSystolic(Long patientUid);
     JSONObject getWeeklyMaxMinAvgSystolic(Long patientUid);
@@ -34,10 +34,10 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONObject getMonthlyMaxMinAvgPressureDiff(Long patientUid);
     JSONObject getYearlyMaxMinAvgPressureDiff(Long patientUid);
 
-    JSONObject getDailyAveragePressure(LocalDate date, Long patientUid);
-    JSONArray getWeeklyAveragePressureByDay(int weeksAgo, Long patientUid);
-    JSONArray getMonthlyAveragePressureByWeek(int monthsAgo, Long patientUid);
-    JSONArray getYearlyAveragePressureByMonth(int yearsAgo, Long patientUid);
+    JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid);
+    JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid);
+    JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
+    JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
     JSONArray getDailyConsecutiveAbnormalities();
 
@@ -54,10 +54,14 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     int ccountPatientsWithHighHeartRate(Long doctorUid);
 
     void updateSdhClassification(Long sdhId, Long patientUid);
+    boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
+
+
+
 
     List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid);
 
     List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid);
 
-    List<Map<String, Object>> getRecentTenDaysStatistics(Long doctorUid);
+    Map<String, Long> getDailyStatistics(Long doctorUid);
 }
