@@ -284,7 +284,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONArray getDailyConsecutiveAbnormalities(){
+    public JSONArray getDailyConsecutiveAbnormalities() {
         LocalDate date = LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
@@ -305,64 +305,137 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         JSONArray result = new JSONArray();
 
-        for(Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()){
+        for (Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()) {
             Long patientUid = entry.getKey();
             List<PersureHeartRateEntity> records = entry.getValue();
             records.sort(Comparator.comparing(PersureHeartRateEntity::getUploadTime));
 
-            int consecutiveHighBp = 0; // 连续高压超过180的次数
-            int maxConsecutiveHighBp = 0; // 连续高压超过180的最大次数
-            int consecutiveLowHr = 0; // 连续低压超过110的次数
-            int maxConsecutiveLowHr = 0; // 连续低压超过110的最大次数
+            List<JSONObject> patientDataList = new ArrayList<>();
 
-            for(PersureHeartRateEntity record : records){
-                if(record.getSystolic() >= 180 || record.getDiastolic() >= 110){
+            int consecutiveHighBp = 0; // 连续高压超过180的次数
+            LocalDateTime highBpStart = null;
+            LocalDateTime highBpEnd = null;
+
+            int consecutiveLowHr = 0; // 连续低压超过110的次数
+            LocalDateTime lowHrStart = null;
+            LocalDateTime lowHrEnd = null;
+
+            for (PersureHeartRateEntity record : records) {
+                if (record.getSystolic() >= 180 || record.getDiastolic() >= 110) {
+                    if (consecutiveHighBp == 0) {
+                        highBpStart = record.getUploadTime();
+                    }
                     consecutiveHighBp++;
-                    maxConsecutiveHighBp = Math.max(maxConsecutiveLowHr, consecutiveLowHr);
+                    highBpEnd = record.getUploadTime();
                 } else {
+                    if (consecutiveHighBp > 1) {
+                        JSONObject patientData = new JSONObject();
+                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                        LocalDate birthday = patientBase.getBirthday();
+                        LocalDate current = LocalDate.now();
+                        int age = 0;
+                        if (birthday != null) {
+                            age = Period.between(birthday, current).getYears();
+                        }
+
+                        patientData.put("name", patientBase.getPatientName());
+                        patientData.put("sex", patientBase.getSex());
+                        patientData.put("age", age);
+                        patientData.put("abnormality", "血压高于180/110mmHg");
+                        patientData.put("count", consecutiveHighBp);
+                        patientData.put("duration", String.format("%d小时%d分钟",
+                                Duration.between(highBpStart, highBpEnd).toHours(),
+                                Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
+
+                        patientDataList.add(patientData);
+                    }
                     consecutiveHighBp = 0;
                 }
 
-                if(record.getHeartRate() < 60){
+                if (record.getHeartRate() < 60) {
+                    if (consecutiveLowHr == 0) {
+                        lowHrStart = record.getUploadTime();
+                    }
                     consecutiveLowHr++;
-                    maxConsecutiveLowHr = Math.max(maxConsecutiveLowHr, consecutiveLowHr);
+                    lowHrEnd = record.getUploadTime();
                 } else {
+                    if (consecutiveLowHr > 1) {
+                        JSONObject patientData = new JSONObject();
+                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                        LocalDate birthday = patientBase.getBirthday();
+                        LocalDate current = LocalDate.now();
+                        int age = 0;
+                        if (birthday != null) {
+                            age = Period.between(birthday, current).getYears();
+                        }
+
+                        patientData.put("name", patientBase.getPatientName());
+                        patientData.put("sex", patientBase.getSex());
+                        patientData.put("age", age);
+                        patientData.put("abnormality", "心率低于60次/分钟");
+                        patientData.put("count", consecutiveLowHr);
+                        patientData.put("duration", String.format("%d小时%d分钟",
+                                Duration.between(lowHrStart, lowHrEnd).toHours(),
+                                Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
+
+                        patientDataList.add(patientData);
+                    }
                     consecutiveLowHr = 0;
                 }
             }
 
-            if(maxConsecutiveHighBp > 1 || maxConsecutiveLowHr > 1){
+            // 处理最后一条记录后的未记录异常情况
+            if (consecutiveHighBp > 1) {
                 JSONObject patientData = new JSONObject();
                 PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
                 LocalDate birthday = patientBase.getBirthday();
                 LocalDate current = LocalDate.now();
                 int age = 0;
-                if (birthday != null && current != null) {
-                    age =  Period.between(birthday, current).getYears();
+                if (birthday != null) {
+                    age = Period.between(birthday, current).getYears();
                 }
 
                 patientData.put("name", patientBase.getPatientName());
                 patientData.put("sex", patientBase.getSex());
                 patientData.put("age", age);
+                patientData.put("abnormality", "血压高于180/110mmHg");
+                patientData.put("count", consecutiveHighBp);
+                patientData.put("duration", String.format("%d小时%d分钟",
+                        Duration.between(highBpStart, highBpEnd).toHours(),
+                        Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
 
-                // 一个患者可能既血压高又心率低，这时这两种信息仍然存在一个JSON中
-                if(maxConsecutiveHighBp > 1){
-                    patientData.put("abnormality", "血压过高");
-                    patientData.put("count", maxConsecutiveHighBp);
-                }
-
-                if(maxConsecutiveLowHr > 1){
-                    patientData.put("abnormality", "心率过低");
-                    patientData.put("count", maxConsecutiveLowHr);
-                }
-
-                result.add(patientData);
+                patientDataList.add(patientData);
             }
+
+            if (consecutiveLowHr > 1) {
+                JSONObject patientData = new JSONObject();
+                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                LocalDate birthday = patientBase.getBirthday();
+                LocalDate current = LocalDate.now();
+                int age = 0;
+                if (birthday != null) {
+                    age = Period.between(birthday, current).getYears();
+                }
+
+                patientData.put("name", patientBase.getPatientName());
+                patientData.put("sex", patientBase.getSex());
+                patientData.put("age", age);
+                patientData.put("abnormality", "心率低于60次/分钟");
+                patientData.put("count", consecutiveLowHr);
+                patientData.put("duration", String.format("%d小时%d分钟",
+                        Duration.between(lowHrStart, lowHrEnd).toHours(),
+                        Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
+
+                patientDataList.add(patientData);
+            }
+
+            result.addAll(patientDataList);
         }
 
         result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
         return result;
     }
+
 
     public JSONObject getMaxMinAvgSystolic(LocalDateTime start, LocalDateTime end, Long patientUid) {
         QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
