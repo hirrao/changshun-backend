@@ -9,6 +9,7 @@ import com.pig4cloud.pig.patient.mapper.SysMessageMapper;
 import com.pig4cloud.pig.patient.service.DrugEatTimeService;
 import com.pig4cloud.pig.patient.service.EatDrugAlertService;
 import com.pig4cloud.pig.patient.service.WebsocketService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.List;
  * @date 2024-07-05 01:50:45
  */
 @Service
+@Slf4j
 public class EatDrugAlertServiceImpl extends ServiceImpl<EatDrugAlertMapper, EatDrugAlertEntity> implements EatDrugAlertService {
 
     @Autowired
