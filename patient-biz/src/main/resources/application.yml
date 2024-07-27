@@ -36,3 +36,4 @@ spring:
 wxchat:
     appid: wxe23d19faaffb93f6
     secret: e65f9a193d0d395c1fbf89a38796071f
+    enc_key: thanks,pig4cloud

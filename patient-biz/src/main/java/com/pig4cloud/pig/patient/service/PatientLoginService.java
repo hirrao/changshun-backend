@@ -7,17 +7,29 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.pig.patient.request.BindPhoneNumberRequest;
 import com.pig4cloud.pig.patient.utils.HTTPUtils;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -35,6 +47,8 @@ public class PatientLoginService {
 	private String appid;
 	@Value("${wxchat.secret}")
 	private String secret;
+	@Value("${wxchat.enc_key}")
+	private String encKey;
 	
 	@Autowired
 	private RedisTemplate redisTemplate;
@@ -57,7 +71,8 @@ public class PatientLoginService {
 		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
 		PatientBaseEntity patientBaseEntity = new PatientBaseEntity();
 		patientBaseEntity.setWxUid(openId);
-		PatientBaseEntity one = patientBaseService.getOne(wrapper);
+		// last("limit 1")避免存在多条数据时报错
+		PatientBaseEntity one = patientBaseService.getOne(wrapper.last("limit 1"));
 		if (one != null && one.getPhoneNumber() != null && !one.getPhoneNumber().isBlank()) {
 			//	手机号存在直接用该手机号登录
 			return this.pigLogin(one);
@@ -68,21 +83,54 @@ public class PatientLoginService {
 	}
 	
 	public R pigLogin(PatientBaseEntity one) {
-		//	手机号存在直接用该手机号登录
-		Map<String, Object> params = new HashMap<>();
-		params.put("username", one.getPhoneNumber());
-		params.put("password", one.getPhoneNumber());
-		params.put("grant_type", "password");
-		params.put("scope", "server");
-		String url = "http://127.0.0.1:9999/auth/oauth2/token";
+		// 缺少封装auth headers等，需要参考pig前端ui操作 手机号存在直接用该手机号登录
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.setBasicAuth("dGVzdDp0ZXN0");
+		// note: form表单提交只能用MultiValueMap
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("username", one.getPhoneNumber());
+		//  密码需要加密
 		try {
-			JSONObject post = httpUtils.post(url, params,
-			 MediaType.APPLICATION_FORM_URLENCODED);
+			params.add("password", encrypt(encKey, one.getPhoneNumber()));
+		} catch (Exception e) {
+			log.error("加密密码失败", e);
+			return R.failed("加密密码失败");
+		}
+		String url = "http://127.0.0.1:9999/auth/oauth2/token?grant_type=password&scope=server";
+		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, headers);
+		try {
+			ResponseEntity<JSONObject> response = restTemplate.postForEntity(url, request,
+			 JSONObject.class);
+			if (response.getStatusCode() != HttpStatus.OK) {
+				return R.failed("网络请求出现错误");
+			}
+			JSONObject post = response.getBody();
 			return R.ok(post);
+		} catch (HttpClientErrorException.Unauthorized e) {
+			//	用户密码错误
+			return R.failed("用户名或密码错误");
+		} catch (HttpServerErrorException.InternalServerError e) {
+			//	系统内部异常，请等待一段时间后再次访问
+			return R.failed("系统内部异常，请等待一段时间后再次访问");
 		} catch (Exception e) {
 			log.error("登录pig失败", e);
 			return R.failed("登录pig失败");
 		}
+	}
+	
+	// 采用AES对称加密，返回16字节的字符串,customKey 为密钥
+	public static String encrypt(String customKey, String word) throws Exception {
+		String algorithm = "AES";
+		String transformation = "AES/CFB/NoPadding";
+		SecretKeySpec secretKey = new SecretKeySpec(customKey.getBytes(StandardCharsets.UTF_8),
+		 algorithm);
+		IvParameterSpec ivSpec = new IvParameterSpec(customKey.getBytes(StandardCharsets.UTF_8));
+		Cipher cipher = Cipher.getInstance(transformation);
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
+		byte[] encrypt = cipher.doFinal(word.getBytes(StandardCharsets.UTF_8));
+		return Base64.getEncoder().encodeToString(encrypt);
+		
 	}
 	
 	public R pigRegister(Map<String, Object> params) {
@@ -110,7 +158,7 @@ public class PatientLoginService {
 		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
 		PatientBaseEntity patientBaseEntity = new PatientBaseEntity();
 		patientBaseEntity.setWxUid(bindPhoneNumberRequest.getOpenId());
-		PatientBaseEntity one = patientBaseService.getOne(wrapper);
+		PatientBaseEntity one = patientBaseService.getOne(wrapper.last("limit 1"));
 		PatientBaseEntity tmp = null;
 		if (one == null) {
 			//	创建新账户
@@ -155,8 +203,18 @@ public class PatientLoginService {
 		}
 	}
 	
-	// TODO: 手机号换绑
-	
+	// 手机号换绑
+	public R changeBindPhoneNumber(BindPhoneNumberRequest bindPhoneNumberRequest) {
+		//	根据openId查询对应的患者
+		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
+		PatientBaseEntity patientBaseEntity = new PatientBaseEntity();
+		patientBaseEntity.setWxUid(bindPhoneNumberRequest.getOpenId());
+		PatientBaseEntity one = patientBaseService.getOne(wrapper.last("limit 1"));
+		if (one == null) {
+			return R.failed("查询患者失败");
+		}
+		return this.bindPhoneNumber(bindPhoneNumberRequest);
+	}
 	
 	// 获取微信小程序的接口调用凭据
 	public R getWXAccessToken() {

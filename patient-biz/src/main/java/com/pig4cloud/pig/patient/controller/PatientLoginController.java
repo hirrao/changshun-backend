@@ -3,6 +3,7 @@ package com.pig4cloud.pig.patient.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.annotation.Inner;
+import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.pig.patient.request.BindPhoneNumberRequest;
 import com.pig4cloud.pig.patient.service.PatientLoginService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -52,6 +53,9 @@ public class PatientLoginController {
 	@PostMapping("/custom_login")
 	public R customLogin(@RequestBody JSONObject jsonObject) {
 		String openId = jsonObject.getString("openId");
+		if (openId.isBlank()) {
+			return R.failed("传入openid为空");
+		}
 		//	自定义的登录服务
 		R r = patientLoginService.customLogin(openId);
 		return r;
@@ -62,17 +66,22 @@ public class PatientLoginController {
 	public R bindPhoneNumber(@RequestBody BindPhoneNumberRequest bindPhoneNumberRequest) {
 		//	绑定手机号码
 		R r = patientLoginService.bindPhoneNumber(bindPhoneNumberRequest);
-		return r;	
+		return r;
 	}
 	
 	
 	@Inner(value = false)
 	@PostMapping("/normal_test")
-	public R normal_test(@RequestBody JSONObject jsonObject) {
-		String code = jsonObject.getString("code");
+	public R normal_test(@RequestBody PatientBaseEntity one) {
 		//	通用的测试service服务的接口
-		R r = patientLoginService.getWxOpenId(code);
+		R r = patientLoginService.pigLogin(one);
 		return r;
+	}
+	
+	@Inner(value = false)
+	@PostMapping("/change_bind_phone_number")
+	public R changeBindPhoneNumber(@RequestBody BindPhoneNumberRequest bindPhoneNumberRequest) {
+		return patientLoginService.changeBindPhoneNumber(bindPhoneNumberRequest);
 	}
 }
 
