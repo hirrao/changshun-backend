@@ -39,7 +39,7 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
     JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
-    JSONArray getDailyConsecutiveAbnormalities();
+    JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
 
     int countPatientsWithLowHeartRate(Long doctorUid);
 
@@ -59,9 +59,9 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
 
 
-    List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid);
+    List<List<Integer>> countSdhClassificationByDoctorAndCare(Long doctorUid);
 
-    List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid);
+    List<List<Integer>> nocountSdhClassificationByDoctorAndCare(Long doctorUid);
 
     Map<String, Long> getDailyStatistics(Long doctorUid);
 }

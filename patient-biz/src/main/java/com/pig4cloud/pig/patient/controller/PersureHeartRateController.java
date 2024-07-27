@@ -62,17 +62,17 @@ public class PersureHeartRateController {
     @Operation(summary = "查询特别关心高血压病情" , description = "查询特别关心高血压病情" )
     @GetMapping("/count-sdh-careclassification")
     @PreAuthorize("@pms.hasPermission('patient_persureCareRate_view')" )
-    public ResponseEntity<?> countSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
-        List<Map<String, Object>> result = persureHeartRateService.countSdhClassificationByDoctorAndCare(doctorUid);
-        return ResponseEntity.ok(result);
+    public R countSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
+        List<List<Integer>> result = persureHeartRateService.countSdhClassificationByDoctorAndCare(doctorUid);
+        return R.ok(result);
     }
 
     @Operation(summary = "查询高血压病情" , description = "查询高血压病情" )
     @GetMapping("/count-sdh-classification")
     @PreAuthorize("@pms.hasPermission('patient_persureRate_view')" )
-    public ResponseEntity<?> nocountSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
-        List<Map<String, Object>> result = persureHeartRateService.nocountSdhClassificationByDoctorAndCare(doctorUid);
-        return ResponseEntity.ok(result);
+    public R nocountSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
+        List<List<Integer>> result = persureHeartRateService.nocountSdhClassificationByDoctorAndCare(doctorUid);
+        return R.ok(result);
     }
 
     @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
@@ -143,7 +143,7 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一周的所有高压、低压、心率", description = "查询某一周的所有高压、低压、心率")
     @GetMapping("/weeklyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getWeeklyPressureData(@RequestParam int weeksAgo, @RequestParam long patientUid) {
+    public R getWeeklyPressureData(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
         JSONArray result = persureHeartRateService.getWeeklyPressureHeartRateData(weeksAgo, patientUid);
         return R.ok(result);
     }
@@ -151,7 +151,7 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一个月的所有高压、低压、心率", description = "查询某一个月的所有高压、低压、心率")
     @GetMapping("/monthlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getMonthlyPressureData(@RequestParam int monthsAgo, @RequestParam long patientUid) {
+    public R getMonthlyPressureData(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
         JSONArray result = persureHeartRateService.getMonthlyPressureHeartRateData(monthsAgo, patientUid);
         return R.ok(result);
     }
@@ -159,7 +159,7 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一年的所有高压、低压、心率", description = "查询某一年的所有高压、低压、心率")
     @GetMapping("/yearlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getYearlyPressureData(@RequestParam int monthsAgo, @RequestParam long patientUid) {
+    public R getYearlyPressureData(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
         JSONArray result = persureHeartRateService.getYearlyPressureHeartRateData(monthsAgo, patientUid);
         return R.ok(result);
     }
@@ -167,8 +167,8 @@ public class PersureHeartRateController {
     @Operation(summary = "统计今天连续高血压和低心率的患者", description = "统计今天所有患者连续高血压或低心率的次数")
     @GetMapping("/todayConsecutiveAbnormalities")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getTodayConsecutiveAbnormalities() {
-        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities();
+    public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
+        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
         return R.ok(result);
     }
 

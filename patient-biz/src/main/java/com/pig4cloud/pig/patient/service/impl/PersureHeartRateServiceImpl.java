@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
+import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     private PersureHeartRateMapper persureHeartRateMapper;
     @Autowired
     private PatientBaseMapper patientBaseMapper;
+    @Autowired
+    private PatientDoctorMapper patientDoctorMapper;
 
     @Override
     public boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate) {
@@ -284,15 +288,31 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONArray getDailyConsecutiveAbnormalities() {
+    public JSONArray getDailyConsecutiveAbnormalities(Long doctorUid) {
         LocalDate date = LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
 
-        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.between("upload_time", startOfDay, endOfDay);
+        QueryWrapper<PatientDoctorEntity> doctorQueryWrapper = new QueryWrapper<>();
+        doctorQueryWrapper.eq("doctor_uid", doctorUid);
 
-        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(queryWrapper);
+        List<Long> patientUids = patientDoctorMapper.selectList(doctorQueryWrapper)
+                .stream()
+                .map(PatientDoctorEntity::getPatientUid)
+                .toList();
+
+        if (patientUids.isEmpty()) {
+            return new JSONArray();
+        }
+
+        // 然后根据患者UID列表查询心率记录
+        QueryWrapper<PersureHeartRateEntity> heartRateQueryWrapper = new QueryWrapper<>();
+        heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
+                .in("patient_uid", patientUids);
+
+
+
+        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(heartRateQueryWrapper);
 
         // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
         Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
@@ -799,13 +819,87 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public List<Map<String, Object>> countSdhClassificationByDoctorAndCare(Long doctorUid) {
-        return persureHeartRateMapper.countSdhClassificationByDoctorAndCare(doctorUid);
+    public List<List<Integer>> countSdhClassificationByDoctorAndCare(Long doctorUid) {
+        List<Map<String, Object>> result = persureHeartRateMapper.countSdhClassificationByDoctorAndCare(doctorUid);
+
+        List<Integer> levelOneCounts = Arrays.asList(0, 0, 0);
+        List<Integer> levelTwoCounts = Arrays.asList(0, 0, 0);
+        List<Integer> levelThreeCounts = Arrays.asList(0, 0, 0);
+
+        for(Map<String, Object> row : result){
+            String classification = (String) row.get("sdh_classification");
+            Integer count = ((Long) row.get("count")).intValue();
+
+            if(classification.contains("一级高血压")) {
+                if(classification.contains("低危")){
+                    levelOneCounts.set(0, count);
+                } else if(classification.contains("中危")){
+                    levelOneCounts.set(1, count);
+                } else if(classification.contains("高危")){
+                    levelOneCounts.set(2, count);
+                }
+            } else if (classification.contains("二级高血压")) {
+                if (classification.contains("低危")) {
+                    levelTwoCounts.set(0, count);
+                } else if (classification.contains("中危")) {
+                    levelTwoCounts.set(1, count);
+                } else if (classification.contains("高危")) {
+                    levelTwoCounts.set(2, count);
+                }
+            } else if (classification.contains("三级高血压")) {
+                if (classification.contains("低危")) {
+                    levelThreeCounts.set(0, count);
+                } else if (classification.contains("中危")) {
+                    levelThreeCounts.set(1, count);
+                } else if (classification.contains("高危")) {
+                    levelThreeCounts.set(2, count);
+                }
+            }
+        }
+
+        return Arrays.asList(levelOneCounts, levelTwoCounts, levelThreeCounts);
     }
 
     @Override
-    public List<Map<String, Object>> nocountSdhClassificationByDoctorAndCare(Long doctorUid) {
-        return persureHeartRateMapper.nocountSdhClassificationByDoctorAndCare(doctorUid);
+    public List<List<Integer>> nocountSdhClassificationByDoctorAndCare(Long doctorUid) {
+        List<Map<String, Object>> result = persureHeartRateMapper.nocountSdhClassificationByDoctorAndCare(doctorUid);
+
+        List<Integer> levelOneCounts = Arrays.asList(0, 0, 0);
+        List<Integer> levelTwoCounts = Arrays.asList(0, 0, 0);
+        List<Integer> levelThreeCounts = Arrays.asList(0, 0, 0);
+
+        for(Map<String, Object> row : result){
+            String classification = (String) row.get("sdh_classification");
+            Integer count = ((Long) row.get("count")).intValue();
+
+            if(classification.contains("一级高血压")) {
+                if(classification.contains("低危")){
+                    levelOneCounts.set(0, count);
+                } else if(classification.contains("中危")){
+                    levelOneCounts.set(1, count);
+                } else if(classification.contains("高危")){
+                    levelOneCounts.set(2, count);
+                }
+            } else if (classification.contains("二级高血压")) {
+                if (classification.contains("低危")) {
+                    levelTwoCounts.set(0, count);
+                } else if (classification.contains("中危")) {
+                    levelTwoCounts.set(1, count);
+                } else if (classification.contains("高危")) {
+                    levelTwoCounts.set(2, count);
+                }
+            } else if (classification.contains("三级高血压")) {
+                if (classification.contains("低危")) {
+                    levelThreeCounts.set(0, count);
+                } else if (classification.contains("中危")) {
+                    levelThreeCounts.set(1, count);
+                } else if (classification.contains("高危")) {
+                    levelThreeCounts.set(2, count);
+                }
+            }
+        }
+
+        return Arrays.asList(levelOneCounts, levelTwoCounts, levelThreeCounts);
     }
 
     @Override
