@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.patient.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
@@ -10,10 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * AI预问诊
@@ -33,13 +31,23 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
     @Override
     public Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid) {
-        List<String> diseaseNames = Arrays.asList("血脂异常", "脑血管病", "心脏疾病", "肾脏疾病",
-                "周围血管病", "视网膜病变", "糖尿病", "其他");
+        Map<String, String> diseaseNameToKeyMap = new HashMap<>();
+        diseaseNameToKeyMap.put("糖尿病", "DM");
+        diseaseNameToKeyMap.put("视网膜病变", "DR");
+        diseaseNameToKeyMap.put("周围血管病", "PAD");
+        diseaseNameToKeyMap.put("肾脏疾病", "CKD");
+        diseaseNameToKeyMap.put("脑血管病", "CVD");
+        diseaseNameToKeyMap.put("血脂异常", "BL");
+        diseaseNameToKeyMap.put("其他", "others");
+
+        List<String> diseaseNames = Arrays.asList("糖尿病", "视网膜病变", "周围血管病", "肾脏疾病",
+                "脑血管病", "血脂异常", "其他");
 
         Map<String, Integer> diseaseCounts = new HashMap<>();
         for (String disease : diseaseNames) {
             int count = aiPreDiagnosisMapper.nocountPatientsWithDisease(doctorUid, disease);
-            diseaseCounts.put(disease, count);
+            String key = diseaseNameToKeyMap.get(disease);
+            diseaseCounts.put(key, count);
         }
 
         return diseaseCounts;
@@ -47,17 +55,29 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
     @Override
     public Map<String, Integer> countPatientsWithDiseases(Long doctorUid) {
-        List<String> diseaseNames = Arrays.asList("血脂异常", "脑血管病", "心脏疾病", "肾脏疾病",
-                "周围血管病", "视网膜病变", "糖尿病", "其他");
+        // 中文疾病名称到英文缩写的映射
+        Map<String, String> diseaseNameToKeyMap = new HashMap<>();
+        diseaseNameToKeyMap.put("糖尿病", "DM");
+        diseaseNameToKeyMap.put("视网膜病变", "DR");
+        diseaseNameToKeyMap.put("周围血管病", "PAD");
+        diseaseNameToKeyMap.put("肾脏疾病", "CKD");
+        diseaseNameToKeyMap.put("脑血管病", "CVD");
+        diseaseNameToKeyMap.put("血脂异常", "BL");
+        diseaseNameToKeyMap.put("其他", "others");
+
+        List<String> diseaseNames = Arrays.asList("糖尿病", "视网膜病变", "周围血管病", "肾脏疾病",
+                "脑血管病", "血脂异常", "其他");
 
         Map<String, Integer> diseaseCounts = new HashMap<>();
         for (String disease : diseaseNames) {
             int count = aiPreDiagnosisMapper.countPatientsWithDisease(doctorUid, disease);
-            diseaseCounts.put(disease, count);
+            String key = diseaseNameToKeyMap.get(disease);
+            diseaseCounts.put(key, count);
         }
 
         return diseaseCounts;
     }
+
 
     @Override
     public int countPatientsWithHypertensionFamilyHistory(Long doctorUid) {
@@ -202,5 +222,49 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         entity.setIsClinical(calculateIsClinical(entity));
         super.updateById(entity);
         return success;
+    }
+
+    @Override
+    public JSONObject ccountPatientsHistory(Long doctorUid) {
+        Map<String, Object> historyCounts = new LinkedHashMap<>();
+
+        // 获取统计结果
+        int hypertensionFamilyHistoryCount = ccountPatientsWithHypertensionFamilyHistory(doctorUid);
+        int smokingHistoryCount = ccountPatientsWithSmokingHistory(doctorUid);
+        int drinkingHistoryCount = ccountPatientsWithDrinkingHistory(doctorUid);
+        int infectiousHistoryCount = ccountPatientsWithInfectiousHistory(doctorUid);
+        int foodAllergyHistoryCount = ccountPatientsWithFoodAllergyHistory(doctorUid);
+
+        // 放入结果到Map中
+        historyCounts.put("高血压家族遗传史", hypertensionFamilyHistoryCount);
+        historyCounts.put("吸烟史", smokingHistoryCount);
+        historyCounts.put("饮酒史", drinkingHistoryCount);
+        historyCounts.put("传染病史", infectiousHistoryCount);
+        historyCounts.put("食物过敏史", foodAllergyHistoryCount);
+
+        JSONObject result = new JSONObject(historyCounts);
+        return result;
+    }
+
+    @Override
+    public JSONObject countPatientsHistory(Long doctorUid) {
+        Map<String, Object> historyCounts = new LinkedHashMap<>();
+
+        // 获取统计结果
+        int hypertensionFamilyHistoryCount = countPatientsWithHypertensionFamilyHistory(doctorUid);
+        int smokingHistoryCount = countPatientsWithSmokingHistory(doctorUid);
+        int drinkingHistoryCount = countPatientsWithDrinkingHistory(doctorUid);
+        int infectiousHistoryCount = countPatientsWithInfectiousHistory(doctorUid);
+        int foodAllergyHistoryCount = countPatientsWithFoodAllergyHistory(doctorUid);
+
+        // 放入结果到Map中
+        historyCounts.put("高血压家族遗传史", hypertensionFamilyHistoryCount);
+        historyCounts.put("吸烟史", smokingHistoryCount);
+        historyCounts.put("饮酒史", drinkingHistoryCount);
+        historyCounts.put("传染病史", infectiousHistoryCount);
+        historyCounts.put("食物过敏史", foodAllergyHistoryCount);
+
+        JSONObject result = new JSONObject(historyCounts);
+        return result;
     }
 }

@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,64 +45,34 @@ public class AiPreDiagnosisController {
     @Operation(summary = "得到特别关心客观病史", description = "得到特别关心客观病史")
     @GetMapping("/count-cpatients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hisccount')")
-    public ResponseEntity<Map<String, Integer>> ccountPatientsHistory(@PathVariable Long doctorUid) {
-        Map<String, Integer> historyCounts = new HashMap<>();
-
-        // 获取统计结果
-        int hypertensionFamilyHistoryCount = aiPreDiagnosisService.ccountPatientsWithHypertensionFamilyHistory(doctorUid);
-        int smokingHistoryCount = aiPreDiagnosisService.ccountPatientsWithSmokingHistory(doctorUid);
-        int drinkingHistoryCount = aiPreDiagnosisService.ccountPatientsWithDrinkingHistory(doctorUid);
-        int infectiousHistoryCount = aiPreDiagnosisService.ccountPatientsWithInfectiousHistory(doctorUid);
-        int foodAllergyHistoryCount = aiPreDiagnosisService.ccountPatientsWithFoodAllergyHistory(doctorUid);
-
-        // 放入结果到Map中
-        historyCounts.put("hypertensionFamilyHistory", hypertensionFamilyHistoryCount);
-        historyCounts.put("smokingHistory", smokingHistoryCount);
-        historyCounts.put("drinkingHistory", drinkingHistoryCount);
-        historyCounts.put("infectiousHistory", infectiousHistoryCount);
-        historyCounts.put("foodAllergyHistory", foodAllergyHistoryCount);
-
-        return ResponseEntity.ok(historyCounts);
+    public R ccountPatientsHistory(@PathVariable Long doctorUid) {
+        JSONObject historyCounts = aiPreDiagnosisService.ccountPatientsHistory(doctorUid);
+        return R.ok(historyCounts);
     }
 
     @Operation(summary = "得到客观病史", description = "得到客观病史")
     @GetMapping("/count-patients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hiscount')")
-    public ResponseEntity<Map<String, Integer>> countPatientsHistory(@PathVariable Long doctorUid) {
-        Map<String, Integer> historyCounts = new HashMap<>();
-
-        // 获取统计结果
-        int hypertensionFamilyHistoryCount = aiPreDiagnosisService.countPatientsWithHypertensionFamilyHistory(doctorUid);
-        int smokingHistoryCount = aiPreDiagnosisService.countPatientsWithSmokingHistory(doctorUid);
-        int drinkingHistoryCount = aiPreDiagnosisService.countPatientsWithDrinkingHistory(doctorUid);
-        int infectiousHistoryCount = aiPreDiagnosisService.countPatientsWithInfectiousHistory(doctorUid);
-        int foodAllergyHistoryCount = aiPreDiagnosisService.countPatientsWithFoodAllergyHistory(doctorUid);
-
-        // 放入结果到Map中
-        historyCounts.put("hypertensionFamilyHistory", hypertensionFamilyHistoryCount);
-        historyCounts.put("smokingHistory", smokingHistoryCount);
-        historyCounts.put("drinkingHistory", drinkingHistoryCount);
-        historyCounts.put("infectiousHistory", infectiousHistoryCount);
-        historyCounts.put("foodAllergyHistory", foodAllergyHistoryCount);
-
-        return ResponseEntity.ok(historyCounts);
+    public R countPatientsHistory(@PathVariable Long doctorUid) {
+        JSONObject historyCounts = aiPreDiagnosisService.countPatientsHistory(doctorUid);
+        return R.ok(historyCounts);
     }
 
     @Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
     @GetMapping("/count-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_carecount')")
-    public ResponseEntity<Map<String, Integer>> countPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
+    public R countPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
         Map<String, Integer> diseaseCounts = aiPreDiagnosisService.countPatientsWithDiseases(doctorUid);
-        return ResponseEntity.ok(diseaseCounts);
+        return R.ok(diseaseCounts);
     }
 
 
     @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
     @GetMapping("/countnocare-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_count')")
-    public ResponseEntity<Map<String, Integer>> nocountPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
+    public R nocountPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
         Map<String, Integer> diseaseCounts = aiPreDiagnosisService.nocountPatientsWithDiseases(doctorUid);
-        return ResponseEntity.ok(diseaseCounts);
+        return R.ok(diseaseCounts);
     }
 
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")

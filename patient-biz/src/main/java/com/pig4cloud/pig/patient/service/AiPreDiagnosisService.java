@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.patient.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
@@ -38,4 +39,6 @@ public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
 
     Boolean calculateIsClinical(AiPreDiagnosisEntity aiPreDiagnosis);
 
+    JSONObject ccountPatientsHistory(Long doctorUid);
+    JSONObject countPatientsHistory(Long doctorUid);
 }

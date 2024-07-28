@@ -59,7 +59,7 @@ public class PressureAnomalyController {
     @Operation(summary = "创建每天的记录", description = "创建每天的记录")
     @PostMapping("/createDailyRecord")
     @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_add')" )
-    public R createDailyRecord(@RequestParam long patient_uid) {
+    public R createDailyRecord(@RequestParam Long patient_uid) {
         return R.ok(pressureAnomalyService.createDailyRecord(patient_uid));
     }
 
@@ -67,7 +67,7 @@ public class PressureAnomalyController {
     @Operation(summary = "更新血压异常次数", description = "更新血压异常次数")
     @PostMapping("/updateAnomalyCount")
     @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_edit')" )
-    public R updateAnomalyCount(@RequestParam long sdhId){
+    public R updateAnomalyCount(@RequestParam Long sdhId){
         return R.ok(pressureAnomalyService.updateAnomalyCount(sdhId));
     }
 
@@ -183,11 +183,20 @@ public class PressureAnomalyController {
     }
 
     // 医生端获取所管理的所有患者的血压异常统计
-    @Operation(summary = "获取医生管理的所有患者的血压异常统计", description = "根据医生ID获取其管理的所有患者的血压异常统计")
+    @Operation(summary = "获取特别关心患者的血压异常统计", description = "获取特别关心患者的血压异常统计")
+    @GetMapping("/getAnomalyStatsByDoctorUidCare")
+    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    public R getAnomalyStatsByDoctorUidCare(@RequestParam Long doctorUid) {
+        JSONObject result = pressureAnomalyService.getAnomalyCountByDoctorUid(doctorUid, true);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "获取全部患者的血压异常统计", description = "获取全部患者的血压异常统计")
     @GetMapping("/getAnomalyStatsByDoctorUid")
     @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
     public R getAnomalyStatsByDoctorUid(@RequestParam Long doctorUid) {
-        JSONObject result = pressureAnomalyService.getAnomalyCountByDoctorUid(doctorUid);
+        JSONObject result = pressureAnomalyService.getAnomalyCountByDoctorUid(doctorUid, false);
         return R.ok(result);
     }
+
 }

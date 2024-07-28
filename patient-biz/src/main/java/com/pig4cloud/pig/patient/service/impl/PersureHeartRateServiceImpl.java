@@ -362,7 +362,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                         patientData.put("sex", patientBase.getSex());
                         patientData.put("age", age);
                         patientData.put("abnormality", "血压高于180/110mmHg");
-                        patientData.put("count", consecutiveHighBp);
+                        patientData.put("ill", "高压过高");
                         patientData.put("duration", String.format("%d小时%d分钟",
                                 Duration.between(highBpStart, highBpEnd).toHours(),
                                 Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
@@ -393,7 +393,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                         patientData.put("sex", patientBase.getSex());
                         patientData.put("age", age);
                         patientData.put("abnormality", "心率低于60次/分钟");
-                        patientData.put("count", consecutiveLowHr);
+                        patientData.put("ill", "心率过低");
                         patientData.put("duration", String.format("%d小时%d分钟",
                                 Duration.between(lowHrStart, lowHrEnd).toHours(),
                                 Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
@@ -419,7 +419,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 patientData.put("sex", patientBase.getSex());
                 patientData.put("age", age);
                 patientData.put("abnormality", "血压高于180/110mmHg");
-                patientData.put("count", consecutiveHighBp);
+                patientData.put("ill", "高压过高");
                 patientData.put("duration", String.format("%d小时%d分钟",
                         Duration.between(highBpStart, highBpEnd).toHours(),
                         Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
@@ -441,7 +441,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 patientData.put("sex", patientBase.getSex());
                 patientData.put("age", age);
                 patientData.put("abnormality", "心率低于60次/分钟");
-                patientData.put("count", consecutiveLowHr);
+                patientData.put("ill", "心率过低");
                 patientData.put("duration", String.format("%d小时%d分钟",
                         Duration.between(lowHrStart, lowHrEnd).toHours(),
                         Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
@@ -508,6 +508,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         return result;
     }
+
     @Override
     public JSONObject getDailyMaxMinAvgSystolic(Long patientUid) {
         LocalDate date = LocalDate.now();
@@ -819,18 +820,22 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public List<List<Integer>> countSdhClassificationByDoctorAndCare(Long doctorUid) {
+    public JSONObject countSdhClassificationByDoctorAndCare(Long doctorUid) {
         List<Map<String, Object>> result = persureHeartRateMapper.countSdhClassificationByDoctorAndCare(doctorUid);
 
         List<Integer> levelOneCounts = Arrays.asList(0, 0, 0);
         List<Integer> levelTwoCounts = Arrays.asList(0, 0, 0);
         List<Integer> levelThreeCounts = Arrays.asList(0, 0, 0);
 
+        int total = 0, levelOneTotal = 0, levelTwoTotal = 0, levelThreeTotal = 0;
+
         for(Map<String, Object> row : result){
             String classification = (String) row.get("sdh_classification");
             Integer count = ((Long) row.get("count")).intValue();
+            total += count;
 
             if(classification.contains("一级高血压")) {
+                levelOneTotal += count;
                 if(classification.contains("低危")){
                     levelOneCounts.set(0, count);
                 } else if(classification.contains("中危")){
@@ -839,6 +844,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     levelOneCounts.set(2, count);
                 }
             } else if (classification.contains("二级高血压")) {
+                levelTwoTotal += count;
                 if (classification.contains("低危")) {
                     levelTwoCounts.set(0, count);
                 } else if (classification.contains("中危")) {
@@ -847,6 +853,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     levelTwoCounts.set(2, count);
                 }
             } else if (classification.contains("三级高血压")) {
+                levelThreeTotal += count;
                 if (classification.contains("低危")) {
                     levelThreeCounts.set(0, count);
                 } else if (classification.contains("中危")) {
@@ -857,22 +864,36 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             }
         }
 
-        return Arrays.asList(levelOneCounts, levelTwoCounts, levelThreeCounts);
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("累计", total);
+        mapData.put("一级高血压共", levelOneTotal);
+        mapData.put("二级高血压共", levelTwoTotal);
+        mapData.put("三级高血压共", levelThreeTotal);
+        mapData.put("一级高血压", levelOneCounts);
+        mapData.put("二级高血压", levelTwoCounts);
+        mapData.put("三级高血压", levelThreeCounts);
+
+        JSONObject data = new JSONObject(mapData);
+
+        return data;
     }
 
     @Override
-    public List<List<Integer>> nocountSdhClassificationByDoctorAndCare(Long doctorUid) {
+    public JSONObject nocountSdhClassificationByDoctorAndCare(Long doctorUid) {
         List<Map<String, Object>> result = persureHeartRateMapper.nocountSdhClassificationByDoctorAndCare(doctorUid);
 
         List<Integer> levelOneCounts = Arrays.asList(0, 0, 0);
         List<Integer> levelTwoCounts = Arrays.asList(0, 0, 0);
         List<Integer> levelThreeCounts = Arrays.asList(0, 0, 0);
 
+        int total = 0, levelOneTotal = 0, levelTwoTotal = 0, levelThreeTotal = 0;
         for(Map<String, Object> row : result){
             String classification = (String) row.get("sdh_classification");
             Integer count = ((Long) row.get("count")).intValue();
+            total += count;
 
             if(classification.contains("一级高血压")) {
+                levelOneTotal += count;
                 if(classification.contains("低危")){
                     levelOneCounts.set(0, count);
                 } else if(classification.contains("中危")){
@@ -881,6 +902,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     levelOneCounts.set(2, count);
                 }
             } else if (classification.contains("二级高血压")) {
+                levelTwoTotal += count;
                 if (classification.contains("低危")) {
                     levelTwoCounts.set(0, count);
                 } else if (classification.contains("中危")) {
@@ -889,6 +911,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     levelTwoCounts.set(2, count);
                 }
             } else if (classification.contains("三级高血压")) {
+                levelThreeTotal += count;
                 if (classification.contains("低危")) {
                     levelThreeCounts.set(0, count);
                 } else if (classification.contains("中危")) {
@@ -899,19 +922,30 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             }
         }
 
-        return Arrays.asList(levelOneCounts, levelTwoCounts, levelThreeCounts);
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("累计", total);
+        mapData.put("一级高血压共", levelOneTotal);
+        mapData.put("二级高血压共", levelTwoTotal);
+        mapData.put("三级高血压共", levelThreeTotal);
+        mapData.put("一级高血压", levelOneCounts);
+        mapData.put("二级高血压", levelTwoCounts);
+        mapData.put("三级高血压", levelThreeCounts);
+
+        JSONObject data = new JSONObject(mapData);
+
+        return data;
     }
 
     @Override
     public Map<String, Long> getDailyStatistics(Long doctorUid) {
         List<Map<String, Object>> resultList = persureHeartRateMapper.selectDailyStatistics(doctorUid);
-        Map<String, Long> statisticsMap = new HashMap<>();
+        Map<String, Long> statisticsMap = new LinkedHashMap<>();
 
         // Initialize map with 0 counts for the last 10 days
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 9; i >= 0; i--) {
             String dateKey = today.minusDays(i).format(formatter);
             statisticsMap.put(dateKey, 0L);
         }
@@ -926,5 +960,41 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         }
 
         return statisticsMap;
+    }
+
+    @Override
+    public JSONObject getHeartRateStatistics(Long doctorUid) {
+        int normal = 0, low = 0, high = 0, all = 0;
+        normal = countPatientsWithNormalHeartRate(doctorUid);
+        low = countPatientsWithLowHeartRate(doctorUid);
+        high = countPatientsWithHighHeartRate(doctorUid);
+        all = normal + low + high;
+
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("正常", normal);
+        mapData.put("过缓", low);
+        mapData.put("过急", high);
+        mapData.put("累计", all);
+
+        JSONObject result = new JSONObject(mapData);
+        return result;
+    }
+
+    @Override
+    public JSONObject getcareHeartRateStatistics(Long doctorUid) {
+        int normal = 0, low = 0, high = 0, all = 0;
+        normal = ccountPatientsWithNormalHeartRate(doctorUid);
+        low = ccountPatientsWithLowHeartRate(doctorUid);
+        high = ccountPatientsWithHighHeartRate(doctorUid);
+        all = normal + low + high;
+
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("正常", normal);
+        mapData.put("过缓", low);
+        mapData.put("过急", high);
+        mapData.put("累计", all);
+
+        JSONObject result = new JSONObject(mapData);
+        return result;
     }
 }

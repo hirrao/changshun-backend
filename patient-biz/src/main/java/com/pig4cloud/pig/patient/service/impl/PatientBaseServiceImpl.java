@@ -1,6 +1,7 @@
 package com.pig4cloud.pig.patient.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -13,9 +14,9 @@ import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
 import com.pig4cloud.pig.patient.service.PatientBaseService;
 import com.pig4cloud.plugin.excel.vo.ErrorMessage;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -130,5 +131,26 @@ public class PatientBaseServiceImpl extends
 		
 		return R.ok();
 	}
-	
+
+	@Override
+	public JSONObject getPatientStatistics(Long doctorUid) {
+		Map<String, Object> mapData = new LinkedHashMap<>();
+		mapData.put("male1", countMalePatientsOver55(doctorUid));
+		mapData.put("male2", countMalePatientsUnderEqual55(doctorUid));
+		mapData.put("female1", countFemalePatientsOver65(doctorUid));
+		mapData.put("female2", countFemalePatientsUnderEqual66(doctorUid));
+		JSONObject data = new JSONObject(mapData);
+		return data;
+	}
+
+	@Override
+	public JSONObject getPatientbycareStatistics(Long doctorUid) {
+		Map<String, Object> mapData = new LinkedHashMap<>();
+		mapData.put("male1", ccountMalePatientsOver55(doctorUid));
+		mapData.put("male2", ccountMalePatientsUnderEqual55(doctorUid));
+		mapData.put("female1", ccountFemalePatientsOver65(doctorUid));
+		mapData.put("female2", ccountFemalePatientsUnderEqual66(doctorUid));
+		JSONObject data = new JSONObject(mapData);
+		return data;
+	}
 }

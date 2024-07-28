@@ -19,7 +19,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 /**
  * 血压异常次数统计
  *
@@ -265,9 +268,14 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
     }
 
     @Override
-    public JSONObject getAnomalyCountByDoctorUid(Long doctorUid) {
+    public JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care) {
         QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("doctor_uid", doctorUid);
+        if(care){
+            queryWrapper.eq("doctor_uid", doctorUid)
+                    .eq("care", true);
+        } else{
+            queryWrapper.eq("doctor_uid", doctorUid);
+        }
         List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(queryWrapper);
 
         int severe = 0, moderate = 0, mild = 0, elevated = 0, low = 0, all = 0;
@@ -289,14 +297,18 @@ public class PressureAnomalyServiceImpl extends ServiceImpl<PressureAnomalyMappe
             }
         }
 
-        JSONObject result = new JSONObject();
-        result.put("severe", severe);
-        result.put("moderate", moderate);
-        result.put("mild", mild);
-        result.put("elevated", elevated);
-        result.put("low", low);
-        result.put("all", all);
+        int normal = all - severe - moderate - mild - elevated - low;
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("重度", severe);
+        mapData.put("中度", moderate);
+        mapData.put("轻度", mild);
+        mapData.put("正常偏高", elevated);
+        mapData.put("正常", normal);
+        mapData.put("偏低", low);
+        mapData.put("累计人次", all);
 
+        JSONObject result = new JSONObject(mapData);
         return result;
     }
+
 }

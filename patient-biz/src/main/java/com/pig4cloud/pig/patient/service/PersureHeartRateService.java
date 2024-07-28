@@ -59,9 +59,12 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
 
 
-    List<List<Integer>> countSdhClassificationByDoctorAndCare(Long doctorUid);
+    JSONObject countSdhClassificationByDoctorAndCare(Long doctorUid);
 
-    List<List<Integer>> nocountSdhClassificationByDoctorAndCare(Long doctorUid);
+    JSONObject nocountSdhClassificationByDoctorAndCare(Long doctorUid);
+
+    JSONObject getHeartRateStatistics(Long doctorUid);
+    JSONObject getcareHeartRateStatistics(Long doctorUid);
 
     Map<String, Long> getDailyStatistics(Long doctorUid);
 }

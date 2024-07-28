@@ -18,5 +18,5 @@ public interface PressureAnomalyService extends IService<PressureAnomalyEntity> 
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
 
-    JSONObject getAnomalyCountByDoctorUid(Long doctorUid);
+    JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care);
 }

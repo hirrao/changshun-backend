@@ -11,6 +11,7 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
+import com.pig4cloud.pig.patient.service.impl.PressureAnomalyServiceImpl;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -48,9 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
-
-
-
+    private final PressureAnomalyServiceImpl pressureAnomalyServiceImpl;
 
     @Operation(summary = "查询最近十天血压统计次数" , description = "查询最近十天血压统计次数" )
     @GetMapping("/recent-ten-days/{doctorUid}")
@@ -63,7 +62,7 @@ public class PersureHeartRateController {
     @GetMapping("/count-sdh-careclassification")
     @PreAuthorize("@pms.hasPermission('patient_persureCareRate_view')" )
     public R countSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
-        List<List<Integer>> result = persureHeartRateService.countSdhClassificationByDoctorAndCare(doctorUid);
+        JSONObject result = persureHeartRateService.countSdhClassificationByDoctorAndCare(doctorUid);
         return R.ok(result);
     }
 
@@ -71,30 +70,24 @@ public class PersureHeartRateController {
     @GetMapping("/count-sdh-classification")
     @PreAuthorize("@pms.hasPermission('patient_persureRate_view')" )
     public R nocountSdhClassification(@RequestParam("doctorUid") Long doctorUid) {
-        List<List<Integer>> result = persureHeartRateService.nocountSdhClassificationByDoctorAndCare(doctorUid);
+        JSONObject result = persureHeartRateService.nocountSdhClassificationByDoctorAndCare(doctorUid);
         return R.ok(result);
     }
 
     @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
     @GetMapping("/{doctorUid}/patient/heartRate/stats")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')" )
-    public String getHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("与医生绑定且当天心率过缓的患者数目: ").append(persureHeartRateService.countPatientsWithLowHeartRate(doctorUid)).append("\n");
-        sb.append("与医生绑定且当天心率正常的患者数目: ").append(persureHeartRateService.countPatientsWithNormalHeartRate(doctorUid)).append("\n");
-        sb.append("与医生绑定且当天心率过急的患者数目: ").append(persureHeartRateService.countPatientsWithHighHeartRate(doctorUid));
-        return sb.toString();
+    public R getHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
+        JSONObject result = persureHeartRateService.getHeartRateStatistics(doctorUid);
+        return R.ok(result);
     }
 
     @Operation(summary = "查询特别关系心率类型人数" , description = "查询特别关系心率类型人数" )
     @GetMapping("/{doctorUid}/carepatient/heartRate/stats")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartCare_view')" )
-    public String getcareHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("与医生绑定特别关心且当天心率过缓的患者数目: ").append(persureHeartRateService.ccountPatientsWithLowHeartRate(doctorUid)).append("\n");
-        sb.append("与医生绑定特别关心且当天心率正常的患者数目: ").append(persureHeartRateService.ccountPatientsWithNormalHeartRate(doctorUid)).append("\n");
-        sb.append("与医生绑定特别关心且当天心率过急的患者数目: ").append(persureHeartRateService.ccountPatientsWithHighHeartRate(doctorUid));
-        return sb.toString();
+    public R getcareHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
+        JSONObject result = persureHeartRateService.getcareHeartRateStatistics(doctorUid);
+        return R.ok(result);
     }
 
 
