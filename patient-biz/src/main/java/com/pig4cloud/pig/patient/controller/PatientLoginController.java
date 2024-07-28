@@ -62,6 +62,16 @@ public class PatientLoginController {
 	}
 	
 	@Inner(value = false)
+	@PostMapping("/get_phone_number")
+	public R getPhoneNumber(@RequestBody BindPhoneNumberRequest bindPhoneNumberRequest) {
+		//	获取手机号码
+		String code = bindPhoneNumberRequest.getPhoneCode();
+		R r = patientLoginService.getPhoneNumber(code);
+		return r;
+	}
+	
+	
+	@Inner(value = false)
 	@PostMapping("/bind_phone_number")
 	public R bindPhoneNumber(@RequestBody BindPhoneNumberRequest bindPhoneNumberRequest) {
 		//	绑定手机号码

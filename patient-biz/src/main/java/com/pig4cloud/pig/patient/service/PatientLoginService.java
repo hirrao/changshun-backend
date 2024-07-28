@@ -71,6 +71,7 @@ public class PatientLoginService {
 		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
 		PatientBaseEntity patientBaseEntity = new PatientBaseEntity();
 		patientBaseEntity.setWxUid(openId);
+		wrapper.setEntity(patientBaseEntity);
 		// last("limit 1")避免存在多条数据时报错
 		PatientBaseEntity one = patientBaseService.getOne(wrapper.last("limit 1"));
 		if (one != null && one.getPhoneNumber() != null && !one.getPhoneNumber().isBlank()) {
@@ -147,29 +148,32 @@ public class PatientLoginService {
 	
 	// 绑定手机号并完成登录
 	public R bindPhoneNumber(BindPhoneNumberRequest bindPhoneNumberRequest) {
-		//	获取该用户的手机号码
-		R phoneNumberR = this.getPhoneNumber(bindPhoneNumberRequest.getPhoneCode());
-		if (phoneNumberR.getCode() != 0) {
-			return phoneNumberR;
-		}
-		JSONObject phoneNumberJson = (JSONObject) phoneNumberR.getData();
-		String phoneNumber = phoneNumberJson.getString("phoneNumber");
+		//	获取该用户的手机号码，将phoneCode作为手机号码
+		String phoneNumber = bindPhoneNumberRequest.getPhoneCode();
 		// 根据openId查询用户，如果没有再创建新账户
 		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
 		PatientBaseEntity patientBaseEntity = new PatientBaseEntity();
 		patientBaseEntity.setWxUid(bindPhoneNumberRequest.getOpenId());
+		wrapper.setEntity(patientBaseEntity);
 		PatientBaseEntity one = patientBaseService.getOne(wrapper.last("limit 1"));
 		PatientBaseEntity tmp = null;
+		System.out.println("查询条件的用户基本信息" + patientBaseEntity);
 		if (one == null) {
 			//	创建新账户
 			patientBaseEntity.setPhoneNumber(phoneNumber);
 			patientBaseEntity.setUsername(phoneNumber);
-			patientBaseService.save(patientBaseEntity);
-			tmp = patientBaseEntity;
+			boolean save = patientBaseService.save(patientBaseEntity);
+			if (save) {
+				tmp = patientBaseEntity;
+			} else {
+				return R.failed("创建新账户失败");
+			}
 		} else {
+			System.out.println("查询得到的用户基本信息:" + one);
 			//	修改用户信息
 			one.setPhoneNumber(phoneNumber);
 			one.setUsername(phoneNumber);
+			//	由于可能对原有数据并没有任何更改，因此不能通过是否有修改来判断
 			patientBaseService.updateById(patientBaseEntity);
 			tmp = one;
 		}
@@ -195,7 +199,7 @@ public class PatientLoginService {
 					return r1;
 				}
 			} else {
-				return R.failed("登录pig异常");
+				return r;
 			}
 		} catch (Exception e) {
 			log.error("绑定手机号并完成登录失败", e);
@@ -209,6 +213,7 @@ public class PatientLoginService {
 		LambdaQueryWrapper<PatientBaseEntity> wrapper = Wrappers.lambdaQuery();
 		PatientBaseEntity patientBaseEntity = new PatientBaseEntity();
 		patientBaseEntity.setWxUid(bindPhoneNumberRequest.getOpenId());
+		wrapper.setEntity(patientBaseEntity);
 		PatientBaseEntity one = patientBaseService.getOne(wrapper.last("limit 1"));
 		if (one == null) {
 			return R.failed("查询患者失败");
@@ -248,12 +253,12 @@ public class PatientLoginService {
 			R wxAccessToken = this.getWXAccessToken();
 			if (wxAccessToken.getCode() == 0) {
 				// 调用成功
-				JSONObject wxAccessTokenJson =
-				 (JSONObject) JSONObject.toJSON(wxAccessToken.getData());
+				JSONObject wxAccessTokenJson = (JSONObject) JSONObject.toJSON(
+				 wxAccessToken.getData());
 				String wxAccessTokenString = wxAccessTokenJson.getString("access_token");
 				try {
-					redisTemplate.boundValueOps("wx_access_token").set(wxAccessTokenString, 6000,
-					 TimeUnit.SECONDS);
+					redisTemplate.boundValueOps("wx_access_token")
+					 .set(wxAccessTokenString, 6000, TimeUnit.SECONDS);
 					// note: 返回的data 是一个String类型，可以直接使用
 					return R.ok(wxAccessTokenString);
 				} catch (Exception e) {
@@ -285,8 +290,8 @@ public class PatientLoginService {
 			return r;
 		}
 		String wxAccessToken = (String) r.getData();
-		String url = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token="
-		 + wxAccessToken;
+		String url =
+		 "https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=" + wxAccessToken;
 		Map<String, Object> requestMap = new HashMap<>();
 		requestMap.put("code", code);
 		JSONObject jsonObject = httpUtils.post(url, requestMap);
@@ -294,7 +299,7 @@ public class PatientLoginService {
 		if (jsonObject.containsKey("errcode") && jsonObject.getInteger("errcode") != 0) {
 			return R.failed(jsonObject.getString("errmsg"));
 		}
-		return R.ok(jsonObject.getJSONObject("phone_info"));
+		return R.ok(jsonObject.getJSONObject("phone_info").getString("phoneNumber"));
 	}
 	
 	public R getWxOpenId(String code) {
@@ -306,8 +311,7 @@ public class PatientLoginService {
 		try {
 			ResponseEntity forEntity = restTemplate.getForEntity(
 			 "https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code"
-			  + "={js_code}&grant_type=authorization_code",
-			 String.class, requestMap);
+			  + "={js_code}&grant_type=authorization_code", String.class, requestMap);
 			JSONObject jsonObject = JSONObject.parseObject(
 			 Objects.requireNonNull(forEntity.getBody()).toString());
 			// 校验是否有错误
