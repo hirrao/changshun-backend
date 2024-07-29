@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -67,6 +68,13 @@ public class SysMessageController {
         }
     }
 
+    @Operation(summary = "最近一周已发通知相关信息查询", description = "最近一周已发通知相关信息查询")
+    @GetMapping("/recentMsg")
+    @PreAuthorize("@pms.hasPermission('patient_sysMessage_view')")
+    public R getRecentMessages(@RequestParam Long doctorId) {
+        JSONArray messages = sysMessageService.getRecentMessageByDoctorId(doctorId);
+        return R.ok(messages);
+    }
 
     @Operation(summary = "查询系统消息", description = "查询系统消息")
     @PostMapping("/getSysMessageById")

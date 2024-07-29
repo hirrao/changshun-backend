@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.patient.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.SysMessageEntity;
 
@@ -13,4 +14,6 @@ public interface SysMessageService extends IService<SysMessageEntity> {
     void sendMessage(Long doctorUid, Long patientUid, String messageType, String jsonText);
     List<SysMessageEntity> getUnreadMessages(Long patientUid);
     void markMessageAsRead(Long notificationId);
+
+    JSONArray getRecentMessageByDoctorId(Long doctorUid);
 }

@@ -1,16 +1,24 @@
 package com.pig4cloud.pig.patient.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.entity.SysMessageEntity;
+import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.SysMessageMapper;
 import com.pig4cloud.pig.patient.service.SysMessageService;
 import com.pig4cloud.pig.patient.service.WebsocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
-
+import java.time.format.DateTimeFormatter;
 /**
  * 系统消息表
  *
@@ -19,6 +27,9 @@ import java.util.List;
  */
 @Service
 public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMessageEntity> implements SysMessageService {
+    @Autowired
+    private PatientBaseMapper patientBaseMapper;
+
     @Override
     public boolean saveBatch(List<SysMessageEntity> entityList) {
         // 这里使用Mybatis Plus提供的saveBatch方法进行批量插入
@@ -82,5 +93,43 @@ public class SysMessageServiceImpl extends ServiceImpl<SysMessageMapper, SysMess
             message.setIsRead(true);
             sysMessageMapper.updateById(message);
         }
+    }
+
+    @Override
+    public JSONArray getRecentMessageByDoctorId(Long doctorUid) {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+        List<SysMessageEntity> messages = sysMessageMapper.findRecentMessageByDoctorId(doctorUid, oneWeekAgo);
+        JSONArray jsonArray = new JSONArray();
+
+        for (SysMessageEntity message : messages) {
+            QueryWrapper<PatientBaseEntity> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("patient_uid", message.getPatientUid());
+
+            PatientBaseEntity patientBase = patientBaseMapper.selectOne(queryWrapper);
+
+            JSONObject baseMsg = new JSONObject();
+
+            // 处理日期格式
+            LocalDateTime sentDate = message.getSentDate();
+            LocalDate today = LocalDate.now();
+            LocalDate yesterday = today.minusDays(1);
+
+            if (sentDate.toLocalDate().equals(today)) {
+                baseMsg.put("time", "今天" + sentDate.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+            } else if (sentDate.toLocalDate().equals(yesterday)) {
+                baseMsg.put("time", "昨天" + sentDate.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+            } else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M月d日 HH:mm");
+                baseMsg.put("time", sentDate.format(formatter));
+            }
+
+            baseMsg.put("sex", patientBase.getSex());
+            baseMsg.put("name", patientBase.getPatientName());
+            baseMsg.put("message", message.getJsonText());
+            baseMsg.put("age", Period.between(patientBase.getBirthday(), LocalDate.now()).getYears());
+
+            jsonArray.add(baseMsg);
+        }
+        return jsonArray;
     }
 }
