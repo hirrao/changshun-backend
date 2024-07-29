@@ -5,7 +5,7 @@ services:
       context: ./db
     environment:
       MYSQL_ROOT_HOST: "%"
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: changshun88
     restart: always
     container_name: pig-mysql
     image: pig-mysql
@@ -102,5 +102,5 @@ services:
 
 networks:
   spring_cloud_default:
-    name:  spring_cloud_default
+    name: spring_cloud_default
     driver: bridge

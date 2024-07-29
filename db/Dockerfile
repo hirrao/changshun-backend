@@ -10,6 +10,8 @@ COPY ./pig.sql /docker-entrypoint-initdb.d
 
 COPY ./pig_config.sql /docker-entrypoint-initdb.d
 
+COPY ./user.sql /docker-entrypoint-initdb.d
+
 EXPOSE 3306
 
 # docker build -t pig-mysql-demo:V1 .
