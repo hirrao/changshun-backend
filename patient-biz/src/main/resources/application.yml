@@ -21,7 +21,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: changshun
     password: changshun88
-    url: jdbc:mysql://pig-mysql:10336/changshun_server?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://pig-mysql:3306/changshun_server?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     hikari:
       connection-timeout: 10000
       validation-timeout: 3000
@@ -32,8 +32,11 @@ spring:
       minimum-idle: 5
   mybatis-plus:
     mapper-locations: classpath:/mapper/*.xml
-
+  data:
+    redis:
+      host: pig-redis
+      port: 6379
 wxchat:
-    appid: wxe23d19faaffb93f6
-    secret: e65f9a193d0d395c1fbf89a38796071f
-    enc_key: thanks,pig4cloud
+  appid: wxe23d19faaffb93f6
+  secret: e65f9a193d0d395c1fbf89a38796071f
+  enc_key: thanks,pig4cloud

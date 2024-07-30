@@ -98,7 +98,7 @@ public class PatientLoginService {
 			log.error("加密密码失败", e);
 			return R.failed("加密密码失败");
 		}
-		String url = "http://127.0.0.1:9999/auth/oauth2/token?grant_type=password&scope=server";
+		String url = "http://pig-gateway:9999/auth/oauth2/token?grant_type=password&scope=server";
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, headers);
 		try {
 			ResponseEntity<JSONObject> response = restTemplate.postForEntity(url, request,
@@ -135,7 +135,7 @@ public class PatientLoginService {
 	}
 	
 	public R pigRegister(Map<String, Object> params) {
-		String url = "http://127.0.0.1:9999/admin/custom_register/user";
+		String url = "http://pig-gateway:9999/admin/custom_register/user";
 		try {
 			JSONObject post = httpUtils.post(url, params);
 			return R.ok(post);

@@ -80,9 +80,6 @@
     </dependencies>
 
     <profiles>
-        <project>
-            <id>boot</id>
-        </project>
         <profile>
             <id>cloud</id>
             <activation>
