@@ -1,6 +1,6 @@
 version: '3'
 services:
-  patient:
+  doctor:
     build:
       context: ./doctor-biz
     restart: always
