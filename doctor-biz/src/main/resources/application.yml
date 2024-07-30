@@ -21,7 +21,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: changshun
     password: changshun88
-    url: jdbc:mysql://pig-mysql:10336/changshun_server?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://pig-mysql:3306/changshun_server?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     hikari:
       connection-timeout: 10000
       validation-timeout: 3000
@@ -30,3 +30,7 @@ spring:
       max-lifetime: 60000
       maximum-pool-size: 10
       minimum-idle: 5
+  data:
+    redis:
+      host: pig-redis
+      port: 6379
