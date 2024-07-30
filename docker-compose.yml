@@ -1,0 +1,16 @@
+version: '3'
+services:
+  patient:
+    build:
+      context: ./doctor-biz
+    restart: always
+    container_name: doctor
+    hostname: doctor
+    image: doctor
+    networks:
+      - spring_cloud_default
+
+networks:
+  spring_cloud_default:
+    name: spring_cloud_default
+    driver: bridge
