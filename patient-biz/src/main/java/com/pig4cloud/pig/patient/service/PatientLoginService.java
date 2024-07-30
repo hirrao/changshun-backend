@@ -174,7 +174,7 @@ public class PatientLoginService {
 			one.setPhoneNumber(phoneNumber);
 			one.setUsername(phoneNumber);
 			//	由于可能对原有数据并没有任何更改，因此不能通过是否有修改来判断
-			patientBaseService.updateById(patientBaseEntity);
+			patientBaseService.updateById(one);
 			tmp = one;
 		}
 		//	创建pig用户并完成登录
