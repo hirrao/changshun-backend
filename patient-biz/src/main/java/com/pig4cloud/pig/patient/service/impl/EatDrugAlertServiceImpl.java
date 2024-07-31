@@ -13,6 +13,7 @@ import com.pig4cloud.pig.patient.service.EatDrugAlertService;
 import com.pig4cloud.pig.patient.service.WebsocketService;
 import java.sql.Time;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -62,11 +63,11 @@ public class EatDrugAlertServiceImpl extends
 			tmp.setPdeId(alert.getPdeId());
 			wrapper.setEntity(tmp);
 			List<DrugEatTimeEntity> list = drugEatTimeMapper.selectList(wrapper);
-			LocalDateTime now = LocalDateTime.now();
+			LocalDate nowDate = LocalDate.now();
 			// 遍历列表
 			for (DrugEatTimeEntity item : list) {
 				// 检测当天是否已经用药过
-				Duration durationToday = Duration.between(now, item.getLastEatTime());
+				Duration durationToday = Duration.between(nowDate, item.getLastEatTime());
 				if (durationToday.toDays() <= 0) {
 					// 无需提醒
 					continue;
@@ -79,7 +80,7 @@ public class EatDrugAlertServiceImpl extends
 					String message = String.format("请记得服用药物: %s，剂量: %d%s，时间:%s",
 					 alert.getDrugName(), alert.getDose(), alert.getUnit(), item.getEatTime());
 					websocketService.sendMsg(alert.getPatientUid(), message);
-					
+					LocalDateTime now = LocalDateTime.now();
 					// 添加系统消息
 					SysMessageEntity sysMessage = getSysMessageEntity(alert, now,
 					 item.getEatTime());
