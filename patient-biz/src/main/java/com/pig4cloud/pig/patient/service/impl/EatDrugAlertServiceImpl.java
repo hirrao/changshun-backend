@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.entity.DrugEatTimeEntity;
 import com.pig4cloud.pig.patient.entity.EatDrugAlertEntity;
 import com.pig4cloud.pig.patient.entity.SysMessageEntity;
+import com.pig4cloud.pig.patient.mapper.DrugEatTimeMapper;
 import com.pig4cloud.pig.patient.mapper.EatDrugAlertMapper;
 import com.pig4cloud.pig.patient.mapper.SysMessageMapper;
-import com.pig4cloud.pig.patient.service.DrugEatTimeService;
 import com.pig4cloud.pig.patient.service.EatDrugAlertService;
 import com.pig4cloud.pig.patient.service.WebsocketService;
 import java.sql.Time;
@@ -37,7 +37,7 @@ public class EatDrugAlertServiceImpl extends
 	private EatDrugAlertMapper eatDrugAlertMapper;
 	
 	@Autowired
-	private DrugEatTimeService drugEatTimeService;
+	private DrugEatTimeMapper drugEatTimeMapper;
 	
 	@Autowired
 	private WebsocketService websocketService;
@@ -61,7 +61,7 @@ public class EatDrugAlertServiceImpl extends
 			DrugEatTimeEntity tmp = new DrugEatTimeEntity();
 			tmp.setPdeId(alert.getPdeId());
 			wrapper.setEntity(tmp);
-			List<DrugEatTimeEntity> list = drugEatTimeService.list(wrapper);
+			List<DrugEatTimeEntity> list = drugEatTimeMapper.selectList(wrapper);
 			LocalDateTime now = LocalDateTime.now();
 			// 遍历列表
 			for (DrugEatTimeEntity item : list) {
