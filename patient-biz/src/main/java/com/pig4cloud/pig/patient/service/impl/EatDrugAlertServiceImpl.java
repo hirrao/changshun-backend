@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -66,9 +67,9 @@ public class EatDrugAlertServiceImpl extends
 			LocalDate nowDate = LocalDate.now();
 			// 遍历列表
 			for (DrugEatTimeEntity item : list) {
-				// 检测当天是否已经用药过
-				Duration durationToday = Duration.between(nowDate, item.getLastEatTime());
-				if (durationToday.toDays() <= 0) {
+				// note: 检测当天是否已经用药过，日期检测需要使用Period，因为日期最小单位是天而不是秒
+				Period durationToday = Period.between(nowDate, item.getLastEatTime());
+				if (durationToday.getDays() <= 0) {
 					// 无需提醒
 					continue;
 				}
