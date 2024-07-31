@@ -69,6 +69,8 @@ public class EatDrugAlertServiceImpl extends
 			for (DrugEatTimeEntity item : list) {
 				// note: 检测当天是否已经用药过，日期检测需要使用Period，因为日期最小单位是天而不是秒
 				Period durationToday = Period.between(nowDate, item.getLastEatTime());
+				// TODO: 需要根据时间频率和上次用药时间一起推算是否需要提醒
+				System.out.println("距离上次用药时间天数为" + durationToday.getDays());
 				if (durationToday.getDays() <= 0) {
 					// 无需提醒
 					continue;
@@ -76,6 +78,7 @@ public class EatDrugAlertServiceImpl extends
 				// 检测用药时间和当前时间是否相差一小时
 				LocalTime nowTime = LocalTime.now();
 				Duration nowBetween = Duration.between(nowTime, item.getEatTime().toLocalTime());
+				System.out.println("当前时间: "+ nowTime + " 用药时间: " + item.getEatTime().toLocalTime() + " 相差小时数: " + nowBetween.toHours());
 				if (nowBetween.toHours() <= 1) {
 					// 提醒
 					String message = String.format("请记得服用药物: %s，剂量: %d%s，时间:%s",
