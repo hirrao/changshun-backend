@@ -123,7 +123,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         Map<LocalDate, List<PersureHeartRateEntity>> recordsByDate = weeklyRecords.stream()
                 .collect(Collectors.groupingBy(record -> record.getUploadTime().toLocalDate()));
 
-        JSONArray pressureData = new JSONArray();
+        Map<LocalDate, JSONObject> sortedDailyData = new TreeMap<>();
 
         for (Map.Entry<LocalDate, List<PersureHeartRateEntity>> entry : recordsByDate.entrySet()) {
             LocalDate recordDate = entry.getKey();
@@ -143,23 +143,22 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             dailyData.put("heartRate", heartRateArray);
             dailyData.put("date", recordDate);
 
-            pressureData.add(dailyData);
+            sortedDailyData.put(recordDate, dailyData);
         }
 
         // 确保一周的每天都有数据，即使其中某天没有血压和心率数据
         for (LocalDate day = startOfWeek; !day.isAfter(endOfWeek); day = day.plusDays(1)) {
-            LocalDate currentDay = day;
-            boolean dayHasData = pressureData.stream()
-                    .anyMatch(data -> ((JSONObject) data).get("date").equals(currentDay));
-            if (!dayHasData) {
+            if (!sortedDailyData.containsKey(day)) {
                 JSONObject emptyData = new JSONObject();
                 emptyData.put("systolic", new JSONArray());
                 emptyData.put("diastolic", new JSONArray());
                 emptyData.put("heartRate", new JSONArray());
                 emptyData.put("date", day);
-                pressureData.add(emptyData);
+                sortedDailyData.put(day, emptyData);
             }
         }
+        JSONArray pressureData = new JSONArray();
+        pressureData.addAll(sortedDailyData.values());
 
         return pressureData;
     }
@@ -179,7 +178,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         Map<LocalDate, List<PersureHeartRateEntity>> recordsByDate = monthlyRecords.stream()
                 .collect(Collectors.groupingBy(record -> record.getUploadTime().toLocalDate()));
 
-        JSONArray pressureData = new JSONArray();
+        Map<LocalDate, JSONObject> sortedDailyData = new TreeMap<>();
 
         for (Map.Entry<LocalDate, List<PersureHeartRateEntity>> entry : recordsByDate.entrySet()) {
             LocalDate recordDate = entry.getKey();
@@ -199,22 +198,21 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             dailyData.put("heartRate", heartRateArray);
             dailyData.put("date", recordDate);
 
-            pressureData.add(dailyData);
+            sortedDailyData.put(recordDate, dailyData);
         }
 
         for (LocalDate day = startOfMonth; !day.isAfter(endOfMonth); day = day.plusDays(1)) {
-            LocalDate currentDate = day;
-            boolean dayHasData = pressureData.stream()
-                    .anyMatch(data -> ((JSONObject) data).get("date").equals(currentDate));
-            if (!dayHasData) {
+            if (!sortedDailyData.containsKey(day)) {
                 JSONObject emptyData = new JSONObject();
                 emptyData.put("systolic", new JSONArray());
                 emptyData.put("diastolic", new JSONArray());
                 emptyData.put("heartRate", new JSONArray());
                 emptyData.put("date", day);
-                pressureData.add(emptyData);
+                sortedDailyData.put(day, emptyData);
             }
         }
+        JSONArray pressureData = new JSONArray();
+        pressureData.addAll(sortedDailyData.values());
 
         return pressureData;
     }
@@ -235,7 +233,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         Map<LocalDate, List<PersureHeartRateEntity>> recordsByDate = yearlyRecords.stream()
                 .collect(Collectors.groupingBy(record -> record.getUploadTime().toLocalDate()));
 
-        JSONArray pressureData = new JSONArray();
+        Map<LocalDate, JSONObject> sortedDailyData = new TreeMap<>();
 
         for (Map.Entry<LocalDate, List<PersureHeartRateEntity>> entry : recordsByDate.entrySet()) {
             LocalDate recordDate = entry.getKey();
@@ -255,22 +253,21 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             dailyData.put("heartRate", heartRateArray);
             dailyData.put("date", recordDate);
 
-            pressureData.add(dailyData);
+            sortedDailyData.put(recordDate, dailyData);
         }
 
         for (LocalDate day = startOfYear; !day.isAfter(endOfYear); day = day.plusDays(1)) {
-            LocalDate currentDate = day;
-            boolean dayHasData = pressureData.stream()
-                    .anyMatch(data -> ((JSONObject) data).get("date").equals(currentDate));
-            if (!dayHasData) {
+            if (!sortedDailyData.containsKey(day)) {
                 JSONObject emptyData = new JSONObject();
                 emptyData.put("systolic", new JSONArray());
                 emptyData.put("diastolic", new JSONArray());
                 emptyData.put("heartRate", new JSONArray());
                 emptyData.put("date", day);
-                pressureData.add(emptyData);
+                sortedDailyData.put(day, emptyData);
             }
         }
+        JSONArray pressureData = new JSONArray();
+        pressureData.addAll(sortedDailyData.values());
 
         return pressureData;
     }

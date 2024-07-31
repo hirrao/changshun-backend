@@ -50,14 +50,14 @@ public class PatientBaseController {
 	
 	@Operation(summary = "查询年龄性别", description = "查询年龄性别")
 	@GetMapping("/{doctorUid}/patient/stats")
-	@PreAuthorize("@pms.hasPermission('patient_patientBase_sex')")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
 	public R getPatientStatistics(@PathVariable("doctorUid") Long doctorUid) {
 		return R.ok(patientBaseService.getPatientStatistics(doctorUid));
 	}
 	
 	@Operation(summary = "查询特别关心年龄性别", description = "查询特别关心年龄性别")
 	@GetMapping("/{doctorUid}/patient/bycarestats")
-	@PreAuthorize("@pms.hasPermission('patient_patientBase_caresex')")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
 	public R getPatientbycareStatistics(@PathVariable("doctorUid") Long doctorUid) {
 		return R.ok(patientBaseService.getPatientbycareStatistics(doctorUid));
 	}
