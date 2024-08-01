@@ -60,3 +60,6 @@ gen_code
 
 ### node ###
 node_modules
+/.flattened-pom.xml
+/patient-biz/.flattened-pom.xml
+/patient-api/.flattened-pom.xml
