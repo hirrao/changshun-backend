@@ -36,6 +36,5 @@ public class WebsocketController {
 		} else {
 			return R.failed();
 		}
-		//	TODO: 系统消息就调用 插入数据库函数，GPT插入GPT对话数据函数
 	}
 }
