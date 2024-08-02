@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper;
+import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,11 @@ import java.util.*;
  */
 @Service
 public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper, AiPreDiagnosisEntity> implements AiPreDiagnosisService {
+    @Autowired
+    private AiPreDiagnosisMapper aiPreDiagnosisMapper;
+    @Autowired
+    private PatientDoctorMapper patientDoctorMapper;
 
-    private final AiPreDiagnosisMapper aiPreDiagnosisMapper;
 
     @Autowired
     public AiPreDiagnosisServiceImpl(AiPreDiagnosisMapper aiPreDiagnosisMapper) {
@@ -234,6 +238,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         int drinkingHistoryCount = ccountPatientsWithDrinkingHistory(doctorUid);
         int infectiousHistoryCount = ccountPatientsWithInfectiousHistory(doctorUid);
         int foodAllergyHistoryCount = ccountPatientsWithFoodAllergyHistory(doctorUid);
+        int total = patientDoctorMapper.getDoctorCountByCare(doctorUid);
 
         // 放入结果到Map中
         historyCounts.put("高血压家族遗传史", hypertensionFamilyHistoryCount);
@@ -241,6 +246,11 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         historyCounts.put("饮酒史", drinkingHistoryCount);
         historyCounts.put("传染病史", infectiousHistoryCount);
         historyCounts.put("食物过敏史", foodAllergyHistoryCount);
+        historyCounts.put("高血压家族遗传史比例", hypertensionFamilyHistoryCount / total * 100);
+        historyCounts.put("吸烟史比例", smokingHistoryCount / total * 100);
+        historyCounts.put("饮酒史比例", drinkingHistoryCount / total * 100);
+        historyCounts.put("传染病史比例", infectiousHistoryCount / total * 100);
+        historyCounts.put("食物过敏史比例", foodAllergyHistoryCount / total * 100);
 
         JSONObject result = new JSONObject(historyCounts);
         return result;
@@ -256,6 +266,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         int drinkingHistoryCount = countPatientsWithDrinkingHistory(doctorUid);
         int infectiousHistoryCount = countPatientsWithInfectiousHistory(doctorUid);
         int foodAllergyHistoryCount = countPatientsWithFoodAllergyHistory(doctorUid);
+        int total = patientDoctorMapper.getDoctorCount(doctorUid);
 
         // 放入结果到Map中
         historyCounts.put("高血压家族遗传史", hypertensionFamilyHistoryCount);
@@ -263,6 +274,11 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         historyCounts.put("饮酒史", drinkingHistoryCount);
         historyCounts.put("传染病史", infectiousHistoryCount);
         historyCounts.put("食物过敏史", foodAllergyHistoryCount);
+        historyCounts.put("高血压家族遗传史比例", hypertensionFamilyHistoryCount / total * 100);
+        historyCounts.put("吸烟史比例", smokingHistoryCount / total * 100);
+        historyCounts.put("饮酒史比例", drinkingHistoryCount / total * 100);
+        historyCounts.put("传染病史比例", infectiousHistoryCount / total * 100);
+        historyCounts.put("食物过敏史比例", foodAllergyHistoryCount / total * 100);
 
         JSONObject result = new JSONObject(historyCounts);
         return result;

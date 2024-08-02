@@ -58,6 +58,9 @@ public class AiPreDiagnosisController {
         return R.ok(historyCounts);
     }
 
+
+
+
     @Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
     @GetMapping("/count-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_carecount')")

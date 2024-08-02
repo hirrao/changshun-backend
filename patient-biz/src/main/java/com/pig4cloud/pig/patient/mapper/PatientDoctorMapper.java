@@ -22,6 +22,12 @@ public interface PatientDoctorMapper extends BaseMapper<PatientDoctorEntity> {
             "AND pd.care = 1")
     HeartRateStatsDTO getHeartRateStats(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM patient_doctor " +
+            "WHERE doctor_uid = #{doctorUid}")
+    int getDoctorCount(@Param("doctorUid") Long doctorUid);
 
+    @Select("SELECT COUNT(*) FROM patient_doctor " +
+            "WHERE doctor_uid = #{doctorUid} AND care = 1")
+    int getDoctorCountByCare(@Param("doctorUid") Long doctorUid);
 
 }
