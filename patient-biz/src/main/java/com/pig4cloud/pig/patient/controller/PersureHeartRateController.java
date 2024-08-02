@@ -281,10 +281,17 @@ public class PersureHeartRateController {
 
     @Operation(summary = "查询某一年的每个月的高压、低压、心率的平均值", description = "查询某一年的每个月的高压、低压、心率的平均值")
     @GetMapping("/yearlyAveragePressureByMonth")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getYearlyAveragePressureByMonth(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
         return R.ok(persureHeartRateService.getYearlyAveragePressureHeartRateByMonth(yearsAgo, patientUid));
     }
 
+    @Operation(summary = "查询最新的血压和心率数据", description = "查询最新的血压和心率数据")
+    @GetMapping("/getNewlyPressureHeartRateData")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getNewlyPressureHeartRateData(@RequestParam Long patientUid) {
+        return R.ok(persureHeartRateService.getNewlyPressureHeartRateData(patientUid));
+    }
 
     /**
      * 通过id查询血压心率展示
@@ -374,5 +381,4 @@ public class PersureHeartRateController {
     public PersureHeartRateEntity getTodayMinHeartRate(@PathVariable("patientUid") Long patientUid) {
         return persureHeartRateService.getTodayMinHeartRate(patientUid);
     }
-
 }

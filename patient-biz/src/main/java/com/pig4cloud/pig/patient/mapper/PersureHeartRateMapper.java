@@ -18,7 +18,14 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	PersureHeartRateEntity selectTodayMaxBloodPressure(@Param("patientUid") Long patientUid);
 	
 	PersureHeartRateEntity selectTodayMinHeartRate(@Param("patientUid") Long patientUid);
-	
+
+	@Select("SELECT systolic, diastolic, heart_rate, risk_assessment, upload_time " +
+			"FROM persure_heart_rate " +
+			"WHERE patient_uid = #{patientUid} " +
+			"ORDER BY upload_time DESC " +
+			"LIMIT 1")
+	PersureHeartRateEntity getLatestMeasurement(@Param("patientUid") Long patientUid);
+
 	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
 	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
 	 +

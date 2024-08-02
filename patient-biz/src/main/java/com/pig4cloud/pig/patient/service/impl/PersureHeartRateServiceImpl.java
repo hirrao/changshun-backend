@@ -12,6 +12,7 @@ import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
@@ -783,6 +784,18 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             yearlyPressureData.add(monthlyAverage);
         }
         return yearlyPressureData;
+    }
+
+    @Override
+    public JSONObject getNewlyPressureHeartRateData(Long patientUid) {
+        PersureHeartRateEntity measure =  persureHeartRateMapper.getLatestMeasurement(patientUid);
+        JSONObject data = new JSONObject();
+        data.put("收缩压", measure.getSystolic());
+        data.put("舒张压", measure.getDiastolic());
+        data.put("心率", measure.getHeartRate());
+        data.put("风险评估", measure.getRiskAssessment());
+        data.put("时间", measure.getUploadTime());
+        return data;
     }
 
     @Override
