@@ -16,7 +16,8 @@ public interface SysMessageMapper extends BaseMapper<SysMessageEntity> {
     List<SysMessageEntity> selectUnreadMessages(Long patientUid);
 
 
-    @Select("SELECT * FROM sys_message WHERE doctor_uid = #{doctorUid} AND send_date >= #{startDate}")
+    @Select("SELECT * FROM sys_message WHERE doctor_uid = #{doctorUid} AND message_type = '医生提醒'" +
+            "AND sent_date >= #{startDate}")
     List<SysMessageEntity> findRecentMessageByDoctorId(@Param("doctorUid")Long doctorUid, @Param("startDate") LocalDateTime startDate);
 
 }
