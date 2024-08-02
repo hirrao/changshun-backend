@@ -293,6 +293,30 @@ public class PersureHeartRateController {
         return R.ok(persureHeartRateService.getNewlyPressureHeartRateData(patientUid));
     }
 
+    // 以下接口来自原数据库血压异常记录统计表 pressure_anomaly_logs
+    @Operation(summary = "查询某一天的风险等级次数统计", description = "查询某一天的风险等级次数统计")
+    @GetMapping("/getRiskNum")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getRiskAssessmentNum(@RequestParam Long patientUid, @RequestParam LocalDate date) {
+        return R.ok(persureHeartRateService.getRiskAssessmentNum(patientUid, date));
+    }
+
+    @Operation(summary = "查询某患者最近7天的血压异常次数", description = "查询某患者最近7天的血压异常次数")
+    @GetMapping("/lastSevenDayAnomaly")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getLastSevenDayAnomalyNum(@RequestParam Long patientUid) {
+        return R.ok(persureHeartRateService.getLastSevenDayAnomalyNum(patientUid));
+    }
+
+    @Operation(summary = "查询某患者指定周的血压异常次数", description = "查询某患者指定周的血压异常次数")
+    @GetMapping("/weekAnomalyCount")
+    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    public R getWeekAnomalyCount(@RequestParam Long patientUid, @RequestParam int weeksAgo){
+        JSONObject result = persureHeartRateService.getWeekAnomalyCount(patientUid, weeksAgo);
+        return R.ok(result);
+    }
+
+
     /**
      * 通过id查询血压心率展示
      * @param sdhId id

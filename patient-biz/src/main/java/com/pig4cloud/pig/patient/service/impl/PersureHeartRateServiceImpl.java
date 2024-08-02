@@ -1011,4 +1011,67 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         JSONObject result = new JSONObject(mapData);
         return result;
     }
+
+    @Override
+    public JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date) {
+        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByDate(patientUid, date);
+
+        String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
+        JSONObject result = new JSONObject();
+
+        for (String level : allRiskLevels) {
+            result.put(level, 0);
+        }
+
+        for (Map<String, Object> record : riskAssessmentCounts) {
+            String riskAssessment = (String) record.get("risk_assessment");
+            Integer count = ((Long) record.get("count")).intValue();
+            result.put(riskAssessment, count);
+        }
+
+        return result;
+    }
+
+    @Override
+    public JSONObject getLastSevenDayAnomalyNum(Long patientUid) {
+        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountLastSevenDays(patientUid);
+
+        String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
+        JSONObject result = new JSONObject();
+
+        for (String level : allRiskLevels) {
+            result.put(level, 0);
+        }
+
+        for (Map<String, Object> record : riskAssessmentCounts) {
+            String riskAssessment = (String) record.get("risk_assessment");
+            Integer count = ((Long) record.get("count")).intValue(); // 将 count 转换为 Integer
+            result.put(riskAssessment, count);
+        }
+
+        return result;
+    }
+
+    @Override
+    public JSONObject getWeekAnomalyCount(Long patientUid, int weeksAgo) {
+        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByWeek(patientUid, weeksAgo);
+
+        // 预定义所有可能的风险评估等级
+        String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
+        JSONObject result = new JSONObject();
+
+        // 初始化所有风险等级为0
+        for (String level : allRiskLevels) {
+            result.put(level, 0);
+        }
+
+        // 填充查询结果
+        for (Map<String, Object> record : riskAssessmentCounts) {
+            String riskAssessment = (String) record.get("risk_assessment");
+            Integer count = ((Long) record.get("count")).intValue(); // 将 count 转换为 Integer
+            result.put(riskAssessment, count);
+        }
+
+        return result;
+    }
 }

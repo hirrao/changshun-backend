@@ -67,4 +67,9 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONObject getcareHeartRateStatistics(Long doctorUid);
 
     Map<String, Long> getDailyStatistics(Long doctorUid);
+
+    JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date);
+    JSONObject getLastSevenDayAnomalyNum(Long patientUid);
+    JSONObject getWeekAnomalyCount(Long patientUid, int weeksAgo);
+
 }

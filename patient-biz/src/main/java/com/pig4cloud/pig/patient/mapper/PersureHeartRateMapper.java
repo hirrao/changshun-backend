@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import java.time.LocalDate;
 
 @Mapper
 public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntity> {
@@ -170,5 +171,25 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	 @Param("query") AbnormalBloodDTO abnormalBloodDTO);
 
 	void updateRiskAssessment(@Param("sdhId") Long sdhId, @Param("riskAssessment") String riskAssessment);
-	
+
+
+	@Select("SELECT risk_assessment, COUNT(*) AS count " +
+			"FROM persure_heart_rate " +
+			"WHERE patient_uid = #{patientUid} AND DATE(upload_time) = #{date} " +
+			"GROUP BY risk_assessment")
+	List<Map<String, Object>> getRiskAssessmentCountByDate(@Param("patientUid") Long patientUid, @Param("date") LocalDate date);
+
+	@Select("SELECT risk_assessment, COUNT(*) AS count " +
+			"FROM persure_heart_rate " +
+			"WHERE patient_uid = #{patientUid} " +
+			"AND upload_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) " +
+			"GROUP BY risk_assessment")
+	List<Map<String, Object>> getRiskAssessmentCountLastSevenDays(@Param("patientUid") Long patientUid);
+
+	@Select("SELECT risk_assessment, COUNT(*) AS count " +
+			"FROM persure_heart_rate " +
+			"WHERE patient_uid = #{patientUid} " +
+			"AND YEARWEEK(upload_time, 1) = YEARWEEK(CURDATE() - INTERVAL #{weeksAgo} WEEK, 1) " +
+			"GROUP BY risk_assessment")
+	List<Map<String, Object>> getRiskAssessmentCountByWeek(@Param("patientUid") Long patientUid, @Param("weeksAgo") int weeksAgo);
 }
