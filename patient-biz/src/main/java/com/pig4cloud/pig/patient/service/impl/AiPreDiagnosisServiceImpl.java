@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
-
+import java.text.DecimalFormat;
 /**
  * AI预问诊
  *
@@ -240,17 +240,19 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         int foodAllergyHistoryCount = ccountPatientsWithFoodAllergyHistory(doctorUid);
         int total = patientDoctorMapper.getDoctorCountByCare(doctorUid);
 
+        DecimalFormat df = new DecimalFormat("#.##");
+
         // 放入结果到Map中
         historyCounts.put("高血压家族遗传史", hypertensionFamilyHistoryCount);
         historyCounts.put("吸烟史", smokingHistoryCount);
         historyCounts.put("饮酒史", drinkingHistoryCount);
         historyCounts.put("传染病史", infectiousHistoryCount);
         historyCounts.put("食物过敏史", foodAllergyHistoryCount);
-        historyCounts.put("高血压家族遗传史比例", hypertensionFamilyHistoryCount / total * 100);
-        historyCounts.put("吸烟史比例", smokingHistoryCount / total * 100);
-        historyCounts.put("饮酒史比例", drinkingHistoryCount / total * 100);
-        historyCounts.put("传染病史比例", infectiousHistoryCount / total * 100);
-        historyCounts.put("食物过敏史比例", foodAllergyHistoryCount / total * 100);
+        historyCounts.put("高血压家族遗传史比例", df.format((double) hypertensionFamilyHistoryCount / total * 100));
+        historyCounts.put("吸烟史比例", df.format((double) smokingHistoryCount / total * 100));
+        historyCounts.put("饮酒史比例", df.format((double) drinkingHistoryCount / total * 100));
+        historyCounts.put("传染病史比例", df.format((double) infectiousHistoryCount / total * 100));
+        historyCounts.put("食物过敏史比例", df.format((double) foodAllergyHistoryCount / total * 100));
 
         JSONObject result = new JSONObject(historyCounts);
         return result;
@@ -268,17 +270,19 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         int foodAllergyHistoryCount = countPatientsWithFoodAllergyHistory(doctorUid);
         int total = patientDoctorMapper.getDoctorCount(doctorUid);
 
+        DecimalFormat df = new DecimalFormat("#.##");
+
         // 放入结果到Map中
         historyCounts.put("高血压家族遗传史", hypertensionFamilyHistoryCount);
         historyCounts.put("吸烟史", smokingHistoryCount);
         historyCounts.put("饮酒史", drinkingHistoryCount);
         historyCounts.put("传染病史", infectiousHistoryCount);
         historyCounts.put("食物过敏史", foodAllergyHistoryCount);
-        historyCounts.put("高血压家族遗传史比例", hypertensionFamilyHistoryCount / total * 100);
-        historyCounts.put("吸烟史比例", smokingHistoryCount / total * 100);
-        historyCounts.put("饮酒史比例", drinkingHistoryCount / total * 100);
-        historyCounts.put("传染病史比例", infectiousHistoryCount / total * 100);
-        historyCounts.put("食物过敏史比例", foodAllergyHistoryCount / total * 100);
+        historyCounts.put("高血压家族遗传史比例", df.format((double) hypertensionFamilyHistoryCount / total * 100));
+        historyCounts.put("吸烟史比例", df.format((double) smokingHistoryCount / total * 100));
+        historyCounts.put("饮酒史比例", df.format((double) drinkingHistoryCount / total * 100));
+        historyCounts.put("传染病史比例", df.format((double) infectiousHistoryCount / total * 100));
+        historyCounts.put("食物过敏史比例", df.format((double) foodAllergyHistoryCount / total * 100));
 
         JSONObject result = new JSONObject(historyCounts);
         return result;
