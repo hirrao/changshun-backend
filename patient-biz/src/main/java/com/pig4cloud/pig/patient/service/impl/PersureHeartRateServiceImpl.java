@@ -302,7 +302,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             return new JSONArray();
         }
 
-        // 然后根据患者UID列表查询心率记录
+        // 根据患者UID列表查询心率记录
         QueryWrapper<PersureHeartRateEntity> heartRateQueryWrapper = new QueryWrapper<>();
         heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
                 .in("patient_uid", patientUids);
@@ -360,6 +360,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                         patientData.put("age", age);
                         patientData.put("abnormality", "血压高于180/110mmHg");
                         patientData.put("ill", "高压过高");
+                        patientData.put("count", consecutiveHighBp);
                         patientData.put("duration", String.format("%d小时%d分钟",
                                 Duration.between(highBpStart, highBpEnd).toHours(),
                                 Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
@@ -391,6 +392,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                         patientData.put("age", age);
                         patientData.put("abnormality", "心率低于60次/分钟");
                         patientData.put("ill", "心率过低");
+                        patientData.put("count", consecutiveLowHr);
                         patientData.put("duration", String.format("%d小时%d分钟",
                                 Duration.between(lowHrStart, lowHrEnd).toHours(),
                                 Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
@@ -417,6 +419,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 patientData.put("age", age);
                 patientData.put("abnormality", "血压高于180/110mmHg");
                 patientData.put("ill", "高压过高");
+                patientData.put("count", consecutiveHighBp);
                 patientData.put("duration", String.format("%d小时%d分钟",
                         Duration.between(highBpStart, highBpEnd).toHours(),
                         Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
@@ -439,6 +442,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 patientData.put("age", age);
                 patientData.put("abnormality", "心率低于60次/分钟");
                 patientData.put("ill", "心率过低");
+                patientData.put("count", consecutiveLowHr);
                 patientData.put("duration", String.format("%d小时%d分钟",
                         Duration.between(lowHrStart, lowHrEnd).toHours(),
                         Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));

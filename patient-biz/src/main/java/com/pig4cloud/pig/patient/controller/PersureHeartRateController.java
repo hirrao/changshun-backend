@@ -148,8 +148,8 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某一年的所有高压、低压、心率", description = "查询某一年的所有高压、低压、心率")
     @GetMapping("/yearlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getYearlyPressureData(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
-        JSONArray result = persureHeartRateService.getYearlyPressureHeartRateData(monthsAgo, patientUid);
+    public R getYearlyPressureData(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
+        JSONArray result = persureHeartRateService.getYearlyPressureHeartRateData(yearsAgo, patientUid);
         return R.ok(result);
     }
 
