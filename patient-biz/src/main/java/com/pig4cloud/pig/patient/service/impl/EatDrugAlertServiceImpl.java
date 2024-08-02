@@ -18,7 +18,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.analysis.function.Abs;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,25 +38,25 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EatDrugAlertServiceImpl extends
  ServiceImpl<EatDrugAlertMapper, EatDrugAlertEntity> implements EatDrugAlertService {
-	
+
 	@Autowired
 	private EatDrugAlertMapper eatDrugAlertMapper;
-	
+
 	@Autowired
 	private DrugEatTimeMapper drugEatTimeMapper;
-	
+
 	@Autowired
 	private WebsocketService websocketService;
-	
+
 	@Autowired
 	private SysMessageMapper sysMessageMapper;
-	
+
 	@Override
 	public List<EatDrugAlertEntity> getActiveAlerts() {
 		return eatDrugAlertMapper.selectList(
 		 new QueryWrapper<EatDrugAlertEntity>().eq("is_active", 1));
 	}
-	
+
 	@Scheduled(cron = "0 0/30 * * * ?") // 每半个小时检查一次
 	@Override
 	public void sendDrugAlerts() {
@@ -65,21 +69,23 @@ public class EatDrugAlertServiceImpl extends
 			wrapper.setEntity(tmp);
 			List<DrugEatTimeEntity> list = drugEatTimeMapper.selectList(wrapper);
 			LocalDate nowDate = LocalDate.now();
+			// 获取吃药频率
+			String frequency = alert.getFrequency();
+			int frequencyDays = getFrequencyDays(frequency);
 			// 遍历列表
 			for (DrugEatTimeEntity item : list) {
 				// note: 检测当天是否已经用药过，日期检测需要使用Period，因为日期最小单位是天而不是秒
 				Period durationToday = Period.between(nowDate, item.getLastEatTime());
-				// TODO: 需要根据时间频率和上次用药时间一起推算是否需要提醒
-				System.out.println("距离上次用药时间天数为" + durationToday.getDays());
-				if (durationToday.getDays() <= 0) {
+				// 需要根据时间频率和上次用药时间一起推算是否需要提醒
+                // note: 计算的时间是旧时间-新时间，所以是负数，应该需要取绝对值保证时间都是正数
+				if (Math.abs(durationToday.getDays()) <= frequencyDays) {
 					// 无需提醒
 					continue;
 				}
 				// 检测用药时间和当前时间是否相差一小时
 				LocalTime nowTime = LocalTime.now();
 				Duration nowBetween = Duration.between(nowTime, item.getEatTime().toLocalTime());
-				System.out.println("当前时间: "+ nowTime + " 用药时间: " + item.getEatTime().toLocalTime() + " 相差小时数: " + nowBetween.toHours());
-				if (nowBetween.toHours() <= 1) {
+				if (Math.abs(nowBetween.toHours()) <= 1) {
 					// 提醒
 					String message = String.format("请记得服用药物: %s，剂量: %d%s，时间:%s",
 					 alert.getDrugName(), alert.getDose(), alert.getUnit(), item.getEatTime());
@@ -90,13 +96,27 @@ public class EatDrugAlertServiceImpl extends
 					 item.getEatTime());
 					addSysMessage(sysMessage);
 				}
-				
+
 			}
-			
-			
+
+
 		}
 	}
-	
+
+	private static int getFrequencyDays(String frequency) {
+		//	根据提供的字符串计算应该相隔几天
+		if (frequency.equals("每天")) {
+			return 0;
+		} else {
+			//  获取数字部分
+			String regEx = "[^0-9]";
+			Pattern p = Pattern.compile(regEx);
+			Matcher m = p.matcher(frequency);
+			String trim = m.replaceAll("").trim();
+			return Integer.parseInt(trim);
+		}
+	}
+
 	private static @NotNull SysMessageEntity getSysMessageEntity(EatDrugAlertEntity alert,
 	 LocalDateTime now, Time alertTime) {
 		SysMessageEntity sysMessage = new SysMessageEntity();
@@ -111,10 +131,10 @@ public class EatDrugAlertServiceImpl extends
 		sysMessage.setIsRead(false);
 		return sysMessage;
 	}
-	
+
 	@Override
 	public void addSysMessage(SysMessageEntity sysMessage) {
 		sysMessageMapper.insert(sysMessage);
 	}
-	
+
 }

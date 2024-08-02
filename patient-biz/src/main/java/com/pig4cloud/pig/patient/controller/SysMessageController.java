@@ -61,14 +61,6 @@ public class SysMessageController {
         sysMessageService.markMessageAsRead(notificationId);
     }
 	
-	// TODO: 测试检测发提醒信息
-	@GetMapping("/test_job")
-	public R testJob() {
-		eatDrugAlertService.sendDrugAlerts();
-		return R.ok();
-	}
-	
-	
     @Operation(summary = "医生发送消息", description = "医生发送消息")
     @PostMapping("/send")
     @PreAuthorize("@pms.hasPermission('patient_send_view')")

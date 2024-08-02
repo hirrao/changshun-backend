@@ -1,0 +1,35 @@
+# 正式部署时环境
+
+spring:
+  application:
+    name: @artifactId@
+  cloud:
+    nacos:
+      username: nacos
+      password: changshunnacos
+      discovery:
+        server-addr: ${NACOS_HOST:pig-register}:${NACOS_PORT:8848}
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+  config:
+    import:
+      - nacos:application-@profiles.active@.yml
+      - nacos:${spring.application.name}-@profiles.active@.yml
+  datasource: # 示例数据源配置，注意修改也可配置至 nacos
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: changshun
+    password: changshun88
+    url: jdbc:mysql://pig-mysql:3306/changshun_server?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    hikari:
+      connection-timeout: 10000
+      validation-timeout: 3000
+      idle-timeout: 60000
+      login-timeout: 5
+      max-lifetime: 60000
+      maximum-pool-size: 10
+      minimum-idle: 5
+  data:
+    redis:
+      host: pig-redis
+      port: 6379

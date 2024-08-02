@@ -35,7 +35,7 @@ public class WebsocketService implements PlanTextMessageHandler {
 	 */
 	@Override
 	public void handle(WebSocketSession session, String message) {
-		// TODO: 业务逻辑处理
+		// 业务逻辑处理
 		log.info("session_id :{} ,接收到的message: {}", session.getId(), message);
 		//sessions.put(session.getAttributes().get("userName").toString(), session);
 	}
