@@ -43,7 +43,7 @@ public class DoctorQcodeController {
         Long doctorUid = jsonObject.getLong("doctorUid");
         // 验证静态资源是否存在
         String path = qrcodePath + '/' + doctorUid + ".jpg";
-        String returnPath = "http://114.116.237.85:80/static/qrcode" + doctorUid + ".jpg";
+        String returnPath = "http://114.116.237.85:80/static/qrcode/" + doctorUid + ".jpg";
         File file = new File(path);
         if (file.exists()) {
             return R.ok(returnPath);
