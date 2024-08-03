@@ -952,6 +952,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
     @Override
     public Map<String, Long> getDailyStatistics(Long doctorUid) {
+        // Fetch the results from the database
         List<Map<String, Object>> resultList = persureHeartRateMapper.selectDailyStatistics(doctorUid);
         Map<String, Long> statisticsMap = new LinkedHashMap<>();
 
@@ -967,14 +968,23 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         // Fill in actual counts from database results
         for (Map<String, Object> result : resultList) {
             String date = result.get("date").toString();
-            LocalDate localDate = LocalDate.parse(date); // Assuming the date is in yyyy-MM-dd format
+
+            // Assuming the date is in yyyy-MM-dd format
+            LocalDate localDate = LocalDate.parse(date);
+
+            // Calculate the formatted date
             String formattedDate = localDate.format(formatter);
-            Long count = ((Number) result.get("count")).longValue();
-            statisticsMap.put(formattedDate, count);
+
+            // Check if the formattedDate is in the last 10 days
+            if (statisticsMap.containsKey(formattedDate)) {
+                Long count = ((Number) result.get("count")).longValue();
+                statisticsMap.put(formattedDate, count);
+            }
         }
 
         return statisticsMap;
     }
+
 
     @Override
     public JSONObject getHeartRateStatistics(Long doctorUid) {
