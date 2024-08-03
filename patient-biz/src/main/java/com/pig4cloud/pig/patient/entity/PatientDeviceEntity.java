@@ -3,6 +3,7 @@ package com.pig4cloud.pig.patient.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,7 +31,7 @@ public class PatientDeviceEntity extends Model<PatientDeviceEntity> {
 	* deviceUid
 	*/
     @Schema(description="deviceUid")
-    private Long deviceUid;
+    private String deviceUid;
 
 	/**
 	* 绑定设备名称
@@ -43,4 +44,10 @@ public class PatientDeviceEntity extends Model<PatientDeviceEntity> {
 	*/
     @Schema(description="patientUid")
     private Long patientUid;
+	
+	/**
+	 * 最后一次同步数据时间
+	 */
+	@Schema(description="最后一次同步数据时间")
+	private LocalDateTime lastUpdateTime;
 }

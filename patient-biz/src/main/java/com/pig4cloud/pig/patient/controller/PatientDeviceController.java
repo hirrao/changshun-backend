@@ -78,7 +78,7 @@ public class PatientDeviceController {
      * @param patientDevice 
      * @return R
      */
-    @Operation(summary = "新增" , description = "新增" )
+    @Operation(summary = "新增绑定设备" , description = "新增绑定设备" )
     @SysLog("新增" )
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_patientDevice_add')" )
