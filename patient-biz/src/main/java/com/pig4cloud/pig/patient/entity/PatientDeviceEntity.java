@@ -31,7 +31,7 @@ public class PatientDeviceEntity extends Model<PatientDeviceEntity> {
 	* deviceUid
 	*/
     @Schema(description="deviceUid")
-    private Long deviceUid;
+    private String deviceUid;
 
 	/**
 	* 绑定设备名称
