@@ -9,6 +9,8 @@ services:
     image: doctor
     networks:
       - spring_cloud_default
+    volumes:
+      - /home/test/pig-data:/home/test/pig-data
 
 networks:
   spring_cloud_default:
