@@ -1,7 +1,13 @@
 server:
   port: 7002
 
+web:
+  qrcode: /home/test/pig-data/qrcode
+
 spring:
+  web:
+    resources:
+      static-locations: file:${web.qrcode}/ # 静态资源路径，注意需要添加“/”
   application:
     name: @artifactId@
   cloud:
