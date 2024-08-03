@@ -8,5 +8,6 @@
         <id property="deviceUid" column="device_uid"/>
         <id property="deviceName" column="device_name"/>
         <id property="patientUid" column="patient_uid"/>
+        <id property="lastUpdateTime" column="last_update_time"/>
   </resultMap>
 </mapper>
