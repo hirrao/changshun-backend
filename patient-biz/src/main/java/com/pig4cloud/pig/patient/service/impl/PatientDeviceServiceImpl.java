@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author wangwenche
@@ -47,6 +48,8 @@ public class PatientDeviceServiceImpl extends
 		return R.ok(this.save(patientDevice));
 	}
 	
+	// 异常回滚事务
+	@Transactional
 	@Override
 	public R syncDeviceData(PatientDeviceEntity patientDevice) {
 		//	查询从最后一次同步时间到当前时间的 血压数据，心率数据
@@ -59,7 +62,10 @@ public class PatientDeviceServiceImpl extends
 		try {
 			JSONObject post = httpUtils.post(hardwareUrl + "/getblood", data);
 			JSONArray dataList = post.getJSONArray("data");
-			//	插入数据库
+			if (dataList != null) {
+				//	插入血压数据库
+					
+			}
 		} catch (Exception e) {
 			log.error("同步血压数据失败", e);
 			return R.failed("同步血压数据失败");

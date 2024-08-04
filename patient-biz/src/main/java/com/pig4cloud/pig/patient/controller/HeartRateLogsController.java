@@ -117,7 +117,7 @@ public class HeartRateLogsController {
     }
 
     @Operation(summary = "批量添加心率数据", description = "批量添加心率数据")
-    @PostMapping("/AddHeartRateInBatches")
+    @PostMapping("/add_heart_batches")
     @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_add')")
     public R saveInBatches(@RequestBody List<HeartRateLogsEntity> data) {
         return R.ok(heartRateLogsService.saveBatch(data));
