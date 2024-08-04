@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.patient.mapper.HeartRateLogsMapper">
+
+  <resultMap id="heartRateLogsMap" type="com.pig4cloud.pig.patient.entity.HeartRateLogsEntity">
+        <id property="hrlId" column="hrl_id"/>
+        <id property="heartRate" column="heart_rate"/>
+        <id property="uploadTime" column="upload_time"/>
+        <id property="patientUid" column="patient_uid"/>
+  </resultMap>
+</mapper>

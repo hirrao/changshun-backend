@@ -48,7 +48,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
-    private final PressureAnomalyServiceImpl pressureAnomalyServiceImpl;
 
     @Operation(summary = "查询最近十天血压统计次数" , description = "查询最近十天血压统计次数" )
     @GetMapping("/recent-ten-days/{doctorUid}")
@@ -316,6 +315,12 @@ public class PersureHeartRateController {
         return R.ok(result);
     }
 
+//    @Operation(summary = "医生端获取特别关心患者的血压异常统计", description = "医生端获取特别关心患者的血压异常统计")
+//    @GetMapping("/getAnomalyStatsByDoctorUidCare")
+//    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+//    public R getAnomalyStatsByDoctorUidCare(@RequestParam Long doctorUid) {
+//        // JSONArray
+//    }
 
     /**
      * 通过id查询血压心率展示

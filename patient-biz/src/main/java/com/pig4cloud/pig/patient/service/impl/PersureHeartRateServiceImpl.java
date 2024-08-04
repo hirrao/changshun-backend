@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
+import com.pig4cloud.pig.patient.entity.PressureAnomalyEntity;
 import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
@@ -1084,4 +1085,48 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         return result;
     }
+
+//    @Override
+//    public JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care) {
+//        QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
+//        if(care){
+//            queryWrapper.eq("doctor_uid", doctorUid)
+//                    .eq("care", true);
+//        } else{
+//            queryWrapper.eq("doctor_uid", doctorUid);
+//        }
+//        List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(queryWrapper);
+//
+//        int severe = 0, moderate = 0, mild = 0, elevated = 0, low = 0, all = 0;
+//
+//        for(PatientDoctorEntity patientDoctorEntity : patientDoctorEntities){
+//            QueryWrapper<PersureHeartRateEntity> queryWrapper1 = new QueryWrapper<>();
+//            LocalDate now = LocalDate.now();
+//            queryWrapper1.eq("patient_uid", patientDoctorEntity.getPatientUid())
+//                    .eq("upload_time", now);
+//            List<PressureAnomalyEntity> anomalyRecords = pressureAnomalyMapper.selectList(queryWrapper1);
+//
+//            for(PressureAnomalyEntity anomalyRecord : anomalyRecords){
+//                severe += anomalyRecord.getSevere();
+//                moderate += anomalyRecord.getModerate();
+//                mild += anomalyRecord.getMild();
+//                elevated += anomalyRecord.getElevated();
+//                low += anomalyRecord.getLow();
+//                all += anomalyRecord.getAllNum();
+//            }
+//        }
+//
+//        int normal = all - severe - moderate - mild - elevated - low;
+//        Map<String, Object> mapData = new LinkedHashMap<>();
+//        mapData.put("重度", severe);
+//        mapData.put("中度", moderate);
+//        mapData.put("轻度", mild);
+//        mapData.put("正常偏高", elevated);
+//        mapData.put("正常", normal);
+//        mapData.put("偏低", low);
+//        mapData.put("累计人次", all);
+//
+//        JSONObject result = new JSONObject(mapData);
+//        return result;
+//    }
 }

@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
  * @date 2024-07-04 20:02:22
  */
 @Data
-@TableName("persure_heart_rate")
+@TableName("pressure_logs")
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "血压心率展示")
+@Schema(description = "患者血压数据")
 public class PersureHeartRateEntity extends Model<PersureHeartRateEntity> {
 
 
@@ -39,12 +39,7 @@ public class PersureHeartRateEntity extends Model<PersureHeartRateEntity> {
 	*/
     @Schema(description="舒张压，低压（单位：mmHg）")
     private Float diastolic;
- 
-	/**
-	* heartRate
-	*/
-    @Schema(description="heartRate")
-    private Integer heartRate;
+
 
 	/**
 	* 记录日期保存到时间级别 YYYY-mm-dd HH:ii:ss
