@@ -34,27 +34,27 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONObject getMonthlyMaxMinAvgPressureDiff(Long patientUid);
     JSONObject getYearlyMaxMinAvgPressureDiff(Long patientUid);
 
-    JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid);
-    JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid);
-    JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
-    JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
+    // JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid);
+    // JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid);
+    // JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
+    // JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
-    JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
+    // JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
 
-    int countPatientsWithLowHeartRate(Long doctorUid);
+    // int countPatientsWithLowHeartRate(Long doctorUid);
 
-    int countPatientsWithNormalHeartRate(Long doctorUid);
+    // int countPatientsWithNormalHeartRate(Long doctorUid);
 
-    int countPatientsWithHighHeartRate(Long doctorUid);
+    // int countPatientsWithHighHeartRate(Long doctorUid);
 
-    int ccountPatientsWithLowHeartRate(Long doctorUid);
+     // int ccountPatientsWithLowHeartRate(Long doctorUid);
 
-    int ccountPatientsWithNormalHeartRate(Long doctorUid);
+     // int ccountPatientsWithNormalHeartRate(Long doctorUid);
 
-    int ccountPatientsWithHighHeartRate(Long doctorUid);
+     // int ccountPatientsWithHighHeartRate(Long doctorUid);
 
     void updateSdhClassification(Long sdhId, Long patientUid);
-    boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
+     boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
 
     JSONObject getNewlyPressureHeartRateData(Long patientUid);
 
@@ -63,8 +63,8 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     JSONObject nocountSdhClassificationByDoctorAndCare(Long doctorUid);
 
-    JSONObject getHeartRateStatistics(Long doctorUid);
-    JSONObject getcareHeartRateStatistics(Long doctorUid);
+    // JSONObject getHeartRateStatistics(Long doctorUid);
+    // JSONObject getcareHeartRateStatistics(Long doctorUid);
 
     Map<String, Long> getDailyStatistics(Long doctorUid);
 

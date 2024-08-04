@@ -136,7 +136,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             for (PersureHeartRateEntity record : entry.getValue()) {
                 systolicArray.add(record.getSystolic() != null ? record.getSystolic() : null);
                 diastolicArray.add(record.getDiastolic() != null ? record.getDiastolic() : null);
-                heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
+                // heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
             }
 
             JSONObject dailyData = new JSONObject();
@@ -191,7 +191,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             for (PersureHeartRateEntity record : entry.getValue()) {
                 systolicArray.add(record.getSystolic() != null ? record.getSystolic() : null);
                 diastolicArray.add(record.getDiastolic() != null ? record.getDiastolic() : null);
-                heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
+                // heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
             }
 
             JSONObject dailyData = new JSONObject();
@@ -246,7 +246,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             for (PersureHeartRateEntity record : entry.getValue()) {
                 systolicArray.add(record.getSystolic() != null ? record.getSystolic() : null);
                 diastolicArray.add(record.getDiastolic() != null ? record.getDiastolic() : null);
-                heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
+                // heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
             }
 
             JSONObject dailyData = new JSONObject();
@@ -286,178 +286,178 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
     }
 
-    @Override
-    public JSONArray getDailyConsecutiveAbnormalities(Long doctorUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(23, 59, 59);
-
-        QueryWrapper<PatientDoctorEntity> doctorQueryWrapper = new QueryWrapper<>();
-        doctorQueryWrapper.eq("doctor_uid", doctorUid);
-
-        List<Long> patientUids = patientDoctorMapper.selectList(doctorQueryWrapper)
-                .stream()
-                .map(PatientDoctorEntity::getPatientUid)
-                .toList();
-
-        if (patientUids.isEmpty()) {
-            return new JSONArray();
-        }
-
-        // 根据患者UID列表查询心率记录
-        QueryWrapper<PersureHeartRateEntity> heartRateQueryWrapper = new QueryWrapper<>();
-        heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
-                .in("patient_uid", patientUids);
-
-
-
-        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(heartRateQueryWrapper);
-
-        // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
-        Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
-                .stream()
-                .collect(Collectors.toMap(PatientBaseEntity::getPatientUid, Function.identity()));
-
-        // 建立patient_uid和PersureHeartRateEntity之间的映射，便于后续按患者统计心率血压异常次数
-        Map<Long, List<PersureHeartRateEntity>> recordsByPatient = todayRecords.stream()
-                .collect(Collectors.groupingBy(PersureHeartRateEntity::getPatientUid));
-
-        JSONArray result = new JSONArray();
-
-        for (Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()) {
-            Long patientUid = entry.getKey();
-            List<PersureHeartRateEntity> records = entry.getValue();
-            records.sort(Comparator.comparing(PersureHeartRateEntity::getUploadTime));
-
-            List<JSONObject> patientDataList = new ArrayList<>();
-
-            int consecutiveHighBp = 0; // 连续高压超过180的次数
-            LocalDateTime highBpStart = null;
-            LocalDateTime highBpEnd = null;
-
-            int consecutiveLowHr = 0; // 连续低压超过110的次数
-            LocalDateTime lowHrStart = null;
-            LocalDateTime lowHrEnd = null;
-
-            for (PersureHeartRateEntity record : records) {
-                if (record.getSystolic() >= 180 || record.getDiastolic() >= 110) {
-                    if (consecutiveHighBp == 0) {
-                        highBpStart = record.getUploadTime();
-                    }
-                    consecutiveHighBp++;
-                    highBpEnd = record.getUploadTime();
-                } else {
-                    if (consecutiveHighBp > 1) {
-                        JSONObject patientData = new JSONObject();
-                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-                        LocalDate birthday = patientBase.getBirthday();
-                        LocalDate current = LocalDate.now();
-                        int age = 0;
-                        if (birthday != null) {
-                            age = Period.between(birthday, current).getYears();
-                        }
-
-                        patientData.put("name", patientBase.getPatientName());
-                        patientData.put("sex", patientBase.getSex());
-                        patientData.put("age", age);
-                        patientData.put("abnormality", "血压高于180/110mmHg");
-                        patientData.put("ill", "高压过高");
-                        patientData.put("count", consecutiveHighBp);
-                        patientData.put("duration", String.format("%d小时%d分钟",
-                                Duration.between(highBpStart, highBpEnd).toHours(),
-                                Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
-
-                        patientDataList.add(patientData);
-                    }
-                    consecutiveHighBp = 0;
-                }
-
-                if (record.getHeartRate() < 60) {
-                    if (consecutiveLowHr == 0) {
-                        lowHrStart = record.getUploadTime();
-                    }
-                    consecutiveLowHr++;
-                    lowHrEnd = record.getUploadTime();
-                } else {
-                    if (consecutiveLowHr > 1) {
-                        JSONObject patientData = new JSONObject();
-                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-                        LocalDate birthday = patientBase.getBirthday();
-                        LocalDate current = LocalDate.now();
-                        int age = 0;
-                        if (birthday != null) {
-                            age = Period.between(birthday, current).getYears();
-                        }
-
-                        patientData.put("name", patientBase.getPatientName());
-                        patientData.put("sex", patientBase.getSex());
-                        patientData.put("age", age);
-                        patientData.put("abnormality", "心率低于60次/分钟");
-                        patientData.put("ill", "心率过低");
-                        patientData.put("count", consecutiveLowHr);
-                        patientData.put("duration", String.format("%d小时%d分钟",
-                                Duration.between(lowHrStart, lowHrEnd).toHours(),
-                                Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
-
-                        patientDataList.add(patientData);
-                    }
-                    consecutiveLowHr = 0;
-                }
-            }
-
-            // 处理最后一条记录后的未记录异常情况
-            if (consecutiveHighBp > 1) {
-                JSONObject patientData = new JSONObject();
-                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-                LocalDate birthday = patientBase.getBirthday();
-                LocalDate current = LocalDate.now();
-                int age = 0;
-                if (birthday != null) {
-                    age = Period.between(birthday, current).getYears();
-                }
-
-                patientData.put("name", patientBase.getPatientName());
-                patientData.put("sex", patientBase.getSex());
-                patientData.put("age", age);
-                patientData.put("abnormality", "血压高于180/110mmHg");
-                patientData.put("ill", "高压过高");
-                patientData.put("count", consecutiveHighBp);
-                patientData.put("duration", String.format("%d小时%d分钟",
-                        Duration.between(highBpStart, highBpEnd).toHours(),
-                        Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
-
-                patientDataList.add(patientData);
-            }
-
-            if (consecutiveLowHr > 1) {
-                JSONObject patientData = new JSONObject();
-                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-                LocalDate birthday = patientBase.getBirthday();
-                LocalDate current = LocalDate.now();
-                int age = 0;
-                if (birthday != null) {
-                    age = Period.between(birthday, current).getYears();
-                }
-
-                patientData.put("name", patientBase.getPatientName());
-                patientData.put("sex", patientBase.getSex());
-                patientData.put("age", age);
-                patientData.put("abnormality", "心率低于60次/分钟");
-                patientData.put("ill", "心率过低");
-                patientData.put("count", consecutiveLowHr);
-                patientData.put("duration", String.format("%d小时%d分钟",
-                        Duration.between(lowHrStart, lowHrEnd).toHours(),
-                        Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
-
-                patientDataList.add(patientData);
-            }
-
-            result.addAll(patientDataList);
-        }
-
-        result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
-        return result;
-    }
+//    @Override
+//    public JSONArray getDailyConsecutiveAbnormalities(Long doctorUid) {
+//        LocalDate date = LocalDate.now();
+//        LocalDateTime startOfDay = date.atStartOfDay();
+//        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+//
+//        QueryWrapper<PatientDoctorEntity> doctorQueryWrapper = new QueryWrapper<>();
+//        doctorQueryWrapper.eq("doctor_uid", doctorUid);
+//
+//        List<Long> patientUids = patientDoctorMapper.selectList(doctorQueryWrapper)
+//                .stream()
+//                .map(PatientDoctorEntity::getPatientUid)
+//                .toList();
+//
+//        if (patientUids.isEmpty()) {
+//            return new JSONArray();
+//        }
+//
+//        // 根据患者UID列表查询心率记录
+//        QueryWrapper<PersureHeartRateEntity> heartRateQueryWrapper = new QueryWrapper<>();
+//        heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
+//                .in("patient_uid", patientUids);
+//
+//
+//
+//        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(heartRateQueryWrapper);
+//
+//        // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
+//        Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
+//                .stream()
+//                .collect(Collectors.toMap(PatientBaseEntity::getPatientUid, Function.identity()));
+//
+//        // 建立patient_uid和PersureHeartRateEntity之间的映射，便于后续按患者统计心率血压异常次数
+//        Map<Long, List<PersureHeartRateEntity>> recordsByPatient = todayRecords.stream()
+//                .collect(Collectors.groupingBy(PersureHeartRateEntity::getPatientUid));
+//
+//        JSONArray result = new JSONArray();
+//
+//        for (Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()) {
+//            Long patientUid = entry.getKey();
+//            List<PersureHeartRateEntity> records = entry.getValue();
+//            records.sort(Comparator.comparing(PersureHeartRateEntity::getUploadTime));
+//
+//            List<JSONObject> patientDataList = new ArrayList<>();
+//
+//            int consecutiveHighBp = 0; // 连续高压超过180的次数
+//            LocalDateTime highBpStart = null;
+//            LocalDateTime highBpEnd = null;
+//
+//            int consecutiveLowHr = 0; // 连续低压超过110的次数
+//            LocalDateTime lowHrStart = null;
+//            LocalDateTime lowHrEnd = null;
+//
+//            for (PersureHeartRateEntity record : records) {
+//                if (record.getSystolic() >= 180 || record.getDiastolic() >= 110) {
+//                    if (consecutiveHighBp == 0) {
+//                        highBpStart = record.getUploadTime();
+//                    }
+//                    consecutiveHighBp++;
+//                    highBpEnd = record.getUploadTime();
+//                } else {
+//                    if (consecutiveHighBp > 1) {
+//                        JSONObject patientData = new JSONObject();
+//                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+//                        LocalDate birthday = patientBase.getBirthday();
+//                        LocalDate current = LocalDate.now();
+//                        int age = 0;
+//                        if (birthday != null) {
+//                            age = Period.between(birthday, current).getYears();
+//                        }
+//
+//                        patientData.put("name", patientBase.getPatientName());
+//                        patientData.put("sex", patientBase.getSex());
+//                        patientData.put("age", age);
+//                        patientData.put("abnormality", "血压高于180/110mmHg");
+//                        patientData.put("ill", "高压过高");
+//                        patientData.put("count", consecutiveHighBp);
+//                        patientData.put("duration", String.format("%d小时%d分钟",
+//                                Duration.between(highBpStart, highBpEnd).toHours(),
+//                                Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
+//
+//                        patientDataList.add(patientData);
+//                    }
+//                    consecutiveHighBp = 0;
+//                }
+//
+//                if (record.getHeartRate() < 60) {
+//                    if (consecutiveLowHr == 0) {
+//                        lowHrStart = record.getUploadTime();
+//                    }
+//                    consecutiveLowHr++;
+//                    lowHrEnd = record.getUploadTime();
+//                } else {
+//                    if (consecutiveLowHr > 1) {
+//                        JSONObject patientData = new JSONObject();
+//                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+//                        LocalDate birthday = patientBase.getBirthday();
+//                        LocalDate current = LocalDate.now();
+//                        int age = 0;
+//                        if (birthday != null) {
+//                            age = Period.between(birthday, current).getYears();
+//                        }
+//
+//                        patientData.put("name", patientBase.getPatientName());
+//                        patientData.put("sex", patientBase.getSex());
+//                        patientData.put("age", age);
+//                        patientData.put("abnormality", "心率低于60次/分钟");
+//                        patientData.put("ill", "心率过低");
+//                        patientData.put("count", consecutiveLowHr);
+//                        patientData.put("duration", String.format("%d小时%d分钟",
+//                                Duration.between(lowHrStart, lowHrEnd).toHours(),
+//                                Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
+//
+//                        patientDataList.add(patientData);
+//                    }
+//                    consecutiveLowHr = 0;
+//                }
+//            }
+//
+//            // 处理最后一条记录后的未记录异常情况
+//            if (consecutiveHighBp > 1) {
+//                JSONObject patientData = new JSONObject();
+//                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+//                LocalDate birthday = patientBase.getBirthday();
+//                LocalDate current = LocalDate.now();
+//                int age = 0;
+//                if (birthday != null) {
+//                    age = Period.between(birthday, current).getYears();
+//                }
+//
+//                patientData.put("name", patientBase.getPatientName());
+//                patientData.put("sex", patientBase.getSex());
+//                patientData.put("age", age);
+//                patientData.put("abnormality", "血压高于180/110mmHg");
+//                patientData.put("ill", "高压过高");
+//                patientData.put("count", consecutiveHighBp);
+//                patientData.put("duration", String.format("%d小时%d分钟",
+//                        Duration.between(highBpStart, highBpEnd).toHours(),
+//                        Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
+//
+//                patientDataList.add(patientData);
+//            }
+//
+//            if (consecutiveLowHr > 1) {
+//                JSONObject patientData = new JSONObject();
+//                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+//                LocalDate birthday = patientBase.getBirthday();
+//                LocalDate current = LocalDate.now();
+//                int age = 0;
+//                if (birthday != null) {
+//                    age = Period.between(birthday, current).getYears();
+//                }
+//
+//                patientData.put("name", patientBase.getPatientName());
+//                patientData.put("sex", patientBase.getSex());
+//                patientData.put("age", age);
+//                patientData.put("abnormality", "心率低于60次/分钟");
+//                patientData.put("ill", "心率过低");
+//                patientData.put("count", consecutiveLowHr);
+//                patientData.put("duration", String.format("%d小时%d分钟",
+//                        Duration.between(lowHrStart, lowHrEnd).toHours(),
+//                        Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
+//
+//                patientDataList.add(patientData);
+//            }
+//
+//            result.addAll(patientDataList);
+//        }
+//
+//        result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
+//        return result;
+//    }
 
 
     public JSONObject getMaxMinAvgSystolic(LocalDateTime start, LocalDateTime end, Long patientUid) {
@@ -635,157 +635,157 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return getMaxMinAvgPressureDiff(startOfYear, endOfYear, patientUid);
     }
 
-    @Override
-    public JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+//    @Override
+//    public JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid) {
+//        LocalDateTime startOfDay = date.atStartOfDay();
+//        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+//
+//        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("patient_uid", patientUid)
+//                .between("upload_time", startOfDay, endOfDay);
+//
+//        List<PersureHeartRateEntity> records = persureHeartRateMapper.selectList(queryWrapper);
+//        JSONObject result = new JSONObject();
+//
+//        if (records.isEmpty()) {
+//            result.put("avg_systolic", null);
+//            result.put("avg_diastolic", null);
+//            result.put("avg_heartRate", null);
+//        } else {
+//            DoubleSummaryStatistics systolicStats = records.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getSystolic)
+//                    .summaryStatistics();
+//
+//            DoubleSummaryStatistics diastolicStats = records.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getDiastolic)
+//                    .summaryStatistics();
+//
+//            DoubleSummaryStatistics heartRateStats = records.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getHeartRate)
+//                    .summaryStatistics();
+//
+//
+//            result.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
+//            result.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
+//            result.put("avg_heartRate", heartRateStats.getCount() > 0 ? heartRateStats.getAverage() : null);
+//        }
+//
+//        return result;
+//    }
 
-        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("patient_uid", patientUid)
-                .between("upload_time", startOfDay, endOfDay);
+//    @Override
+//    public JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid) {
+//        LocalDate date = LocalDate.now();
+//        LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+//        LocalDate endOfWeek = startOfWeek.plusDays(6);
+//
+//        JSONArray result = new JSONArray();
+//
+//        for (LocalDate currentDate = startOfWeek; !currentDate.isAfter(endOfWeek); currentDate = currentDate.plusDays(1)) {
+//            JSONObject dailyAverage = getDailyAveragePressureHeartRate(currentDate, patientUid);
+//            dailyAverage.put("date", currentDate);
+//
+//            result.add(dailyAverage);
+//        }
+//
+//        return result;
+//    }
 
-        List<PersureHeartRateEntity> records = persureHeartRateMapper.selectList(queryWrapper);
-        JSONObject result = new JSONObject();
+//    @Override
+//    // 一个月的开头和结尾几天可能不是完整的一周，也算作一周
+//    public JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid) {
+//        LocalDate date = LocalDate.now();
+//        LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
+//        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+//
+//        JSONArray monthlyPressureData = new JSONArray();
+//
+//        LocalDate startOfWeek = startOfMonth;
+//        while (!startOfWeek.isAfter(endOfMonth)) {
+//            LocalDate endOfWeek = startOfWeek.with(DayOfWeek.SUNDAY);
+//            if (endOfWeek.isAfter(endOfMonth)) {
+//                endOfWeek = endOfMonth;
+//            }
+//
+//            LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+//            LocalDateTime endDateTime = endOfWeek.atTime(23, 59, 59);
+//
+//            QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("patient_uid", patientUid)
+//                    .between("upload_time", startDateTime, endDateTime);
+//
+//            List<PersureHeartRateEntity> weeklyRecords = persureHeartRateMapper.selectList(queryWrapper);
+//
+//            DoubleSummaryStatistics systolicStats = weeklyRecords.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getSystolic)
+//                    .summaryStatistics();
+//
+//            DoubleSummaryStatistics diastolicStats = weeklyRecords.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getDiastolic)
+//                    .summaryStatistics();
+//
+//            DoubleSummaryStatistics heartRateStats = weeklyRecords.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getHeartRate)
+//                    .summaryStatistics();
+//
+//            JSONObject weeklyAverage = new JSONObject();
+//            weeklyAverage.put("start_date", startOfWeek.toString());
+//            weeklyAverage.put("end_date", endOfWeek.toString());
+//            weeklyAverage.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
+//            weeklyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
+//            weeklyAverage.put("avg_heartRate", heartRateStats.getCount() > 0 ? heartRateStats.getAverage() : null);
+//            monthlyPressureData.add(weeklyAverage);
+//
+//            // 下一周
+//            startOfWeek = endOfWeek.plusDays(1);
+//        }
+//
+//        return monthlyPressureData;
+//    }
 
-        if (records.isEmpty()) {
-            result.put("avg_systolic", null);
-            result.put("avg_diastolic", null);
-            result.put("avg_heartRate", null);
-        } else {
-            DoubleSummaryStatistics systolicStats = records.stream()
-                    .mapToDouble(PersureHeartRateEntity::getSystolic)
-                    .summaryStatistics();
-
-            DoubleSummaryStatistics diastolicStats = records.stream()
-                    .mapToDouble(PersureHeartRateEntity::getDiastolic)
-                    .summaryStatistics();
-
-            DoubleSummaryStatistics heartRateStats = records.stream()
-                    .mapToDouble(PersureHeartRateEntity::getHeartRate)
-                    .summaryStatistics();
-
-
-            result.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
-            result.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
-            result.put("avg_heartRate", heartRateStats.getCount() > 0 ? heartRateStats.getAverage() : null);
-        }
-
-        return result;
-    }
-
-    @Override
-    public JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
-
-        JSONArray result = new JSONArray();
-
-        for (LocalDate currentDate = startOfWeek; !currentDate.isAfter(endOfWeek); currentDate = currentDate.plusDays(1)) {
-            JSONObject dailyAverage = getDailyAveragePressureHeartRate(currentDate, patientUid);
-            dailyAverage.put("date", currentDate);
-
-            result.add(dailyAverage);
-        }
-
-        return result;
-    }
-
-    @Override
-    // 一个月的开头和结尾几天可能不是完整的一周，也算作一周
-    public JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
-        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
-
-        JSONArray monthlyPressureData = new JSONArray();
-
-        LocalDate startOfWeek = startOfMonth;
-        while (!startOfWeek.isAfter(endOfMonth)) {
-            LocalDate endOfWeek = startOfWeek.with(DayOfWeek.SUNDAY);
-            if (endOfWeek.isAfter(endOfMonth)) {
-                endOfWeek = endOfMonth;
-            }
-
-            LocalDateTime startDateTime = startOfWeek.atStartOfDay();
-            LocalDateTime endDateTime = endOfWeek.atTime(23, 59, 59);
-
-            QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("patient_uid", patientUid)
-                    .between("upload_time", startDateTime, endDateTime);
-
-            List<PersureHeartRateEntity> weeklyRecords = persureHeartRateMapper.selectList(queryWrapper);
-
-            DoubleSummaryStatistics systolicStats = weeklyRecords.stream()
-                    .mapToDouble(PersureHeartRateEntity::getSystolic)
-                    .summaryStatistics();
-
-            DoubleSummaryStatistics diastolicStats = weeklyRecords.stream()
-                    .mapToDouble(PersureHeartRateEntity::getDiastolic)
-                    .summaryStatistics();
-
-            DoubleSummaryStatistics heartRateStats = weeklyRecords.stream()
-                    .mapToDouble(PersureHeartRateEntity::getHeartRate)
-                    .summaryStatistics();
-
-            JSONObject weeklyAverage = new JSONObject();
-            weeklyAverage.put("start_date", startOfWeek.toString());
-            weeklyAverage.put("end_date", endOfWeek.toString());
-            weeklyAverage.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
-            weeklyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
-            weeklyAverage.put("avg_heartRate", heartRateStats.getCount() > 0 ? heartRateStats.getAverage() : null);
-            monthlyPressureData.add(weeklyAverage);
-
-            // 下一周
-            startOfWeek = endOfWeek.plusDays(1);
-        }
-
-        return monthlyPressureData;
-    }
-
-    @Override
-    public JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfYear = date.minusYears(yearsAgo).withDayOfYear(1);
-        int year = startOfYear.getYear();
-
-        JSONArray yearlyPressureData = new JSONArray();
-        for (int month = 1; month <= 12; month++) {
-            LocalDate startOfMonth = LocalDate.of(year, month, 1);
-            LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
-
-            LocalDateTime startDateTime = startOfMonth.atStartOfDay();
-            LocalDateTime endDateTime = endOfMonth.atTime(23, 59, 59);
-
-            QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("patient_uid", patientUid)
-                    .between("upload_time", startDateTime, endDateTime);
-
-            List<PersureHeartRateEntity> monthlyRecords = persureHeartRateMapper.selectList(queryWrapper);
-
-            DoubleSummaryStatistics systolicStats = monthlyRecords.stream()
-                    .mapToDouble(PersureHeartRateEntity::getSystolic)
-                    .summaryStatistics();
-
-            DoubleSummaryStatistics diastolicStats = monthlyRecords.stream()
-                    .mapToDouble(PersureHeartRateEntity::getDiastolic)
-                    .summaryStatistics();
-
-            DoubleSummaryStatistics heartRateStats = monthlyRecords.stream()
-                    .mapToDouble(PersureHeartRateEntity::getHeartRate)
-                    .summaryStatistics();
-
-            JSONObject monthlyAverage = new JSONObject();
-            monthlyAverage.put("month", startOfMonth.getMonth().toString());
-            monthlyAverage.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
-            monthlyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
-            monthlyAverage.put("avg_heartRate", heartRateStats.getCount() > 0 ? heartRateStats.getAverage() : null);
-
-
-            yearlyPressureData.add(monthlyAverage);
-        }
-        return yearlyPressureData;
-    }
+//    @Override
+//    public JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid) {
+//        LocalDate date = LocalDate.now();
+//        LocalDate startOfYear = date.minusYears(yearsAgo).withDayOfYear(1);
+//        int year = startOfYear.getYear();
+//
+//        JSONArray yearlyPressureData = new JSONArray();
+//        for (int month = 1; month <= 12; month++) {
+//            LocalDate startOfMonth = LocalDate.of(year, month, 1);
+//            LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+//
+//            LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+//            LocalDateTime endDateTime = endOfMonth.atTime(23, 59, 59);
+//
+//            QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("patient_uid", patientUid)
+//                    .between("upload_time", startDateTime, endDateTime);
+//
+//            List<PersureHeartRateEntity> monthlyRecords = persureHeartRateMapper.selectList(queryWrapper);
+//
+//            DoubleSummaryStatistics systolicStats = monthlyRecords.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getSystolic)
+//                    .summaryStatistics();
+//
+//            DoubleSummaryStatistics diastolicStats = monthlyRecords.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getDiastolic)
+//                    .summaryStatistics();
+//
+//            DoubleSummaryStatistics heartRateStats = monthlyRecords.stream()
+//                    .mapToDouble(PersureHeartRateEntity::getHeartRate)
+//                    .summaryStatistics();
+//
+//            JSONObject monthlyAverage = new JSONObject();
+//            monthlyAverage.put("month", startOfMonth.getMonth().toString());
+//            monthlyAverage.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
+//            monthlyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
+//            monthlyAverage.put("avg_heartRate", heartRateStats.getCount() > 0 ? heartRateStats.getAverage() : null);
+//
+//
+//            yearlyPressureData.add(monthlyAverage);
+//        }
+//        return yearlyPressureData;
+//    }
 
     @Override
     public JSONObject getNewlyPressureHeartRateData(Long patientUid) {
@@ -793,41 +793,41 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         JSONObject data = new JSONObject();
         data.put("收缩压", measure.getSystolic());
         data.put("舒张压", measure.getDiastolic());
-        data.put("心率", measure.getHeartRate());
+        // data.put("心率", measure.getHeartRate());
         data.put("风险评估", measure.getRiskAssessment());
         data.put("时间", measure.getUploadTime());
         return data;
     }
 
-    @Override
-    public int countPatientsWithLowHeartRate(Long doctorUid) {
-        return persureHeartRateMapper.countPatientsWithLowHeartRate(doctorUid);
-    }
+//    @Override
+//    public int countPatientsWithLowHeartRate(Long doctorUid) {
+//        return persureHeartRateMapper.countPatientsWithLowHeartRate(doctorUid);
+//    }
 
-    @Override
-    public int countPatientsWithNormalHeartRate(Long doctorUid) {
-        return persureHeartRateMapper.countPatientsWithNormalHeartRate(doctorUid);
-    }
-
-    @Override
-    public int countPatientsWithHighHeartRate(Long doctorUid) {
-        return persureHeartRateMapper.countPatientsWithHighHeartRate(doctorUid);
-    }
-
-    @Override
-    public int ccountPatientsWithLowHeartRate(Long doctorUid) {
-        return persureHeartRateMapper.ccountPatientsWithLowHeartRate(doctorUid);
-    }
-
-    @Override
-    public int ccountPatientsWithNormalHeartRate(Long doctorUid) {
-        return persureHeartRateMapper.ccountPatientsWithNormalHeartRate(doctorUid);
-    }
-
-    @Override
-    public int ccountPatientsWithHighHeartRate(Long doctorUid) {
-        return persureHeartRateMapper.ccountPatientsWithHighHeartRate(doctorUid);
-    }
+//    @Override
+//    public int countPatientsWithNormalHeartRate(Long doctorUid) {
+//        return persureHeartRateMapper.countPatientsWithNormalHeartRate(doctorUid);
+//    }
+//
+//    @Override
+//    public int countPatientsWithHighHeartRate(Long doctorUid) {
+//        return persureHeartRateMapper.countPatientsWithHighHeartRate(doctorUid);
+//    }
+//
+//    @Override
+//    public int ccountPatientsWithLowHeartRate(Long doctorUid) {
+//        return persureHeartRateMapper.ccountPatientsWithLowHeartRate(doctorUid);
+//    }
+//
+//    @Override
+//    public int ccountPatientsWithNormalHeartRate(Long doctorUid) {
+//        return persureHeartRateMapper.ccountPatientsWithNormalHeartRate(doctorUid);
+//    }
+//
+//    @Override
+//    public int ccountPatientsWithHighHeartRate(Long doctorUid) {
+//        return persureHeartRateMapper.ccountPatientsWithHighHeartRate(doctorUid);
+//    }
 
     @Override
     public void updateSdhClassification(Long sdhId, Long patientUid) {
@@ -987,41 +987,41 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
 
-    @Override
-    public JSONObject getHeartRateStatistics(Long doctorUid) {
-        int normal = 0, low = 0, high = 0, all = 0;
-        normal = countPatientsWithNormalHeartRate(doctorUid);
-        low = countPatientsWithLowHeartRate(doctorUid);
-        high = countPatientsWithHighHeartRate(doctorUid);
-        all = normal + low + high;
+//    @Override
+//    public JSONObject getHeartRateStatistics(Long doctorUid) {
+//        int normal = 0, low = 0, high = 0, all = 0;
+//        normal = countPatientsWithNormalHeartRate(doctorUid);
+//        low = countPatientsWithLowHeartRate(doctorUid);
+//        high = countPatientsWithHighHeartRate(doctorUid);
+//        all = normal + low + high;
+//
+//        Map<String, Object> mapData = new LinkedHashMap<>();
+//        mapData.put("正常", normal);
+//        mapData.put("过缓", low);
+//        mapData.put("过急", high);
+//        mapData.put("累计", all);
+//
+//        JSONObject result = new JSONObject(mapData);
+//        return result;
+//    }
 
-        Map<String, Object> mapData = new LinkedHashMap<>();
-        mapData.put("正常", normal);
-        mapData.put("过缓", low);
-        mapData.put("过急", high);
-        mapData.put("累计", all);
-
-        JSONObject result = new JSONObject(mapData);
-        return result;
-    }
-
-    @Override
-    public JSONObject getcareHeartRateStatistics(Long doctorUid) {
-        int normal = 0, low = 0, high = 0, all = 0;
-        normal = ccountPatientsWithNormalHeartRate(doctorUid);
-        low = ccountPatientsWithLowHeartRate(doctorUid);
-        high = ccountPatientsWithHighHeartRate(doctorUid);
-        all = normal + low + high;
-
-        Map<String, Object> mapData = new LinkedHashMap<>();
-        mapData.put("正常", normal);
-        mapData.put("过缓", low);
-        mapData.put("过急", high);
-        mapData.put("累计", all);
-
-        JSONObject result = new JSONObject(mapData);
-        return result;
-    }
+//    @Override
+//    public JSONObject getcareHeartRateStatistics(Long doctorUid) {
+//        int normal = 0, low = 0, high = 0, all = 0;
+//        normal = ccountPatientsWithNormalHeartRate(doctorUid);
+//        low = ccountPatientsWithLowHeartRate(doctorUid);
+//        high = ccountPatientsWithHighHeartRate(doctorUid);
+//        all = normal + low + high;
+//
+//        Map<String, Object> mapData = new LinkedHashMap<>();
+//        mapData.put("正常", normal);
+//        mapData.put("过缓", low);
+//        mapData.put("过急", high);
+//        mapData.put("累计", all);
+//
+//        JSONObject result = new JSONObject(mapData);
+//        return result;
+//    }
 
     @Override
     public JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date) {

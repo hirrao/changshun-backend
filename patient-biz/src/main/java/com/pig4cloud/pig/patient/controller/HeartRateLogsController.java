@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 患者心率数据
@@ -116,4 +115,21 @@ public class HeartRateLogsController {
     public List<HeartRateLogsEntity> export(HeartRateLogsEntity heartRateLogs,Long[] ids) {
         return heartRateLogsService.list(Wrappers.lambdaQuery(heartRateLogs).in(ArrayUtil.isNotEmpty(ids), HeartRateLogsEntity::getHrlId, ids));
     }
+
+    @Operation(summary = "批量添加心率数据", description = "批量添加心率数据")
+    @PostMapping("/AddHeartRateInBatches")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_add')")
+    public R saveInBatches(@RequestBody List<HeartRateLogsEntity> data) {
+        return R.ok(heartRateLogsService.saveBatch(data));
+    }
+
+    @Operation(summary = "全条件查询心率数据", description = "全条件查询心率数据")
+    @PostMapping("/getByHeartRate")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
+    public R getByUserFeedbackObject(@RequestBody HeartRateLogsEntity heartRateLogs) {
+        LambdaQueryWrapper<HeartRateLogsEntity> wrapper = Wrappers.lambdaQuery();
+        wrapper.setEntity(heartRateLogs);
+        return R.ok(heartRateLogsService.list(wrapper));
+    }
+
 }
