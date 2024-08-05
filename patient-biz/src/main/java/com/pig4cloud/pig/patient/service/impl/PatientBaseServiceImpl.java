@@ -16,6 +16,8 @@ import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
 import com.pig4cloud.pig.patient.service.PatientBaseService;
 import com.pig4cloud.plugin.excel.vo.ErrorMessage;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,5 +176,21 @@ public class PatientBaseServiceImpl extends
 		patientBaseMapper.updateById(patient);
 
 		return "success";
+	}
+
+	@Override
+	public JSONObject getPatientNameSexAge(Long patientUid) {
+
+		LambdaQueryWrapper<PatientBaseEntity> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(PatientBaseEntity::getPatientUid, patientUid).last("limit 1");
+
+		PatientBaseEntity patient = patientBaseMapper.selectOne(queryWrapper);
+
+		JSONObject result = new JSONObject();
+		result.put("name", patient.getPatientName());
+		result.put("sex", patient.getSex());
+		result.put("age", Period.between(patient.getBirthday(), LocalDate.now()).getYears());
+
+		return result;
 	}
 }

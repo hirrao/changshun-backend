@@ -94,6 +94,14 @@ public class PatientBaseController {
 		}
 	}
 
+	@Operation(summary = "查询患者姓名性别年龄", description = "查询患者姓名性别年龄")
+	@GetMapping("/get_name_sex_age")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
+	public R getPatientNameSexAge(@RequestParam Long patientUid) {
+		return R.ok(patientBaseService.getPatientNameSexAge(patientUid));
+	}
+
+
 	/**
 	 * 通过id查询患者基本信息
 	 *
