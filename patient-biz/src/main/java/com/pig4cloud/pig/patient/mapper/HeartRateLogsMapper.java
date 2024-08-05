@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Select;
 public interface HeartRateLogsMapper extends BaseMapper<HeartRateLogsEntity> {
 
     @Select("SELECT heart_rate, upload_time " +
-            "FROM pressure_logs " +
+            "FROM heart_rate_logs " +
             "WHERE patient_uid = #{patientUid} " +
             "ORDER BY upload_time DESC " +
             "LIMIT 1")
