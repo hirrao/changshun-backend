@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
+import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,10 +18,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -309,9 +312,21 @@ public class PersureHeartRateController {
     @Operation(summary = "查询某患者指定周的血压异常次数", description = "查询某患者指定周的血压异常次数")
     @GetMapping("/weekAnomalyCount")
     @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
-    public R getWeekAnomalyCount(@RequestParam Long patientUid, @RequestParam int weeksAgo){
+    public R getWeekAnomalyCount(@RequestParam Long patientUid, @RequestParam int weeksAgo) {
         JSONObject result = persureHeartRateService.getWeekAnomalyCount(patientUid, weeksAgo);
         return R.ok(result);
+    }
+
+    @Operation(summary = "查询血压和心率的最新时间", description = "查询血压和心率的最新时间")
+    @GetMapping("/get_newest_time")
+    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    public R get_newest_measure_time(@RequestParam Long patientUid) {
+        try {
+            JSONObject result = persureHeartRateService.getLatestMeasurementTime(patientUid);
+            return R.ok(result);
+        } catch (RuntimeException e) {
+            return R.failed(e.getMessage());
+        }
     }
 
 //    @Operation(summary = "医生端获取特别关心患者的血压异常统计", description = "医生端获取特别关心患者的血压异常统计")

@@ -57,7 +57,7 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
      boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
 
     JSONObject getNewlyPressureData(Long patientUid);
-
+    JSONObject getLatestMeasurementTime(Long patientUid);
 
     JSONObject countSdhClassificationByDoctorAndCare(Long doctorUid);
 
