@@ -209,7 +209,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
                 processedPatients.add(diagnosis.getPatientUid());
 
                 // 统计条件
-                if (diagnosis.getEarlyCvdFamilyHistory() != null && diagnosis.getEarlyCvdFamilyHistory() == 1) {
+                if (diagnosis.getEarlyCvdFamilyHistory() == 1) {
                     earlyCvdFamilyHistoryCount++;
                 }
                 if ("是".equals(diagnosis.getSmokingStatus()) || "已戒烟".equals(diagnosis.getSmokingStatus())) {
