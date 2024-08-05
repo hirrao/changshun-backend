@@ -50,13 +50,13 @@ public class AiPreDiagnosisController {
         //return R.ok(historyCounts);
     }*/
 
-    @Operation(summary = "得到客观病史", description = "得到客观病史")
+    /*@Operation(summary = "得到客观病史", description = "得到客观病史")
     @GetMapping("/newcount-patients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hiscount')")
     public R<Map<String, Integer>> getPatientDiseasesStatistics(@RequestParam Long doctorUid) {
         Map<String, Integer> statistics = aiPreDiagnosisService.getDiseasesStatistics(doctorUid);
         return R.ok(statistics);
-    }
+    }*/
 
 
 
@@ -70,13 +70,13 @@ public class AiPreDiagnosisController {
     }*/
 
 
-    /*@Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
+    @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
     @GetMapping("/countnocare-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_count')")
-    public R nocountPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
-        //Map<String, Integer> diseaseCounts = aiPreDiagnosisService.nocountPatientsWithDiseases(doctorUid);
-        //return R.ok(diseaseCounts);
-    }*/
+    public R<Map<String, Integer>> getPatientDiseasesStatistics(@RequestParam Long doctorUid) {
+        Map<String, Integer> statistics = aiPreDiagnosisService.getDiseasesStatistics(doctorUid);
+        return R.ok(statistics);
+    }
 
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")
     @PostMapping("/getAiPreDiagnosisMsg")
