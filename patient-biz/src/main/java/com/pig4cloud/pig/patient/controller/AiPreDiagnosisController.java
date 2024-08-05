@@ -61,13 +61,12 @@ public class AiPreDiagnosisController {
 
 
 
-    /*@Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
+    @Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
     @GetMapping("/count-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_carecount')")
-    public R countPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
-        //Map<String, Integer> diseaseCounts = aiPreDiagnosisService.countPatientsWithDiseases(doctorUid);
-        //return R.ok(diseaseCounts);
-    }*/
+    public Map<String, Integer> getPatientDiseasesCount(@PathVariable Long doctorUid) {
+        return aiPreDiagnosisService.getCarePatientDiseasesCount(doctorUid);
+    }
 
 
     @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
