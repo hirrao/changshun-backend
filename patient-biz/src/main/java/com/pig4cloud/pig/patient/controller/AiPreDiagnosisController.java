@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
+import com.pig4cloud.pig.patient.dto.StatisticsResult;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +51,12 @@ public class AiPreDiagnosisController {
         //return R.ok(historyCounts);
     }*/
 
-    /*@Operation(summary = "得到客观病史", description = "得到客观病史")
+    @Operation(summary = "得到客观病史", description = "得到客观病史")
     @GetMapping("/newcount-patients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hiscount')")
-    public R<Map<String, Integer>> getPatientDiseasesStatistics(@RequestParam Long doctorUid) {
-        Map<String, Integer> statistics = aiPreDiagnosisService.getDiseasesStatistics(doctorUid);
-        return R.ok(statistics);
-    }*/
+    public StatisticsResult getStatisticsByDoctor(@PathVariable Long doctorUid) {
+        return aiPreDiagnosisService.getStatisticsByDoctor(doctorUid);
+    }
 
 
 

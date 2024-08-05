@@ -1,9 +1,11 @@
 package com.pig4cloud.pig.patient.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
+import com.pig4cloud.pig.patient.dto.StatisticsResult;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper;
@@ -162,6 +164,70 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         }
 
         return diseasesCount;
+    }
+
+    @Override
+    public StatisticsResult getStatisticsByDoctor(Long doctorUid) {
+        /// 获取与医生绑定的患者
+        QueryWrapper<PatientDoctorEntity> patientDoctorQuery = new QueryWrapper<>();
+        patientDoctorQuery.eq("doctor_uid", doctorUid);
+        List<PatientDoctorEntity> patientDoctors = patientDoctorMapper.selectList(patientDoctorQuery);
+
+        Set<Long> patientUids = new HashSet<>();
+        for (PatientDoctorEntity patientDoctor : patientDoctors) {
+            patientUids.add(patientDoctor.getPatientUid());
+        }
+
+        // 查询所有与患者相关的AI预问诊记录
+        QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
+        aiPreDiagnosisQuery.in("patient_uid", patientUids);
+        List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
+
+        // 使用 Map 存储每个患者的最新记录
+        Map<Long, AiPreDiagnosisEntity> latestDiagnosisMap = new HashMap<>();
+
+        // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            Long patientUid = diagnosis.getPatientUid();
+            // 如果当前患者没有记录，或当前记录比已存储的记录新，则更新
+            if (!latestDiagnosisMap.containsKey(patientUid) ||
+                    diagnosis.getAiId() > latestDiagnosisMap.get(patientUid).getAiId()) {
+                latestDiagnosisMap.put(patientUid, diagnosis);
+            }
+        }
+
+        // 4. 统计条件
+        Set<Long> processedPatients = new HashSet<>();
+        int earlyCvdFamilyHistoryCount = 0;
+        int smokingCount = 0;
+        int drinkingCount = 0;
+        int infectiousDiseaseCount = 0;
+        int foodAllergyCount = 0;
+
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            if (!processedPatients.contains(diagnosis.getPatientUid())) {
+                processedPatients.add(diagnosis.getPatientUid());
+
+                // 统计条件
+                if (diagnosis.getEarlyCvdFamilyHistory() != null && diagnosis.getEarlyCvdFamilyHistory() == 1) {
+                    earlyCvdFamilyHistoryCount++;
+                }
+                if ("是".equals(diagnosis.getSmokingStatus()) || "已戒烟".equals(diagnosis.getSmokingStatus())) {
+                    smokingCount++;
+                }
+                if ("是".equals(diagnosis.getDrinkingStatus()) || "已戒酒".equals(diagnosis.getDrinkingStatus())) {
+                    drinkingCount++;
+                }
+                if (diagnosis.getInfectiousDiseaseHistory() != null && !diagnosis.getInfectiousDiseaseHistory().equals("无")) {
+                    infectiousDiseaseCount++;
+                }
+                if (diagnosis.getFoodAllergyHistory() != null && !diagnosis.getFoodAllergyHistory().equals("无")) {
+                    foodAllergyCount++;
+                }
+            }
+        }
+
+        return new StatisticsResult(earlyCvdFamilyHistoryCount, smokingCount, drinkingCount, infectiousDiseaseCount, foodAllergyCount);
     }
 
 
