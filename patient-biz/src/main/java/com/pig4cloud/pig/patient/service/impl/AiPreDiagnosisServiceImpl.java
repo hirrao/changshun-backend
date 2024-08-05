@@ -1,12 +1,14 @@
 package com.pig4cloud.pig.patient.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
+import com.pig4cloud.pig.patient.service.PatientDoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,40 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         this.aiPreDiagnosisMapper = aiPreDiagnosisMapper;
     }
 
+    @Autowired
+    private PatientDoctorService patientDoctorService;
+
     @Override
+    public Map<String, Integer> getDiseasesStatistics(Long doctorUid) {
+        List<Long> patientUids = patientDoctorService.getPatientUidsByDoctorUid(doctorUid);
+
+        if (patientUids.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        QueryWrapper<AiPreDiagnosisEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("patient_uid", patientUids);
+        List<AiPreDiagnosisEntity> aiPreDiagnosisList = this.list(queryWrapper);
+
+        Map<String, Integer> diseasesStatistics = new HashMap<>();
+        Set<Long> uniquePatientUids = new HashSet<>();
+
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            Long patientUid = diagnosis.getPatientUid();
+            if (!uniquePatientUids.contains(patientUid)) {
+                uniquePatientUids.add(patientUid);
+                String[] diseases = diagnosis.getDiseasesList().split(",");
+                for (String disease : diseases) {
+                    diseasesStatistics.put(disease, diseasesStatistics.getOrDefault(disease, 0) + 1);
+                }
+            }
+        }
+
+        return diseasesStatistics;
+    }
+
+
+    /*@Override
     public Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid) {
         Map<String, String> diseaseNameToKeyMap = new HashMap<>();
         diseaseNameToKeyMap.put("糖尿病", "DM");
@@ -132,7 +167,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     @Override
     public int ccountPatientsWithFoodAllergyHistory(Long doctorUid) {
         return aiPreDiagnosisMapper.ccountPatientsWithFoodAllergyHistory(doctorUid);
-    }
+    }*/
 
     @Override
     public boolean saveAiPreDiagnosis(AiPreDiagnosisEntity aiPreDiagnosis) {
@@ -228,7 +263,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         return success;
     }
 
-    @Override
+    /*@Override
     public JSONObject ccountPatientsHistory(Long doctorUid) {
         Map<String, Object> historyCounts = new LinkedHashMap<>();
 
@@ -286,5 +321,5 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
         JSONObject result = new JSONObject(historyCounts);
         return result;
-    }
+    }*/
 }

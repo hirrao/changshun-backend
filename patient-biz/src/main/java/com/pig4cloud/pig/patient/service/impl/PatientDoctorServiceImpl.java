@@ -34,6 +34,15 @@ public class PatientDoctorServiceImpl extends
 	public PatientDoctorServiceImpl(PatientDoctorMapper patientDoctorMapper) {
 		this.patientDoctorMapper = patientDoctorMapper;
 	}
+
+	@Override
+	public List<Long> getPatientUidsByDoctorUid(Long doctorUid) {
+		QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("doctor_uid", doctorUid);
+		return this.list(queryWrapper).stream()
+				.map(PatientDoctorEntity::getPatientUid)
+				.toList();
+	}
 	
 	@Override
 	public HeartRateStatsDTO getHeartRateStats(Long doctorUid) {
