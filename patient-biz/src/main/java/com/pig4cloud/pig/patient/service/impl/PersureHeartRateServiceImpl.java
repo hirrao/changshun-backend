@@ -63,9 +63,11 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         // 根据血压值和最新的 AI 预问诊记录判断分类
         String classification = determineClassification(persureHeartRate, latestDiagnosis);
+        String riskAssessment = judgeRiskByBloodPressure(persureHeartRate.getSystolic(), persureHeartRate.getDiastolic());
 
         // 设置上传时间并插入血压记录
         persureHeartRate.setSdhClassification(classification);
+        persureHeartRate.setRiskAssessment(riskAssessment);
         persureHeartRate.setUploadTime(LocalDateTime.now());
         persureHeartRateMapper.insert(persureHeartRate); // 使用 MyBatis-Plus 的 insert 方法
     }
