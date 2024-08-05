@@ -9,10 +9,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
-import com.pig4cloud.pig.patient.entity.HeartRateLogsEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
-import com.pig4cloud.pig.patient.service.impl.PressureAnomalyServiceImpl;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -286,11 +284,11 @@ public class PersureHeartRateController {
 //        return R.ok(persureHeartRateService.getYearlyAveragePressureHeartRateByMonth(yearsAgo, patientUid));
 //    }
 
-    @Operation(summary = "查询最新的血压和心率数据", description = "查询最新的血压和心率数据")
-    @GetMapping("/getNewlyPressureHeartRateData")
+    @Operation(summary = "查询最新的血压数据", description = "查询最新的血压数据")
+    @GetMapping("/getNewlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getNewlyPressureHeartRateData(@RequestParam Long patientUid) {
-        return R.ok(persureHeartRateService.getNewlyPressureHeartRateData(patientUid));
+    public R getNewlyPressureData(@RequestParam Long patientUid) {
+        return R.ok(persureHeartRateService.getNewlyPressureData(patientUid));
     }
 
     // 以下接口来自原数据库血压异常记录统计表 pressure_anomaly_logs

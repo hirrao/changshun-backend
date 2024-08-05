@@ -776,12 +776,11 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 //    }
 
     @Override
-    public JSONObject getNewlyPressureHeartRateData(Long patientUid) {
+    public JSONObject getNewlyPressureData(Long patientUid) {
         PersureHeartRateEntity measure =  persureHeartRateMapper.getLatestMeasurement(patientUid);
         JSONObject data = new JSONObject();
         data.put("收缩压", measure.getSystolic());
         data.put("舒张压", measure.getDiastolic());
-        // data.put("心率", measure.getHeartRate());
         data.put("风险评估", measure.getRiskAssessment());
         data.put("时间", measure.getUploadTime());
         return data;
