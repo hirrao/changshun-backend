@@ -8,7 +8,7 @@ import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import java.util.Map;
 
 public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
-    Map<String, Double> getDiseaseStats(Long doctorUid);
+    Map<String, Integer> getPatientDiseasesCount(Long doctorUid);
 
     /*Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid);
 

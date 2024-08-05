@@ -11,6 +11,7 @@ import java.util.List;
 
 @Mapper
 public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
+
     /*@Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
             "WHERE patient_uid IN " +
             "(SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid} ) " +

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.EatDrugAlertEntity;
+import com.pig4cloud.pig.patient.request.AddDrugAlertRequest;
 import com.pig4cloud.pig.patient.service.EatDrugAlertService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
@@ -72,6 +73,18 @@ public class EatDrugAlertController {
     public R getById(@PathVariable("pdeId" ) Long pdeId) {
         return R.ok(eatDrugAlertService.getById(pdeId));
     }
+    
+    /**
+     * 通过id查询用药管理表
+     * @param pdeId id
+     * @return R
+     */
+    @Operation(summary = "通过患者id查询所有用药计划" , description = "通过患者id查询所有用药计划" )
+    @GetMapping("/get_drug/{patientUid}" )
+    @PreAuthorize("@pms.hasPermission('patient_eatDrugAlert_view')" )
+    public R getDrugList(@PathVariable("patientUid" ) Long patientUid) {
+        return eatDrugAlertService.getDrugList(patientUid);
+    }
 
     /**
      * 新增用药管理表
@@ -85,6 +98,21 @@ public class EatDrugAlertController {
     public R save(@RequestBody EatDrugAlertEntity eatDrugAlert) {
         return R.ok(eatDrugAlertService.save(eatDrugAlert));
     }
+    
+    /**
+     * 新增用药计划
+     * @param eatDrugAlert 用药管理表
+     * @return R
+     */
+    @Operation(summary = "新增用药计划" , description = "新增用药计划" )
+    @SysLog("新增用药计划" )
+    @PostMapping("/add_drug_alert")
+    @PreAuthorize("@pms.hasPermission('patient_eatDrugAlert_add')" )
+    public R addDrugAlert(@RequestBody AddDrugAlertRequest eatDrugAlert) {
+        return eatDrugAlertService.addDrugAlert(eatDrugAlert);
+    }
+    
+    
 
     /**
      * 修改用药管理表
