@@ -83,9 +83,25 @@ public class PatientDeviceController {
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_patientDevice_add')" )
     public R save(@RequestBody PatientDeviceEntity patientDevice) {
-        return R.ok(patientDeviceService.save(patientDevice));
+        return patientDeviceService.addPatientDevice(patientDevice);
     }
 
+    @Operation(summary = "取消设备绑定",description = "取消设备绑定")
+    @SysLog("解除绑定")
+    @PostMapping
+    @PreAuthorize("@pms.hasPermission('patient_patientDevice_add')" )
+    public R unbindDevice(@RequestBody PatientDeviceEntity patientDevice) {
+        return patientDeviceService.unbindDevice(patientDevice);
+    }
+	
+	@Operation(summary = "同步设备数据",description = "同步设备数据")
+	@SysLog("同步设备数据")
+	@PostMapping
+	@PreAuthorize("@pms.hasPermission('patient_patientDevice_add')" )
+	public R syncDeviceData(@RequestBody PatientDeviceEntity patientDevice) {
+		return R.ok();
+	}
+	
     /**
      * 修改
      * @param patientDevice 

@@ -169,4 +169,13 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
 
         return pressureData;
     }
+
+    @Override
+    public JSONObject getNewlyPressureData(Long patientUid) {
+        HeartRateLogsEntity measure =  heartRateLogsMapper.getLatestMeasurement(patientUid);
+        JSONObject data = new JSONObject();
+        data.put("心率", measure.getHeartRate());
+        data.put("时间", measure.getUploadTime());
+        return data;
+    }
 }

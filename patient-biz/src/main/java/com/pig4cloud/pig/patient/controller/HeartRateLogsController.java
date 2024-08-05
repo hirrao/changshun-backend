@@ -157,4 +157,10 @@ public class HeartRateLogsController {
         return R.ok(result);
     }
 
+    @Operation(summary = "查询最新的心率数据", description = "查询最新的心率数据")
+    @GetMapping("/get_newly_heart_rate_data")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
+    public R getNewlyHeartRateData(@RequestParam Long patientUid) {
+        return R.ok(heartRateLogsService.getNewlyPressureData(patientUid));
+    }
 }
