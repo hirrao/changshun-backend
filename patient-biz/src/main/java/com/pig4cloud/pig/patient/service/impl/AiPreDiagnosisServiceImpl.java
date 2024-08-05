@@ -1,12 +1,15 @@
 package com.pig4cloud.pig.patient.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
+import com.pig4cloud.pig.patient.service.PatientDoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 import java.text.DecimalFormat;
+import java.util.stream.Collectors;
 /**
  * AI预问诊
  *
@@ -33,7 +37,47 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         this.aiPreDiagnosisMapper = aiPreDiagnosisMapper;
     }
 
+    @Autowired
+    private PatientDoctorService patientDoctorService;
+
     @Override
+    public Map<String, Integer> getDiseasesStatistics(Long doctorUid) {
+        // 1. 查询与医生绑定的患者
+        List<PatientDoctorEntity> patients = patientDoctorMapper.selectPatientsByDoctorUid(doctorUid);
+        List<Long> patientUids = patients.stream()
+                .map(PatientDoctorEntity::getPatientUid)
+                .distinct() // 去重
+                .collect(Collectors.toList());
+
+        // 2. 查询这些患者的AI预问诊数据
+        List<AiPreDiagnosisEntity> diagnosisList = aiPreDiagnosisMapper.selectByPatientUids(patientUids);
+
+        // 3. 统计伴随疾病的数量
+        Map<String, Integer> diseaseCount = new HashMap<>();
+
+        for (AiPreDiagnosisEntity diagnosis : diagnosisList) {
+            if (diagnosis.getDiseasesList() != null) {
+                String[] diseases = diagnosis.getDiseasesList().split(",");
+                for (String disease : diseases) {
+                    disease = disease.trim(); // 去除空格
+                    diseaseCount.put(disease, diseaseCount.getOrDefault(disease, 0) + 1);
+                }
+            }
+        }
+
+        // 4. 确保返回的疾病类型
+        Map<String, Integer> result = new HashMap<>();
+        String[] allDiseases = {"血脂异常", "脑血管病", "心脏疾病", "肾脏疾病", "周围血管病", "视网膜病变", "糖尿病", "其他"};
+        for (String disease : allDiseases) {
+            result.put(disease, diseaseCount.getOrDefault(disease, 0));
+        }
+
+        return result;
+    }
+
+
+
+    /*@Override
     public Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid) {
         Map<String, String> diseaseNameToKeyMap = new HashMap<>();
         diseaseNameToKeyMap.put("糖尿病", "DM");
@@ -132,7 +176,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     @Override
     public int ccountPatientsWithFoodAllergyHistory(Long doctorUid) {
         return aiPreDiagnosisMapper.ccountPatientsWithFoodAllergyHistory(doctorUid);
-    }
+    }*/
 
     @Override
     public boolean saveAiPreDiagnosis(AiPreDiagnosisEntity aiPreDiagnosis) {
@@ -228,7 +272,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         return success;
     }
 
-    @Override
+    /*@Override
     public JSONObject ccountPatientsHistory(Long doctorUid) {
         Map<String, Object> historyCounts = new LinkedHashMap<>();
 
@@ -286,5 +330,5 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
         JSONObject result = new JSONObject(historyCounts);
         return result;
-    }
+    }*/
 }

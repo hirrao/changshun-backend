@@ -8,8 +8,9 @@ import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import java.util.Map;
 
 public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
+    Map<String, Integer> getDiseasesStatistics(Long doctorUid);
 
-    Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid);
+    /*Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid);
 
     Map<String, Integer> countPatientsWithDiseases(Long doctorUid);
 
@@ -31,7 +32,7 @@ public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
 
     int ccountPatientsWithInfectiousHistory(Long doctorUid);
 
-    int ccountPatientsWithFoodAllergyHistory(Long doctorUid);
+    int ccountPatientsWithFoodAllergyHistory(Long doctorUid);*/
 
     boolean saveAiPreDiagnosis(AiPreDiagnosisEntity aiPreDiagnosis);
 
@@ -39,6 +40,6 @@ public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
 
     Boolean calculateIsClinical(AiPreDiagnosisEntity aiPreDiagnosis);
 
-    JSONObject ccountPatientsHistory(Long doctorUid);
-    JSONObject countPatientsHistory(Long doctorUid);
+    /*JSONObject ccountPatientsHistory(Long doctorUid);
+    JSONObject countPatientsHistory(Long doctorUid);*/
 }

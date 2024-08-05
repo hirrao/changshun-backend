@@ -7,9 +7,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
-    @Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
+    /*@Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
             "WHERE patient_uid IN " +
             "(SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid} ) " +
             "AND (FIND_IN_SET(#{disease}, diseases_list) > 0)")
@@ -101,6 +103,8 @@ public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
             "   SELECT patient_uid FROM patient_doctor " +
             "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
             ")")
-    int ccountPatientsWithFoodAllergyHistory(@Param("doctorUid") Long doctorUid);
+    int ccountPatientsWithFoodAllergyHistory(@Param("doctorUid") Long doctorUid);*/
+
+    List<AiPreDiagnosisEntity> selectByPatientUids(List<Long> patientUids);
 
 }

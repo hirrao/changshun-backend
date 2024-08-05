@@ -5,7 +5,11 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.dto.HeartRateStatsDTO;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 
+import java.util.List;
+
 public interface PatientDoctorService extends IService<PatientDoctorEntity> {
+
+	List<Long> getPatientUidsByDoctorUid(Long doctorUid);
 	
 	HeartRateStatsDTO getHeartRateStats(Long doctorUid);
 	

@@ -42,41 +42,41 @@ public class AiPreDiagnosisController {
 
     private final  AiPreDiagnosisService aiPreDiagnosisService;
 
-    @Operation(summary = "得到特别关心客观病史", description = "得到特别关心客观病史")
+    /*@Operation(summary = "得到特别关心客观病史", description = "得到特别关心客观病史")
     @GetMapping("/count-cpatients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hisccount')")
     public R ccountPatientsHistory(@PathVariable Long doctorUid) {
-        JSONObject historyCounts = aiPreDiagnosisService.ccountPatientsHistory(doctorUid);
-        return R.ok(historyCounts);
-    }
+        //JSONObject historyCounts = aiPreDiagnosisService.ccountPatientsHistory(doctorUid);
+        //return R.ok(historyCounts);
+    }*/
 
     @Operation(summary = "得到客观病史", description = "得到客观病史")
     @GetMapping("/count-patients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hiscount')")
-    public R countPatientsHistory(@PathVariable Long doctorUid) {
-        JSONObject historyCounts = aiPreDiagnosisService.countPatientsHistory(doctorUid);
-        return R.ok(historyCounts);
+    public R<Map<String, Integer>> getPatientDiseasesStatistics(@RequestParam Long doctorUid) {
+        Map<String, Integer> statistics = aiPreDiagnosisService.getDiseasesStatistics(doctorUid);
+        return R.ok(statistics);
     }
 
 
 
 
-    @Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
+    /*@Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
     @GetMapping("/count-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_carecount')")
     public R countPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
-        Map<String, Integer> diseaseCounts = aiPreDiagnosisService.countPatientsWithDiseases(doctorUid);
-        return R.ok(diseaseCounts);
-    }
+        //Map<String, Integer> diseaseCounts = aiPreDiagnosisService.countPatientsWithDiseases(doctorUid);
+        //return R.ok(diseaseCounts);
+    }*/
 
 
-    @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
+    /*@Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
     @GetMapping("/countnocare-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_count')")
     public R nocountPatientsWithDiseases(@PathVariable("doctorUid") Long doctorUid) {
-        Map<String, Integer> diseaseCounts = aiPreDiagnosisService.nocountPatientsWithDiseases(doctorUid);
-        return R.ok(diseaseCounts);
-    }
+        //Map<String, Integer> diseaseCounts = aiPreDiagnosisService.nocountPatientsWithDiseases(doctorUid);
+        //return R.ok(diseaseCounts);
+    }*/
 
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")
     @PostMapping("/getAiPreDiagnosisMsg")
