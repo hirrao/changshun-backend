@@ -105,6 +105,5 @@ public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
             ")")
     int ccountPatientsWithFoodAllergyHistory(@Param("doctorUid") Long doctorUid);*/
 
-    List<AiPreDiagnosisEntity> selectByPatientUids(List<Long> patientUids);
 
 }

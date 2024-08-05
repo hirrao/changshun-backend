@@ -31,6 +31,5 @@ public interface PatientDoctorMapper extends BaseMapper<PatientDoctorEntity> {
     int getDoctorCountByCare(@Param("doctorUid") Long doctorUid);
 
 
-    List<PatientDoctorEntity> selectPatientsByDoctorUid(Long doctorUid);
 
 }
