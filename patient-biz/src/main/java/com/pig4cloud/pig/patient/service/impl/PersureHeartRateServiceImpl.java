@@ -9,9 +9,11 @@ import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.entity.PressureAnomalyEntity;
+import com.pig4cloud.pig.patient.mapper.HeartRateLogsMapper;
 import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
+import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,12 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     private PatientBaseMapper patientBaseMapper;
     @Autowired
     private PatientDoctorMapper patientDoctorMapper;
+    @Autowired
+    private HeartRateLogsMapper heartRateLogsMapper;
+    @Autowired
+    private PersureHeartRateService persureHeartRateService;
+    @Autowired
+    private HeartRateLogsService heartRateLogsService;
 
     @Override
     public boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate) {
@@ -621,6 +629,45 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         LocalDateTime startOfYear = date.withDayOfYear(1).atStartOfDay();
         LocalDateTime endOfYear = date.with(TemporalAdjusters.lastDayOfYear()).atTime(23, 59, 59);
         return getMaxMinAvgPressureDiff(startOfYear, endOfYear, patientUid);
+    }
+
+    @Override
+    public JSONObject getLatestMeasurementTime(Long patientUid) {
+        LocalDateTime latestPressureTime = LocalDateTime.parse(persureHeartRateService.getNewlyPressureData(patientUid)
+                .getString("时间"));
+        LocalDateTime latestHeartRateTime = LocalDateTime.parse(heartRateLogsService.getNewlyHeartRateData(patientUid)
+                .getString("时间"));
+        LocalDateTime latestTime = null;
+        String source = "";
+
+        // 比较两个时间并选择最新的
+        if (latestPressureTime != null && latestHeartRateTime != null) {
+            if (latestPressureTime.isAfter(latestHeartRateTime)) {
+                latestTime = latestPressureTime;
+                source = "Blood Pressure";
+            } else {
+                latestTime = latestHeartRateTime;
+                source = "Heart Rate";
+            }
+        } else if (latestPressureTime != null) {
+            latestTime = latestPressureTime;
+            source = "Blood Pressure";
+        } else if (latestHeartRateTime != null) {
+            latestTime = latestHeartRateTime;
+            source = "Heart Rate";
+        }
+
+        // 如果两个数据都没有测量时间
+        if (latestTime == null) {
+            throw new RuntimeException("No measurement data available for the patient.");
+        }
+
+        // 构建返回结果
+        JSONObject result = new JSONObject();
+        result.put("latestTime", latestTime.toString());
+        result.put("source", source);
+
+        return result;
     }
 
 //    @Override

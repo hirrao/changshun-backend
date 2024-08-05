@@ -171,7 +171,7 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
     }
 
     @Override
-    public JSONObject getNewlyPressureData(Long patientUid) {
+    public JSONObject getNewlyHeartRateData(Long patientUid) {
         HeartRateLogsEntity measure =  heartRateLogsMapper.getLatestMeasurement(patientUid);
         JSONObject data = new JSONObject();
         data.put("心率", measure.getHeartRate());

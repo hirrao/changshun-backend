@@ -161,6 +161,6 @@ public class HeartRateLogsController {
     @GetMapping("/get_newly_heart_rate_data")
     @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
     public R getNewlyHeartRateData(@RequestParam Long patientUid) {
-        return R.ok(heartRateLogsService.getNewlyPressureData(patientUid));
+        return R.ok(heartRateLogsService.getNewlyHeartRateData(patientUid));
     }
 }

@@ -11,5 +11,5 @@ public interface HeartRateLogsService extends IService<HeartRateLogsEntity> {
     JSONArray getMonthlyHeartRateData(int monthsAgo, Long patientUid);
     JSONArray getYearlyHeartRateData(int yearsAgo, Long patientUid);
 
-    JSONObject getNewlyPressureData(Long patientUid);
+    JSONObject getNewlyHeartRateData(Long patientUid);
 }

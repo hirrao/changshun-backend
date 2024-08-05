@@ -98,6 +98,7 @@ public class PatientBaseController {
 	@GetMapping("/get_name_sex_age")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
 	public R getPatientNameSexAge(@RequestParam Long patientUid) {
+		System.out.println(patientUid);
 		return R.ok(patientBaseService.getPatientNameSexAge(patientUid));
 	}
 
