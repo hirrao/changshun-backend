@@ -51,6 +51,15 @@ public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
 
+
+    @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
+    @PostMapping("/add")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
+    public R<Void> addBloodPressure(@RequestBody PersureHeartRateEntity persureHeartRate) {
+        persureHeartRateService.addBloodPressure(persureHeartRate);
+        return R.ok(); // 返回成功信息
+    }
+
     @Operation(summary = "查询最近十天血压统计次数" , description = "查询最近十天血压统计次数" )
     @GetMapping("/recent-ten-days/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_persurecount_view')" )

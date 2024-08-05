@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface PersureHeartRateService extends IService<PersureHeartRateEntity> {
+
+    void addBloodPressure(PersureHeartRateEntity persureHeartRate);
+
+
     JSONObject classifyAllBloodPressure(Long patientUid);
     String getCurrentRiskAssessment(Long patientUid);
     String judgeRiskByBloodPressure(float systolic, float diastolic);

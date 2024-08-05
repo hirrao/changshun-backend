@@ -5,14 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
-import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
-import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
-import com.pig4cloud.pig.patient.entity.PressureAnomalyEntity;
-import com.pig4cloud.pig.patient.mapper.HeartRateLogsMapper;
-import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
-import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
-import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
+import com.pig4cloud.pig.patient.entity.*;
+import com.pig4cloud.pig.patient.mapper.*;
 import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -45,6 +39,67 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     private HeartRateLogsMapper heartRateLogsMapper;
     @Autowired
     private HeartRateLogsService heartRateLogsService;
+    @Autowired
+    private AiPreDiagnosisMapper aiPreDiagnosisMapper;
+
+    @Override
+    public void addBloodPressure(PersureHeartRateEntity persureHeartRate) {
+        // 查询与患者相关的 AI 预问诊记录
+        LambdaQueryWrapper<AiPreDiagnosisEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AiPreDiagnosisEntity::getPatientUid, persureHeartRate.getPatientUid());
+        List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(queryWrapper);
+
+        // 使用 Map 存储每个患者的最新记录
+        Map<Long, AiPreDiagnosisEntity> latestDiagnosisMap = new HashMap<>();
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            Long patientUid = diagnosis.getPatientUid();
+            if (!latestDiagnosisMap.containsKey(patientUid) || diagnosis.getAiId() > latestDiagnosisMap.get(patientUid).getAiId()) {
+                latestDiagnosisMap.put(patientUid, diagnosis);
+            }
+        }
+
+        // 获取当前患者的最新记录
+        AiPreDiagnosisEntity latestDiagnosis = latestDiagnosisMap.get(persureHeartRate.getPatientUid());
+
+        // 根据血压值和最新的 AI 预问诊记录判断分类
+        String classification = determineClassification(persureHeartRate, latestDiagnosis);
+
+        // 设置上传时间并插入血压记录
+        persureHeartRate.setSdhClassification(classification);
+        persureHeartRate.setUploadTime(LocalDateTime.now());
+        persureHeartRateMapper.insert(persureHeartRate); // 使用 MyBatis-Plus 的 insert 方法
+    }
+
+    private String determineClassification(PersureHeartRateEntity heartRate, AiPreDiagnosisEntity diagnosis) {
+        if (heartRate.getSystolic() >= 180 || heartRate.getDiastolic() >= 110) {
+            return "三级高血压高危";
+        } else if (heartRate.getSystolic() >= 160 && heartRate.getSystolic() <= 179 ||
+                heartRate.getDiastolic() >= 100 && heartRate.getDiastolic() <= 109) {
+            // 二级高血压逻辑
+            if (diagnosis != null) {
+                if (diagnosis.getIsClinical() != null && diagnosis.getIsClinical()) {
+                    return "二级高血压高危";
+                } else if (diagnosis.getDangerReason() != null && diagnosis.getDangerReason() <= 2) {
+                    return "二级高血压中危";
+                }
+            }
+            return "二级高血压高危";
+        } else if (heartRate.getSystolic() >= 140 && heartRate.getSystolic() <= 159 ||
+                heartRate.getDiastolic() >= 90 && heartRate.getDiastolic() <= 99) {
+            // 一级高血压逻辑
+            if (diagnosis != null) {
+                if (diagnosis.getIsClinical() != null && diagnosis.getIsClinical()) {
+                    return "一级高血压高危";
+                } else if (diagnosis.getDangerReason() != null && diagnosis.getDangerReason() == 0) {
+                    return "一级高血压低危";
+                } else if (diagnosis.getDangerReason() != null && diagnosis.getDangerReason() <= 2) {
+                    return "一级高血压中危";
+                }
+            }
+            return "一级高血压高危";
+        }
+        return "未分类";
+    }
 
     @Override
     public boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate) {
@@ -52,6 +107,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         persureHeartRate.setRiskAssessment(riskAssessment);
         return save(persureHeartRate);
     }
+
+
 
     @Override
     public String judgeRiskByBloodPressure(float systolic, float diastolic){
