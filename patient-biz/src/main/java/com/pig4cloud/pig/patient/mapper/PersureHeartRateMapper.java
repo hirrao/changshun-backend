@@ -21,34 +21,34 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	PersureHeartRateEntity selectTodayMinHeartRate(@Param("patientUid") Long patientUid);
 
 	@Select("SELECT systolic, diastolic, risk_assessment, upload_time " +
-			"FROM pressure_logs " +
+			"FROM persure_heart_rate " +
 			"WHERE patient_uid = #{patientUid} " +
 			"ORDER BY upload_time DESC " +
 			"LIMIT 1")
 	PersureHeartRateEntity getLatestMeasurement(@Param("patientUid") Long patientUid);
 
-	@Select("SELECT COUNT(*) FROM pressure_logs " +
+	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
 	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
 	 +
 	 "AND DATE(upload_time) = CURDATE() " +
 	 "AND heart_rate < 60")
 	int countPatientsWithLowHeartRate(@Param("doctorUid") Long doctorUid);
 	
-//	@Select("SELECT COUNT(*) FROM pressure_logs " +
+//	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
 //	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
 //	 +
 //	 "AND DATE(upload_time) = CURDATE() " +
 //	 "AND heart_rate >= 60 AND heart_rate <= 100")
 //	int countPatientsWithNormalHeartRate(@Param("doctorUid") Long doctorUid);
 	
-//	@Select("SELECT COUNT(*) FROM pressure_logs " +
+//	@Select("SELECT COUNT(*) FROM persure_heart_rate " +
 //	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
 //	 +
 //	 "AND DATE(upload_time) = CURDATE() " +
 //	 "AND heart_rate > 100")
 //	int countPatientsWithHighHeartRate(@Param("doctorUid") Long doctorUid);
 
-//	@Select("SELECT COUNT(*) FROM pressure_logs phr " +
+//	@Select("SELECT COUNT(*) FROM persure_heart_rate phr " +
 //			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
 //			"WHERE pd.doctor_uid = #{doctorUid} " +
 //			"AND DATE(phr.upload_time) = CURDATE() " +
@@ -56,7 +56,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 //			"AND pd.care = 1")
 //	int ccountPatientsWithLowHeartRate(@Param("doctorUid") Long doctorUid);
 
-//	@Select("SELECT COUNT(*) FROM pressure_logs phr " +
+//	@Select("SELECT COUNT(*) FROM persure_heart_rate phr " +
 //			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
 //			"WHERE pd.doctor_uid = #{doctorUid} " +
 //			"AND DATE(phr.upload_time) = CURDATE() " +
@@ -64,7 +64,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 //			"AND pd.care = 1")
 //	int ccountPatientsWithNormalHeartRate(@Param("doctorUid") Long doctorUid);
 
-//	@Select("SELECT COUNT(*) FROM pressure_logs phr " +
+//	@Select("SELECT COUNT(*) FROM persure_heart_rate phr " +
 //			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
 //			"WHERE pd.doctor_uid = #{doctorUid} " +
 //			"AND DATE(phr.upload_time) = CURDATE() " +
@@ -72,7 +72,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 //			"AND pd.care = 1")
 //	int ccountPatientsWithHighHeartRate(@Param("doctorUid") Long doctorUid);
 	
-	@Update("UPDATE pressure_logs phr " +
+	@Update("UPDATE persure_heart_rate phr " +
 	 "SET sdh_classification = " +
 	 "CASE " +
 	 "   WHEN phr.systolic BETWEEN 140 AND 159 OR phr.diastolic BETWEEN 90 AND 99 THEN " +
@@ -135,7 +135,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	void updateSdhClassification(@Param("sdhId") Long sdhId, @Param("patientUid") Long patientUid);
 	
 	@Select("SELECT sdh_classification, COUNT(*) AS count " +
-	 "FROM pressure_logs phr " +
+	 "FROM persure_heart_rate phr " +
 	 "JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
 	 "WHERE pd.doctor_uid = #{doctorUid} " +
 	 "  AND pd.care = 1 " +
@@ -145,7 +145,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	 @Param("doctorUid") Long doctorUid);
 	
 	@Select("SELECT sdh_classification, COUNT(*) AS count " +
-	 "FROM pressure_logs phr " +
+	 "FROM persure_heart_rate phr " +
 	 "JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
 	 "WHERE pd.doctor_uid = #{doctorUid} " +
 	 "  AND DATE(phr.upload_time) = CURDATE() " +
@@ -154,7 +154,7 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	 @Param("doctorUid") Long doctorUid);
 
 	@Select("SELECT DATE(p.upload_time) AS date, COUNT(*) AS count " +
-			"FROM pressure_logs p " +
+			"FROM persure_heart_rate p " +
 			"JOIN patient_doctor pd ON p.patient_uid = pd.patient_uid " +
 			"WHERE pd.doctor_uid = #{doctorUid} " +
 			"AND p.upload_time >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) " +
@@ -174,20 +174,20 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 
 
 	@Select("SELECT risk_assessment, COUNT(*) AS count " +
-			"FROM pressure_logs " +
+			"FROM persure_heart_rate " +
 			"WHERE patient_uid = #{patientUid} AND DATE(upload_time) = #{date} " +
 			"GROUP BY risk_assessment")
 	List<Map<String, Object>> getRiskAssessmentCountByDate(@Param("patientUid") Long patientUid, @Param("date") LocalDate date);
 
 	@Select("SELECT risk_assessment, COUNT(*) AS count " +
-			"FROM pressure_logs " +
+			"FROM persure_heart_rate " +
 			"WHERE patient_uid = #{patientUid} " +
 			"AND upload_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) " +
 			"GROUP BY risk_assessment")
 	List<Map<String, Object>> getRiskAssessmentCountLastSevenDays(@Param("patientUid") Long patientUid);
 
 	@Select("SELECT risk_assessment, COUNT(*) AS count " +
-			"FROM pressure_logs " +
+			"FROM persure_heart_rate " +
 			"WHERE patient_uid = #{patientUid} " +
 			"AND YEARWEEK(upload_time, 1) = YEARWEEK(CURDATE() - INTERVAL #{weeksAgo} WEEK, 1) " +
 			"GROUP BY risk_assessment")
