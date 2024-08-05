@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: prod # 部署时一定是prod才行，linux服务器测试可以使用dev借助IDEA远程运行
+    active: dev # 部署时一定是prod才行，linux服务器测试可以使用dev借助IDEA远程运行
 
 wxchat:
   appid: wxe23d19faaffb93f6

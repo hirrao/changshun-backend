@@ -44,8 +44,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     @Autowired
     private HeartRateLogsMapper heartRateLogsMapper;
     @Autowired
-    private PersureHeartRateService persureHeartRateService;
-    @Autowired
     private HeartRateLogsService heartRateLogsService;
 
     @Override
@@ -633,7 +631,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
     @Override
     public JSONObject getLatestMeasurementTime(Long patientUid) {
-        LocalDateTime latestPressureTime = LocalDateTime.parse(persureHeartRateService.getNewlyPressureData(patientUid)
+        LocalDateTime latestPressureTime = LocalDateTime.parse(getNewlyPressureData(patientUid)
                 .getString("时间"));
         LocalDateTime latestHeartRateTime = LocalDateTime.parse(heartRateLogsService.getNewlyHeartRateData(patientUid)
                 .getString("时间"));
