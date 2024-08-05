@@ -51,7 +51,7 @@ public class AiPreDiagnosisController {
     }*/
 
     @Operation(summary = "得到客观病史", description = "得到客观病史")
-    @GetMapping("/count-patients-history/{doctorUid}")
+    @GetMapping("/newcount-patients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hiscount')")
     public R<Map<String, Integer>> getPatientDiseasesStatistics(@RequestParam Long doctorUid) {
         Map<String, Integer> statistics = aiPreDiagnosisService.getDiseasesStatistics(doctorUid);
