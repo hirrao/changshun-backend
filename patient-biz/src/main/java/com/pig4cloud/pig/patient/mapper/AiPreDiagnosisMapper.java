@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
     /*@Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
@@ -102,5 +104,7 @@ public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
             "   WHERE doctor_uid = #{doctorUid} AND care = 1" +
             ")")
     int ccountPatientsWithFoodAllergyHistory(@Param("doctorUid") Long doctorUid);*/
+
+    List<AiPreDiagnosisEntity> selectByPatientUids(List<Long> patientUids);
 
 }

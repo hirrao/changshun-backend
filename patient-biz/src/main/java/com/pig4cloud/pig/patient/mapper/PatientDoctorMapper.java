@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface PatientDoctorMapper extends BaseMapper<PatientDoctorEntity> {
 
@@ -27,5 +29,8 @@ public interface PatientDoctorMapper extends BaseMapper<PatientDoctorEntity> {
 
     @Select("SELECT COUNT(*) FROM patient_doctor WHERE doctor_uid = #{doctorUid} AND care = 1")
     int getDoctorCountByCare(@Param("doctorUid") Long doctorUid);
+
+
+    List<PatientDoctorEntity> selectPatientsByDoctorUid(Long doctorUid);
 
 }

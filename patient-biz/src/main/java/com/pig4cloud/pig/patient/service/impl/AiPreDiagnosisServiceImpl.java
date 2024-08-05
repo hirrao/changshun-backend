@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 import java.text.DecimalFormat;
+import java.util.stream.Collectors;
 /**
  * AI预问诊
  *
@@ -40,32 +42,39 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
     @Override
     public Map<String, Integer> getDiseasesStatistics(Long doctorUid) {
-        List<Long> patientUids = patientDoctorService.getPatientUidsByDoctorUid(doctorUid);
+        // 1. 查询与医生绑定的患者
+        List<PatientDoctorEntity> patients = patientDoctorMapper.selectPatientsByDoctorUid(doctorUid);
+        List<Long> patientUids = patients.stream()
+                .map(PatientDoctorEntity::getPatientUid)
+                .distinct() // 去重
+                .collect(Collectors.toList());
 
-        if (patientUids.isEmpty()) {
-            return new HashMap<>();
-        }
+        // 2. 查询这些患者的AI预问诊数据
+        List<AiPreDiagnosisEntity> diagnosisList = aiPreDiagnosisMapper.selectByPatientUids(patientUids);
 
-        QueryWrapper<AiPreDiagnosisEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("patient_uid", patientUids);
-        List<AiPreDiagnosisEntity> aiPreDiagnosisList = this.list(queryWrapper);
+        // 3. 统计伴随疾病的数量
+        Map<String, Integer> diseaseCount = new HashMap<>();
 
-        Map<String, Integer> diseasesStatistics = new HashMap<>();
-        Set<Long> uniquePatientUids = new HashSet<>();
-
-        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
-            Long patientUid = diagnosis.getPatientUid();
-            if (!uniquePatientUids.contains(patientUid)) {
-                uniquePatientUids.add(patientUid);
+        for (AiPreDiagnosisEntity diagnosis : diagnosisList) {
+            if (diagnosis.getDiseasesList() != null) {
                 String[] diseases = diagnosis.getDiseasesList().split(",");
                 for (String disease : diseases) {
-                    diseasesStatistics.put(disease, diseasesStatistics.getOrDefault(disease, 0) + 1);
+                    disease = disease.trim(); // 去除空格
+                    diseaseCount.put(disease, diseaseCount.getOrDefault(disease, 0) + 1);
                 }
             }
         }
 
-        return diseasesStatistics;
+        // 4. 确保返回的疾病类型
+        Map<String, Integer> result = new HashMap<>();
+        String[] allDiseases = {"血脂异常", "脑血管病", "心脏疾病", "肾脏疾病", "周围血管病", "视网膜病变", "糖尿病", "其他"};
+        for (String disease : allDiseases) {
+            result.put(disease, diseaseCount.getOrDefault(disease, 0));
+        }
+
+        return result;
     }
+
 
 
     /*@Override
