@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
@@ -152,5 +153,13 @@ public class PatientBaseServiceImpl extends
 		mapData.put("female2", ccountFemalePatientsUnderEqual66(doctorUid));
 		JSONObject data = new JSONObject(mapData);
 		return data;
+	}
+
+	@Override
+	public void editPhysicalStrength(Long patientUid, int physicalStrength) {
+		LambdaQueryWrapper<PatientBaseEntity> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(PatientBaseEntity::getPatientUid, patientUid).last("limit 1");
+		PatientBaseEntity patient = patientBaseMapper.selectOne(queryWrapper);
+		patient.setPhysicalStrength(physicalStrength);
 	}
 }

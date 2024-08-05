@@ -45,7 +45,7 @@ public class PatientBaseEntity extends Model<PatientBaseEntity> {
 	 * physicalStrength
 	 */
 	@Schema(description = "physicalStrength")
-	private String physicalStrength;
+	private Integer physicalStrength;
 	
 	/**
 	 * sex

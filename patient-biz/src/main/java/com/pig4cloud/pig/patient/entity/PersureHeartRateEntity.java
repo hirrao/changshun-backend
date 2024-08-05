@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * @date 2024-07-04 20:02:22
  */
 @Data
-@TableName("pressure_logs")
+@TableName("persure_heart_rate")
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "患者血压数据")
 public class PersureHeartRateEntity extends Model<PersureHeartRateEntity> {

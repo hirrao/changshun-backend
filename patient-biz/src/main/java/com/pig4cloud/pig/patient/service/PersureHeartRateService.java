@@ -15,9 +15,9 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     String judgeRiskByBloodPressure(float systolic, float diastolic);
     PersureHeartRateEntity getTodayMaxBloodPressure(Long patientUid);
     PersureHeartRateEntity getTodayMinHeartRate(Long patientUid);
-    JSONArray getWeeklyPressureHeartRateData(int weeksAgo, Long patientUid);
-    JSONArray getMonthlyPressureHeartRateData(int monthsAgo, Long patientUid);
-    JSONArray getYearlyPressureHeartRateData(int yearsAgo, Long patientUid);
+    JSONArray getWeeklyPressureData(int weeksAgo, Long patientUid);
+    JSONArray getMonthlyPressureData(int monthsAgo, Long patientUid);
+    JSONArray getYearlyPressureData(int yearsAgo, Long patientUid);
 
     JSONObject getDailyMaxMinAvgSystolic(Long patientUid);
     JSONObject getWeeklyMaxMinAvgSystolic(Long patientUid);

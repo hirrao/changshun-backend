@@ -24,14 +24,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 患者基本信息
@@ -88,7 +81,14 @@ public class PatientBaseController {
 		wrapper.setEntity(patientBase);
 		return R.ok(patientBaseService.list(wrapper));
 	}
-	
+
+	@Operation(summary = "修改患者体力状况", description = "修改患者体力状况")
+	@PutMapping("/edit_physical_strength")
+	@PreAuthorize("@pms.hasPermission('patient_patientBase_edit')")
+	public R editPhysicalStrength(@RequestParam Long patientUid, @RequestParam int physicalStrength) {
+		patientBaseService.editPhysicalStrength(patientUid, physicalStrength);
+		return R.ok();
+	}
 	
 	/**
 	 * 通过id查询患者基本信息

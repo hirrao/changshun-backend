@@ -111,7 +111,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONArray getWeeklyPressureHeartRateData(int weeksAgo, Long patientUid) {
+    public JSONArray getWeeklyPressureData(int weeksAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
         LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
@@ -131,18 +131,15 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             LocalDate recordDate = entry.getKey();
             JSONArray systolicArray = new JSONArray();
             JSONArray diastolicArray = new JSONArray();
-            JSONArray heartRateArray = new JSONArray();
 
             for (PersureHeartRateEntity record : entry.getValue()) {
                 systolicArray.add(record.getSystolic() != null ? record.getSystolic() : null);
                 diastolicArray.add(record.getDiastolic() != null ? record.getDiastolic() : null);
-                // heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
             }
 
             JSONObject dailyData = new JSONObject();
             dailyData.put("systolic", systolicArray);
             dailyData.put("diastolic", diastolicArray);
-            dailyData.put("heartRate", heartRateArray);
             dailyData.put("date", recordDate);
 
             sortedDailyData.put(recordDate, dailyData);
@@ -154,7 +151,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 JSONObject emptyData = new JSONObject();
                 emptyData.put("systolic", new JSONArray());
                 emptyData.put("diastolic", new JSONArray());
-                emptyData.put("heartRate", new JSONArray());
                 emptyData.put("date", day);
                 sortedDailyData.put(day, emptyData);
             }
@@ -166,7 +162,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONArray getMonthlyPressureHeartRateData(int monthsAgo, Long patientUid) {
+    public JSONArray getMonthlyPressureData(int monthsAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
         LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
         LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
@@ -186,18 +182,15 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             LocalDate recordDate = entry.getKey();
             JSONArray systolicArray = new JSONArray();
             JSONArray diastolicArray = new JSONArray();
-            JSONArray heartRateArray = new JSONArray();
 
             for (PersureHeartRateEntity record : entry.getValue()) {
                 systolicArray.add(record.getSystolic() != null ? record.getSystolic() : null);
                 diastolicArray.add(record.getDiastolic() != null ? record.getDiastolic() : null);
-                // heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
             }
 
             JSONObject dailyData = new JSONObject();
             dailyData.put("systolic", systolicArray);
             dailyData.put("diastolic", diastolicArray);
-            dailyData.put("heartRate", heartRateArray);
             dailyData.put("date", recordDate);
 
             sortedDailyData.put(recordDate, dailyData);
@@ -208,7 +201,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 JSONObject emptyData = new JSONObject();
                 emptyData.put("systolic", new JSONArray());
                 emptyData.put("diastolic", new JSONArray());
-                emptyData.put("heartRate", new JSONArray());
                 emptyData.put("date", day);
                 sortedDailyData.put(day, emptyData);
             }
@@ -221,7 +213,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
 
     @Override
-    public JSONArray getYearlyPressureHeartRateData(int yearsAgo, Long patientUid) {
+    public JSONArray getYearlyPressureData(int yearsAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
         LocalDate startOfYear = date.minusYears(yearsAgo).withDayOfYear(1);
         LocalDate endOfYear = startOfYear.with(TemporalAdjusters.lastDayOfYear());
@@ -241,18 +233,15 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             LocalDate recordDate = entry.getKey();
             JSONArray systolicArray = new JSONArray();
             JSONArray diastolicArray = new JSONArray();
-            JSONArray heartRateArray = new JSONArray();
 
             for (PersureHeartRateEntity record : entry.getValue()) {
                 systolicArray.add(record.getSystolic() != null ? record.getSystolic() : null);
                 diastolicArray.add(record.getDiastolic() != null ? record.getDiastolic() : null);
-                // heartRateArray.add(record.getHeartRate() != null ? record.getHeartRate() : null);
             }
 
             JSONObject dailyData = new JSONObject();
             dailyData.put("systolic", systolicArray);
             dailyData.put("diastolic", diastolicArray);
-            dailyData.put("heartRate", heartRateArray);
             dailyData.put("date", recordDate);
 
             sortedDailyData.put(recordDate, dailyData);
@@ -263,7 +252,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 JSONObject emptyData = new JSONObject();
                 emptyData.put("systolic", new JSONArray());
                 emptyData.put("diastolic", new JSONArray());
-                emptyData.put("heartRate", new JSONArray());
                 emptyData.put("date", day);
                 sortedDailyData.put(day, emptyData);
             }

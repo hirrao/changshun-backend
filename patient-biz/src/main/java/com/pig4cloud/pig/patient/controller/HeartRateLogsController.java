@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -130,6 +131,30 @@ public class HeartRateLogsController {
         LambdaQueryWrapper<HeartRateLogsEntity> wrapper = Wrappers.lambdaQuery();
         wrapper.setEntity(heartRateLogs);
         return R.ok(heartRateLogsService.list(wrapper));
+    }
+
+    @Operation(summary = "查询某一周的所有心率", description = "查询某一周的所有心率")
+    @GetMapping("/weekly_heart_rate_data")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
+    public R getWeeklyHeartRateData(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
+        JSONArray result = heartRateLogsService.getWeeklyHeartRateData(weeksAgo, patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询某一个月的所有心率", description = "查询某一个月的所有心率")
+    @GetMapping("/monthly_heart_rate_data")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
+    public R getMonthlyHeartRateData(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
+        JSONArray result = heartRateLogsService.getMonthlyHeartRateData(monthsAgo, patientUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询某一年的所有心率", description = "查询某一年的所有心率")
+    @GetMapping("/yearly_heart_rate_data")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
+    public R getYearlyHeartRateData(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
+        JSONArray result = heartRateLogsService.getYearlyHeartRateData(yearsAgo, patientUid);
+        return R.ok(result);
     }
 
 }

@@ -129,27 +129,27 @@ public class PersureHeartRateController {
         return R.ok(persureHeartRateService.getCurrentRiskAssessment(patientUid));
     }
 
-    @Operation(summary = "查询某一周的所有高压、低压、心率", description = "查询某一周的所有高压、低压、心率")
+    @Operation(summary = "查询某一周的所有高压、低压", description = "查询某一周的所有高压、低压")
     @GetMapping("/weeklyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getWeeklyPressureData(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
-        JSONArray result = persureHeartRateService.getWeeklyPressureHeartRateData(weeksAgo, patientUid);
+        JSONArray result = persureHeartRateService.getWeeklyPressureData(weeksAgo, patientUid);
         return R.ok(result);
     }
 
-    @Operation(summary = "查询某一个月的所有高压、低压、心率", description = "查询某一个月的所有高压、低压、心率")
+    @Operation(summary = "查询某一个月的所有高压、低压", description = "查询某一个月的所有高压、低压")
     @GetMapping("/monthlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getMonthlyPressureData(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
-        JSONArray result = persureHeartRateService.getMonthlyPressureHeartRateData(monthsAgo, patientUid);
+        JSONArray result = persureHeartRateService.getMonthlyPressureData(monthsAgo, patientUid);
         return R.ok(result);
     }
 
-    @Operation(summary = "查询某一年的所有高压、低压、心率", description = "查询某一年的所有高压、低压、心率")
+    @Operation(summary = "查询某一年的所有高压、低压", description = "查询某一年的所有高压、低压")
     @GetMapping("/yearlyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getYearlyPressureData(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
-        JSONArray result = persureHeartRateService.getYearlyPressureHeartRateData(yearsAgo, patientUid);
+        JSONArray result = persureHeartRateService.getYearlyPressureData(yearsAgo, patientUid);
         return R.ok(result);
     }
 
