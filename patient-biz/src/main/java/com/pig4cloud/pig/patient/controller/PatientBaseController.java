@@ -86,10 +86,14 @@ public class PatientBaseController {
 	@PutMapping("/edit_physical_strength")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_edit')")
 	public R editPhysicalStrength(@RequestParam Long patientUid, @RequestParam int physicalStrength) {
-		patientBaseService.editPhysicalStrength(patientUid, physicalStrength);
-		return R.ok();
+		String result = patientBaseService.editPhysicalStrength(patientUid, physicalStrength);
+		if ("success".equals(result)) {
+			return R.ok();
+		} else {
+			return R.failed(result);
+		}
 	}
-	
+
 	/**
 	 * 通过id查询患者基本信息
 	 *

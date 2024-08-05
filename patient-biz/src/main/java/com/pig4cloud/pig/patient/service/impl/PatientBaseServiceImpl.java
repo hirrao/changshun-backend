@@ -156,10 +156,23 @@ public class PatientBaseServiceImpl extends
 	}
 
 	@Override
-	public void editPhysicalStrength(Long patientUid, int physicalStrength) {
+	public String editPhysicalStrength(Long patientUid, int physicalStrength) {
+		if (physicalStrength < 0 || physicalStrength > 4) {
+			return "Physical strength must be between 0 and 4.";
+		}
+
 		LambdaQueryWrapper<PatientBaseEntity> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(PatientBaseEntity::getPatientUid, patientUid).last("limit 1");
+
 		PatientBaseEntity patient = patientBaseMapper.selectOne(queryWrapper);
+
+		if (patient == null) {
+			return "Patient not found with uid: " + patientUid;
+		}
+
 		patient.setPhysicalStrength(physicalStrength);
+		patientBaseMapper.updateById(patient);
+
+		return "success";
 	}
 }

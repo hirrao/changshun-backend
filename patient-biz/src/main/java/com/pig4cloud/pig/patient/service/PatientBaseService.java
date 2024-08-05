@@ -35,5 +35,5 @@ public interface PatientBaseService extends IService<PatientBaseEntity> {
     JSONObject getPatientStatistics(Long doctorUid);
     JSONObject getPatientbycareStatistics(Long doctorUid);
 
-    void editPhysicalStrength(Long patientUid, int physicalStrength);
+    String editPhysicalStrength(Long patientUid, int physicalStrength);
 }
