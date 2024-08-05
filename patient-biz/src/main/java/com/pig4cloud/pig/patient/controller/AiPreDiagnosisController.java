@@ -73,8 +73,8 @@ public class AiPreDiagnosisController {
     @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
     @GetMapping("/countnocare-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_count')")
-    public Map<String, Double> getDiseaseStats(@RequestParam Long doctorUid) {
-        return aiPreDiagnosisService.getDiseaseStats(doctorUid);
+    public Map<String, Integer> getDiseaseStats(@PathVariable Long doctorUid) {
+        return aiPreDiagnosisService.getPatientDiseasesCount(doctorUid);
     }
 
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")

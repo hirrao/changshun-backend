@@ -41,55 +41,50 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     private PatientDoctorService patientDoctorService;
 
     @Override
-    public Map<String, Double> getDiseaseStats(Long doctorUid) {
-        // 查询与医生绑定的患者
-        QueryWrapper<PatientDoctorEntity> patientDoctorQueryWrapper = new QueryWrapper<>();
-        patientDoctorQueryWrapper.eq("doctor_uid", doctorUid);
-        List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(patientDoctorQueryWrapper);
+    public Map<String, Integer> getPatientDiseasesCount(Long doctorUid) {
+        // 获取与医生绑定的患者
+        QueryWrapper<PatientDoctorEntity> patientDoctorQuery = new QueryWrapper<>();
+        patientDoctorQuery.eq("doctor_uid", doctorUid);
+        List<PatientDoctorEntity> patientDoctors = patientDoctorMapper.selectList(patientDoctorQuery);
 
-        // 提取患者ID集合
-        Set<Long> patientUids = patientDoctorEntities.stream()
-                .map(PatientDoctorEntity::getPatientUid)
-                .collect(Collectors.toSet());
-
-        if (patientUids.isEmpty()) {
-            return Collections.emptyMap();
+        Set<Long> patientUids = new HashSet<>();
+        for (PatientDoctorEntity patientDoctor : patientDoctors) {
+            patientUids.add(patientDoctor.getPatientUid());
         }
 
-        // 查询AI预问诊表中符合条件的数据
-        QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQueryWrapper = new QueryWrapper<>();
-        aiPreDiagnosisQueryWrapper.in("patient_uid", patientUids);
-        List<AiPreDiagnosisEntity> aiPreDiagnosisEntities = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQueryWrapper);
+        // 查询所有与患者相关的AI预问诊记录
+        QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
+        aiPreDiagnosisQuery.in("patient_uid", patientUids);
+        List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
 
-        // 去重患者ID
-        Set<Long> uniquePatientUids = aiPreDiagnosisEntities.stream()
-                .map(AiPreDiagnosisEntity::getPatientUid)
-                .collect(Collectors.toSet());
+        // 初始化疾病统计结果
+        Map<String, Integer> diseasesCount = new HashMap<>();
+        diseasesCount.put("血脂异常", 0);
+        diseasesCount.put("脑血管病", 0);
+        diseasesCount.put("心脏疾病", 0);
+        diseasesCount.put("肾脏疾病", 0);
+        diseasesCount.put("周围血管病", 0);
+        diseasesCount.put("视网膜病变", 0);
+        diseasesCount.put("糖尿病", 0);
+        diseasesCount.put("其他", 0);
 
-        if (uniquePatientUids.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        // 统计各种伴随疾病的占比情况
-        Map<String, Long> diseaseCounts = new HashMap<>();
-        for (AiPreDiagnosisEntity entity : aiPreDiagnosisEntities) {
-            if (entity.getDiseasesList() != null) {
-                String[] diseases = entity.getDiseasesList().split(",");
-                for (String disease : diseases) {
-                    diseaseCounts.put(disease, diseaseCounts.getOrDefault(disease, 0L) + 1);
+        // 统计每个疾病的数量
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            String[] diseases = diagnosis.getDiseasesList().split(",");
+            for (String disease : diseases) {
+                disease = disease.trim(); // 去除多余空格
+                if (diseasesCount.containsKey(disease)) {
+                    diseasesCount.put(disease, diseasesCount.get(disease) + 1);
+                } else {
+                    diseasesCount.put("其他", diseasesCount.get("其他") + 1);
                 }
             }
         }
 
-        // 计算占比情况
-        Map<String, Double> diseaseStats = new HashMap<>();
-        int totalPatients = uniquePatientUids.size();
-        for (Map.Entry<String, Long> entry : diseaseCounts.entrySet()) {
-            diseaseStats.put(entry.getKey(), (double) entry.getValue() / totalPatients);
-        }
-
-        return diseaseStats;
+        return diseasesCount;
     }
+
+
 
 
 
