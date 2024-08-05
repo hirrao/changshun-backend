@@ -43,13 +43,12 @@ public class AiPreDiagnosisController {
 
     private final  AiPreDiagnosisService aiPreDiagnosisService;
 
-    /*@Operation(summary = "得到特别关心客观病史", description = "得到特别关心客观病史")
+    @Operation(summary = "得到特别关心客观病史", description = "得到特别关心客观病史")
     @GetMapping("/count-cpatients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hisccount')")
-    public R ccountPatientsHistory(@PathVariable Long doctorUid) {
-        //JSONObject historyCounts = aiPreDiagnosisService.ccountPatientsHistory(doctorUid);
-        //return R.ok(historyCounts);
-    }*/
+    public StatisticsResult getCareStatisticsByDoctor(@PathVariable Long doctorUid) {
+        return aiPreDiagnosisService.getCareStatisticsByDoctor(doctorUid);
+    }
 
     @Operation(summary = "得到客观病史", description = "得到客观病史")
     @GetMapping("/newcount-patients-history/{doctorUid}")

@@ -13,6 +13,7 @@ public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
     Map<String, Integer> getCarePatientDiseasesCount(Long doctorUid);
 
     StatisticsResult getStatisticsByDoctor(Long doctorUid);
+    StatisticsResult getCareStatisticsByDoctor(Long doctorUid);
 
 
 
