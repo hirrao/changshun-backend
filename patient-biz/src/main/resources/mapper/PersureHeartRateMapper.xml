@@ -9,7 +9,6 @@
         <id property="sdhId" column="sdh_id"/>
         <id property="systolic" column="systolic"/>
         <id property="diastolic" column="diastolic"/>
-        <id property="heartRate" column="heart_rate"/>
         <id property="uploadTime" column="upload_time"/>
         <id property="patientUid" column="patient_uid"/>
         <id property="sdhClassification" column="sdh_classification"/>
@@ -64,7 +63,6 @@
         pb.phone_number,
         ph.systolic,
         ph.diastolic,
-        ph.heart_rate,
         ph.sdh_classification,
         ph.upload_time,
         pd.care
@@ -77,7 +75,6 @@
         ph1.patient_uid,
         ph1.systolic,
         ph1.diastolic,
-        ph1.heart_rate,
         ph1.sdh_classification,
         ph1.upload_time
         FROM
