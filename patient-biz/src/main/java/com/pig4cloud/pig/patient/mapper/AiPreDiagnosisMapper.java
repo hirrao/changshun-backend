@@ -12,6 +12,20 @@ import java.util.List;
 @Mapper
 public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
 
+    // 查询指定患者的最新AI预问诊表单
+    @Select({
+            "<script>",
+            "SELECT * FROM ai_pre_diagnosis WHERE patientUid IN",
+            "<foreach item='uid' collection='patientUids' open='(' separator=',' close=')'>",
+            "#{uid}",
+            "</foreach>",
+            "AND aiId IN (",
+            "    SELECT MAX(aiId) FROM ai_pre_diagnosis GROUP BY patientUid",
+            ")",
+            "</script>"
+    })
+    List<AiPreDiagnosisEntity> selectLatestDiagnosisByPatientUids(@Param("patientUids") List<Long> patientUids);
+
     /*@Select("SELECT COUNT(*) FROM ai_pre_diagnosis " +
             "WHERE patient_uid IN " +
             "(SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid} ) " +

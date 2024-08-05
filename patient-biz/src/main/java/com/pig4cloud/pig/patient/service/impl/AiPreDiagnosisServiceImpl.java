@@ -82,16 +82,22 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
         // 统计每个患者最新AI预问诊记录中的疾病
         for (AiPreDiagnosisEntity diagnosis : latestDiagnosisMap.values()) {
-            String[] diseases = diagnosis.getDiseasesList().split(",");
-            for (String disease : diseases) {
-                disease = disease.trim(); // 去除多余空格
-                if (diseasesCount.containsKey(disease)) {
-                    diseasesCount.put(disease, diseasesCount.get(disease) + 1);
-                } else {
-                    diseasesCount.put("其他", diseasesCount.get("其他") + 1);
+            String diseasesList = diagnosis.getDiseasesList(); // 获取疾病列表
+
+            // 在调用 split 前进行空值检查
+            if (diseasesList != null && !diseasesList.isEmpty()) {
+                String[] diseases = diseasesList.split(",");
+                for (String disease : diseases) {
+                    disease = disease.trim(); // 去除多余空格
+                    if (diseasesCount.containsKey(disease)) {
+                        diseasesCount.put(disease, diseasesCount.get(disease) + 1);
+                    } else {
+                        diseasesCount.put("其他", diseasesCount.get("其他") + 1);
+                    }
                 }
             }
         }
+
 
         return diseasesCount;
     }
@@ -139,14 +145,18 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
         // 统计每个患者最新AI预问诊记录中的疾病
         for (AiPreDiagnosisEntity diagnosis : latestDiagnosisMap.values()) {
-            // 分割 diseasesList 字符串
-            String[] diseases = diagnosis.getDiseasesList() != null ? diagnosis.getDiseasesList().split(",") : new String[0];
-            for (String disease : diseases) {
-                disease = disease.trim(); // 去除多余空格
-                if (diseasesCount.containsKey(disease)) {
-                    diseasesCount.put(disease, diseasesCount.get(disease) + 1);
-                } else {
-                    diseasesCount.put("其他", diseasesCount.get("其他") + 1);
+            String diseasesList = diagnosis.getDiseasesList(); // 获取疾病列表
+
+            // 在调用 split 前进行空值检查
+            if (diseasesList != null && !diseasesList.isEmpty()) {
+                String[] diseases = diseasesList.split(",");
+                for (String disease : diseases) {
+                    disease = disease.trim(); // 去除多余空格
+                    if (diseasesCount.containsKey(disease)) {
+                        diseasesCount.put(disease, diseasesCount.get(disease) + 1);
+                    } else {
+                        diseasesCount.put("其他", diseasesCount.get("其他") + 1);
+                    }
                 }
             }
         }
