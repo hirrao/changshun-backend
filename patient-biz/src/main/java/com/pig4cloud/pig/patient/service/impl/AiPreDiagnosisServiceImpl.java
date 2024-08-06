@@ -286,6 +286,43 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     }
 
 
+    @Override
+    public String generateAiPreDiagnosisReport(Long patientUid) {
+        QueryWrapper<AiPreDiagnosisEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("patientUid", patientUid).orderByDesc("aiId").last("LIMIT 1");
+        AiPreDiagnosisEntity latestDiagnosis = aiPreDiagnosisMapper.selectOne(queryWrapper);
+
+        if (latestDiagnosis == null) {
+            return "未找到该患者的AI预问诊表单。";
+        }
+
+        // 处理 diseasesList 字段
+        String diseasesList = latestDiagnosis.getDiseasesList();
+        String diseasesStatement;
+        if ("无".equals(diseasesList)) {
+            diseasesStatement = "否认血脂异常，脑血管病，心脏疾病，肾脏疾病，周围血管病，视网膜病变，糖尿病等病史";
+        } else if ("不清楚".equals(diseasesList)) {
+            diseasesStatement = "不确定血脂异常，脑血管病，心脏疾病，肾脏疾病，周围血管病，视网膜病变，糖尿病等病史";
+        } else {
+            diseasesStatement = "承认" + diseasesList + "病史";
+        }
+
+        // 处理 infectiousDiseaseHistory 字段
+        String infectiousDiseaseHistory = latestDiagnosis.getInfectiousDiseaseHistory();
+        String infectiousDiseaseStatement = "无".equals(infectiousDiseaseHistory) ?
+                "否认传染病史" :
+                "有" + infectiousDiseaseHistory + "传染病";
+
+        // 处理 foodAllergyHistory 字段
+        String foodAllergyHistory = latestDiagnosis.getFoodAllergyHistory();
+        String foodAllergyStatement = "无".equals(foodAllergyHistory) ?
+                "否认食物过敏史" :
+                "对" + foodAllergyHistory + "过敏";
+
+        return diseasesStatement + "。" + infectiousDiseaseStatement + "。" + foodAllergyStatement + "。";
+    }
+
+
 
 
 

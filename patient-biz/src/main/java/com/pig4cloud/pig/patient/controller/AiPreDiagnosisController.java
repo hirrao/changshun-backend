@@ -75,6 +75,13 @@ public class AiPreDiagnosisController {
         return aiPreDiagnosisService.getPatientDiseasesCount(doctorUid);
     }
 
+    @Operation(summary = "客观病史——既往史", description = "客观病史——既往史")
+    @PostMapping("/report/{patientUid}")
+    @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_view')")
+    public String generateAiPreDiagnosisReport(@PathVariable Long patientUid) {
+        return aiPreDiagnosisService.generateAiPreDiagnosisReport(patientUid);
+    }
+
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")
     @PostMapping("/getAiPreDiagnosisMsg")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_view')")

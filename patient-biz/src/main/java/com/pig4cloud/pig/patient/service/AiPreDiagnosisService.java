@@ -15,6 +15,8 @@ public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
     StatisticsResult getStatisticsByDoctor(Long doctorUid);
     StatisticsResult getCareStatisticsByDoctor(Long doctorUid);
 
+    String generateAiPreDiagnosisReport(Long patientUid);
+
 
 
     /*Map<String, Integer> nocountPatientsWithDiseases(Long doctorUid);

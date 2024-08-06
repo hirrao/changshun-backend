@@ -12,6 +12,8 @@ import java.util.List;
 @Mapper
 public interface AiPreDiagnosisMapper extends BaseMapper<AiPreDiagnosisEntity> {
 
+    AiPreDiagnosisEntity findLatestByPatientUid(Long patientUid);
+
     // 查询指定患者的最新AI预问诊表单
     @Select({
             "<script>",
