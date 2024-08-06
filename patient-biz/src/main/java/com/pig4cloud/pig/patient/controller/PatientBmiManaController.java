@@ -141,5 +141,4 @@ public class PatientBmiManaController {
         return R.ok(patientBmiManaService.getNewestHeightWeightBmi(patientUid));
     }
 
-
 }
