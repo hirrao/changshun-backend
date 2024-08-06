@@ -118,7 +118,7 @@ public class PatientBmiManaController {
         return patientBmiManaService.list(Wrappers.lambdaQuery(patientBmiMana).in(ArrayUtil.isNotEmpty(ids), PatientBmiManaEntity::getBmiUuid, ids));
     }
 
-    @Operation(summary = "全条件查询反馈信息", description = "全条件查询反馈信息")
+    @Operation(summary = "全条件查询患者BMI信息", description = "全条件查询患者BMI信息")
     @PostMapping("/getByPatientBmiManaEntityObject")
     @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_view')")
     public R getByPatientBmiManaObject(@RequestBody PatientBmiManaEntity patientBmiMana) {
@@ -133,4 +133,13 @@ public class PatientBmiManaController {
     public R getPatientBmiStatus(@PathVariable("patientUid") Long patientUid){
         return R.ok(patientBmiManaService.getPatientBmiStatus(patientUid));
     }
+
+    @Operation(summary = "获取患者最新的身高体重和体重指数", description = "获取患者最新的身高体重和体重指数")
+    @GetMapping("/get_height_weight_bmi")
+    @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_view')")
+    public R getHeightWeightBmi(@RequestParam Long patientUid) {
+        return R.ok(patientBmiManaService.getNewestHeightWeightBmi(patientUid));
+    }
+
+
 }

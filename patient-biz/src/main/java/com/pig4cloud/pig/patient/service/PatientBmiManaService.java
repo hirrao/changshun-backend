@@ -10,4 +10,5 @@ public interface PatientBmiManaService extends IService<PatientBmiManaEntity> {
     JSONObject getPatientBmiStatus(Long patientUid);
     PatientBmiManaEntity getLastestRecoredByPatientUid(Long patientUid);
     Map<String, Float> getLatestWeightAndHeight(Long patientUid);
+    JSONObject getNewestHeightWeightBmi(Long patientUid);
 }
