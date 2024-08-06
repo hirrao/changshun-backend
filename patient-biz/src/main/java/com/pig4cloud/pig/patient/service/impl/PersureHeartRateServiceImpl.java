@@ -1157,6 +1157,12 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             result.put(riskAssessment, count);
         }
 
+        LocalDate today = LocalDate.now();
+        LocalDate sevenDaysAgo = today.minusDays(7);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
+        String dateRange = sevenDaysAgo.format(formatter) + "~" + today.format(formatter);
+        result.put("dateRange", dateRange);
+
         return result;
     }
 
