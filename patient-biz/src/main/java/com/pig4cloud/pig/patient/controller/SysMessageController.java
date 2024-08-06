@@ -57,8 +57,9 @@ public class SysMessageController {
     }
 
     @PostMapping("/read/{notificationId}")
-    public void markMessageAsRead(@PathVariable Long notificationId) {
+    public R markMessageAsRead(@PathVariable Long notificationId) {
         sysMessageService.markMessageAsRead(notificationId);
+        return R.ok();
     }
 	
     @Operation(summary = "医生发送消息", description = "医生发送消息")
