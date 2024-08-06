@@ -1127,6 +1127,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         for (Map<String, Object> record : riskAssessmentCounts) {
             String riskAssessment = (String) record.get("risk_assessment");
+            if (riskAssessment == null) {
+                continue;
+            }
             Integer count = ((Long) record.get("count")).intValue();
             result.put(riskAssessment, count);
         }
@@ -1147,6 +1150,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         for (Map<String, Object> record : riskAssessmentCounts) {
             String riskAssessment = (String) record.get("risk_assessment");
+            if (riskAssessment == null) {
+                continue;
+            }
             Integer count = ((Long) record.get("count")).intValue(); // 将 count 转换为 Integer
             result.put(riskAssessment, count);
         }
@@ -1170,6 +1176,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         // 填充查询结果
         for (Map<String, Object> record : riskAssessmentCounts) {
             String riskAssessment = (String) record.get("risk_assessment");
+            if (riskAssessment == null) {
+                continue;
+            }
             Integer count = ((Long) record.get("count")).intValue(); // 将 count 转换为 Integer
             result.put(riskAssessment, count);
         }
