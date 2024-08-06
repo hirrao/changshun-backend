@@ -56,21 +56,41 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
         }
 
         float bmi = result.get("weight") / (result.get("height") * result.get("height"));
-        String bmiStatus;
+        int bmiStatus = 0;
         if(bmi < 18.5){
-            bmiStatus = "偏瘦" + "低";
+            bmiStatus = 1;
         } else if (bmi < 23) {
-            bmiStatus = "正常" + "平均水平";
+            bmiStatus = 2;
         } else if (bmi < 25) {
-            bmiStatus = "偏胖" + "增加";
+            bmiStatus = 3;
         } else if (bmi < 30) {
-            bmiStatus = "肥胖" + "重度增加";
+            bmiStatus = 4;
         } else {
-            bmiStatus = "严重肥胖" + "严重增加";
+            bmiStatus = 5;
         }
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("bmiStatus", bmiStatus);
         return jsonObject;
+    }
+
+    @Override
+    public JSONObject getNewestHeightWeightBmi(Long patientUid) {
+        Map<String, Object> latestData = patientBmiManaMapper.getLatestHeightWeight(patientUid);
+        Double height = (Double) latestData.get("height"); // 单位为米
+        Double weight = (Double) latestData.get("weight"); // 单位为千克
+        String measurementDate = (String) latestData.get("bmimeasurement_date");
+
+        double bmi = 0;
+        if (height != null && weight != null && height > 0) {
+            bmi = weight / (height * height);
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("height", height);
+        result.put("weight", weight);
+        result.put("bmi", bmi);
+        result.put("measurementDate", measurementDate);
+        return result;
     }
 }
