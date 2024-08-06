@@ -167,31 +167,31 @@ public class HeartRateLogsController {
     }
 
     @Operation(summary = "查询某一天的某位患者的心率的平均值", description = "查询某一天的某位患者的心率的平均值")
-    @GetMapping("/dailyAvgPressure")
+    @GetMapping("/daily_avg_heart_rate")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getDailyAveragePressure(@RequestParam LocalDate date, @RequestParam Long patientUid) {
+    public R getDailyAverageHeartRate(@RequestParam LocalDate date, @RequestParam Long patientUid) {
         JSONObject result = heartRateLogsService.getDailyAverageHeartRate(date, patientUid);
         return R.ok(result);
     }
 
     @Operation(summary = "查询某一周的某位患者的心率的平均值", description = "查询某一周的某位患者的心率的平均值")
-    @GetMapping("/weeklyAvgPressureByDay")
+    @GetMapping("/weekly_avg_heart_rate")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getWeeklyAveragePressureByDay(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
+    public R getWeeklyAverageHeartRateByDay(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
         return R.ok(heartRateLogsService.getWeeklyAverageHeartRateByDay(weeksAgo, patientUid));
     }
 
     @Operation(summary = "查询某一个月的某位患者的每周段的心率的平均值", description = "查询某一个月的某位患者的每周段的心率的平均值")
-    @GetMapping("/monthlyAvgPressureByWeek")
+    @GetMapping("/monthly_avg_heart_rate_by_week")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getMonthlyAveragePressureByWeek(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
+    public R getMonthlyAverageHeartRateByWeek(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
         return R.ok(heartRateLogsService.getMonthlyAverageHeartRateByWeek(monthsAgo, patientUid));
     }
 
     @Operation(summary = "查询某一年的每个月的心率的平均值", description = "查询某一年的每个月的心率的平均值")
-    @GetMapping("/yearlyAveragePressureByMonth")
+    @GetMapping("/yearly_avg_heart_rate_by_month")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-    public R getYearlyAveragePressureByMonth(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
+    public R getYearlyAverageHeartRateByMonth(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
         return R.ok(heartRateLogsService.getYearlyAverageHeartRateByMonth(yearsAgo, patientUid));
     }
 }
