@@ -781,7 +781,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     @Override
     public JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
-        LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate startOfWeek = date.minusWeeks(weeksAgo).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
         JSONArray result = new JSONArray();
