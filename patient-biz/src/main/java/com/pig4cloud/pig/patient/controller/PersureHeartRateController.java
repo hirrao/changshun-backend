@@ -276,7 +276,7 @@ public class PersureHeartRateController {
         return R.ok(result);
     }
 
-    @Operation(summary = "查询某一天的某位患者的高压、低压、心率的平均值", description = "查询某一天的某位患者的高压和低压的平均值")
+    @Operation(summary = "查询某一天的某位患者的高压、低压的平均值", description = "查询某一天的某位患者的高压和低压的平均值")
     @GetMapping("/dailyAvgPressure")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getDailyAveragePressure(@RequestParam LocalDate date, @RequestParam Long patientUid) {
@@ -284,21 +284,21 @@ public class PersureHeartRateController {
         return R.ok(result);
     }
 
-    @Operation(summary = "查询某一周的某位患者的高压、低压、心率的平均值", description = "查询某一周的某位患者的高压、低压、心率的平均值")
+    @Operation(summary = "查询某一周的某位患者的高压、低压的平均值", description = "查询某一周的某位患者的高压、低压的平均值")
     @GetMapping("/weeklyAvgPressureByDay")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getWeeklyAveragePressureByDay(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
         return R.ok(persureHeartRateService.getWeeklyAveragePressureHeartRateByDay(weeksAgo, patientUid));
     }
 
-    @Operation(summary = "查询某一个月的某位患者的每周段的高压、低压、心率的平均值", description = "查询某一个月的某位患者的每周段的高压、低压、心率的平均值")
+    @Operation(summary = "查询某一个月的某位患者的每周段的高压、低压的平均值", description = "查询某一个月的某位患者的每周段的高压、低压的平均值")
     @GetMapping("/monthlyAvgPressureByWeek")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getMonthlyAveragePressureByWeek(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
         return R.ok(persureHeartRateService.getMonthlyAveragePressureHeartRateByWeek(monthsAgo, patientUid));
     }
 
-    @Operation(summary = "查询某一年的每个月的高压、低压、心率的平均值", description = "查询某一年的每个月的高压、低压、心率的平均值")
+    @Operation(summary = "查询某一年的每个月的高压、低压的平均值", description = "查询某一年的每个月的高压、低压的平均值")
     @GetMapping("/yearlyAveragePressureByMonth")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getYearlyAveragePressureByMonth(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
