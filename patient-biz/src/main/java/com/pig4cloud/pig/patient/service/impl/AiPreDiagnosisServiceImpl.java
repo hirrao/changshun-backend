@@ -3,6 +3,7 @@ package com.pig4cloud.pig.patient.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.dto.StatisticsResult;
@@ -320,6 +321,49 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
                 "对" + foodAllergyHistory + "过敏";
 
         return diseasesStatement + "。" + infectiousDiseaseStatement + "。" + foodAllergyStatement + "。";
+    }
+    @Override
+    public String getSmokingAndDrinkingInfo(Long patientUid) {
+        LambdaQueryWrapper<AiPreDiagnosisEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AiPreDiagnosisEntity::getPatientUid, patientUid)
+                .orderByDesc(AiPreDiagnosisEntity::getAiId)
+                .last("LIMIT 1");
+
+        AiPreDiagnosisEntity entity = aiPreDiagnosisMapper.selectOne(queryWrapper);
+
+        if (entity == null) {
+            return "未找到预问诊信息";
+        }
+
+        String smokingInfo = "";
+        if ("否".equals(entity.getSmokingStatus())) {
+            smokingInfo = "不吸烟";
+        } else if ("是".equals(entity.getSmokingStatus())) {
+            smokingInfo = "自述吸烟" + entity.getSmokingDuration() + "年，每日吸烟量" + entity.getDailySmokingAmount() + "根";
+        } else if ("已戒烟".equals(entity.getSmokingStatus())) {
+            smokingInfo = "自述曾吸烟" + entity.getSmokingDuration() + "年，每日吸烟量" + entity.getDailySmokingAmount() + "根";
+        }
+
+        String drinkingInfo = "";
+        if ("否".equals(entity.getDrinkingStatus())) {
+            drinkingInfo = "不饮酒";
+        } else if ("是".equals(entity.getDrinkingStatus())) {
+            drinkingInfo = "自述饮酒" + entity.getDrinkingDuration() + "年，每日饮酒量" + entity.getDailyDrinkingAmount() + "ml";
+        } else if ("已戒酒".equals(entity.getDrinkingStatus())) {
+            drinkingInfo = "自述曾饮酒" + entity.getDrinkingDuration() + "年，每日饮酒量" + entity.getDailyDrinkingAmount() + "ml";
+        }
+
+        return smokingInfo + "；" + drinkingInfo;
+    }
+
+    @Override
+    public String getDiagnosisDetails(Long patientUid) {
+        QueryWrapper<AiPreDiagnosisEntity> query = Wrappers.query();
+        query.eq("patient_uid", patientUid).orderByDesc("ai_id").last("LIMIT 1");
+        AiPreDiagnosisEntity diagnosis = this.baseMapper.selectOne(query);
+        String earlyCvdHistory = diagnosis.getEarlyCvdFamilyHistory() == 1 ? "自述有早发心血管家族史" : "否认早发心血管家族史";
+        String geneticDisease = "无".equals(diagnosis.getGeneticDiseaseInFamily()) ? "否认直系亲属中遗传病史" : "自述" + diagnosis.getGeneticDiseaseInFamily();
+        return earlyCvdHistory + ". " + geneticDisease + ".";
     }
 
 

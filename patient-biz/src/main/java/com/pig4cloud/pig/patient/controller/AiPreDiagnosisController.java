@@ -76,10 +76,24 @@ public class AiPreDiagnosisController {
     }
 
     @Operation(summary = "客观病史——既往史", description = "客观病史——既往史")
-    @PostMapping("/report/{patientUid}")
+    @GetMapping("/report/{patientUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_view')")
     public String generateAiPreDiagnosisReport(@PathVariable Long patientUid) {
         return aiPreDiagnosisService.generateAiPreDiagnosisReport(patientUid);
+    }
+
+    @Operation(summary = "客观病史——个人史", description = "客观病史——个人史")
+    @GetMapping("/smoking-and-drinking-info/{patientUid}")
+    @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_view')")
+    public String getSmokingAndDrinkingInfo(@PathVariable Long patientUid) {
+        return aiPreDiagnosisService.getSmokingAndDrinkingInfo(patientUid);
+    }
+
+    @Operation(summary = "客观病史——家族史", description = "客观病史——家族史")
+    @GetMapping("/family-history/{patientUid}")
+    @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_view')")
+    public String getDiagnosisDetails(@PathVariable Long patientUid) {
+        return aiPreDiagnosisService.getDiagnosisDetails(patientUid);
     }
 
     @Operation(summary = "全条件查询AI预问诊信息", description = "全条件查询AI预问诊信息")
