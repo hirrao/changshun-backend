@@ -45,7 +45,7 @@ public class PersureHeartRateEntity extends Model<PersureHeartRateEntity> {
 	* 记录日期保存到时间级别 YYYY-mm-dd HH:ii:ss
 	*/
     @Schema(description="记录日期保存到时间级别 YYYY-mm-dd HH:ii:ss")
-	@JsonFormat(pattern = "MM-dd", timezone = "GMT+8")
+//	@JsonFormat(pattern = "MM-dd", timezone = "GMT+8")
     private LocalDateTime uploadTime;
 
 	/**

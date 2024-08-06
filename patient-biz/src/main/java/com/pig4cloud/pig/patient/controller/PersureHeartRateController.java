@@ -26,6 +26,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,20 @@ public class PersureHeartRateController {
     public R<Void> addBloodPressure(@RequestBody PersureHeartRateEntity persureHeartRate) {
         persureHeartRateService.addBloodPressure(persureHeartRate);
         return R.ok(); // 返回成功信息
+    }
+
+    @Transactional
+    @Operation(summary = "批量添加血压数据(不填充时间)", description = "批量添加血压数据")
+    @PostMapping("/AddPressureInBatches")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')")
+    public R saveInBatches(@RequestBody List<PersureHeartRateEntity> result) {
+        for(PersureHeartRateEntity data : result) {
+            //  设置sdh分类和risk分类
+            persureHeartRateService.setSdhAndRiskClass(data);
+        }
+        //  批量增加
+        persureHeartRateService.saveBatch(result);
+        return R.ok();
     }
 
     @Operation(summary = "查询最近十天血压统计次数" , description = "查询最近十天血压统计次数" )
@@ -357,22 +372,22 @@ public class PersureHeartRateController {
         return R.ok(persureHeartRateService.getById(sdhId));
     }
 
-    /**
-     * 新增血压心率展示
-     * @param persureHeartRate 血压心率展示
-     * @return R
-     */
-    @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
-    @SysLog("新增血压心率展示" )
-    @PostMapping
-    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
-    public R save(@Valid @RequestBody PersureHeartRateEntity persureHeartRate) {
-        boolean saved = persureHeartRateService.savePersureHeartRate(persureHeartRate);
-        if (saved) {
-            persureHeartRateService.updateSdhClassification(persureHeartRate.getSdhId(), persureHeartRate.getPatientUid());
-        }
-        return R.ok(saved);
-    }
+//    /**
+//     * 新增血压心率展示
+//     * @param persureHeartRate 血压心率展示
+//     * @return R
+//     */
+//    @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
+//    @SysLog("新增血压心率展示" )
+//    @PostMapping
+//    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
+//    public R save(@Valid @RequestBody PersureHeartRateEntity persureHeartRate) {
+//        boolean saved = persureHeartRateService.savePersureHeartRate(persureHeartRate);
+//        if (saved) {
+//            persureHeartRateService.updateSdhClassification(persureHeartRate.getSdhId(), persureHeartRate.getPatientUid());
+//        }
+//        return R.ok(saved);
+//    }
 
     /**
      * 修改血压心率展示
@@ -434,16 +449,4 @@ public class PersureHeartRateController {
         return persureHeartRateService.getTodayMinHeartRate(patientUid);
     }
 
-    @Operation(summary = "批量添加血压数据", description = "批量添加血压数据")
-    @PostMapping("/AddPressureInBatches")
-    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')")
-    public R saveInBatches(@RequestBody List<PersureHeartRateEntity> result) {
-        for(PersureHeartRateEntity data : result) {
-            boolean updated = persureHeartRateService.updateById(data);
-            if (updated) {
-                persureHeartRateService.updateSdhClassification(data.getSdhId(), data.getPatientUid());
-            }
-        }
-        return R.ok();
-    }
 }
