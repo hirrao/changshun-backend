@@ -13,7 +13,7 @@ public interface SysMessageService extends IService<SysMessageEntity> {
 
     void sendMessage(Long doctorUid, Long patientUid, String messageType, String jsonText);
     List<SysMessageEntity> getUnreadMessages(Long patientUid);
-    void markMessageAsRead(Long notificationId);
+    void markMessageAsRead(List<Long> notificationIdList);
 
     JSONArray getRecentMessageByDoctorId(Long doctorUid);
 }

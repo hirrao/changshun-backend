@@ -22,6 +22,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,9 +57,9 @@ public class SysMessageController {
         return R.ok(sysMessageService.getUnreadMessages(patientUid));
     }
 
-    @PostMapping("/read/{notificationId}")
-    public R markMessageAsRead(@PathVariable Long notificationId) {
-        sysMessageService.markMessageAsRead(notificationId);
+    @PostMapping("/read")
+    public R markMessageAsRead(@RequestBody List<Long> notificationIdList) {
+        sysMessageService.markMessageAsRead(notificationIdList);
         return R.ok();
     }
 	
