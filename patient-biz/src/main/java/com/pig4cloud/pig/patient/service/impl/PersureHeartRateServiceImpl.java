@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 血压心率展示
  *
@@ -47,7 +49,18 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         }
         persureHeartRateMapper.insert(persureHeartRate); // 使用 MyBatis-Plus 的 insert 方法
     }
-
+    
+    @Transactional
+    @Override
+    public void AddPressureInBatches(List<PersureHeartRateEntity> result) {
+        for(PersureHeartRateEntity data : result) {
+            //  设置sdh分类和risk分类
+            this.setSdhAndRiskClass(data);
+        }
+        //  批量增加
+        this.saveBatch(result);
+    }
+    
     @Override
     public PersureHeartRateEntity setSdhAndRiskClass(PersureHeartRateEntity persureHeartRate) {
 

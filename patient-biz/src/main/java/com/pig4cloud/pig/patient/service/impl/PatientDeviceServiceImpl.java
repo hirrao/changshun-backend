@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.HeartRateLogsEntity;
 import com.pig4cloud.pig.patient.entity.PatientDeviceEntity;
+import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.PatientDeviceMapper;
 import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import com.pig4cloud.pig.patient.service.PatientDeviceService;
+import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import com.pig4cloud.pig.patient.utils.HTTPUtils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +41,9 @@ public class PatientDeviceServiceImpl extends
 	
 	@Autowired
 	private HeartRateLogsService heartRateLogsService;
+	
+	@Autowired
+	private PersureHeartRateService persureHeartRateService;	
 	
 	@Override
 	public R addPatientDevice(PatientDeviceEntity patientDevice) {
@@ -71,8 +76,24 @@ public class PatientDeviceServiceImpl extends
 			JSONObject post = httpUtils.post(hardwareUrl + "/getblood", data);
 			JSONArray dataList = post.getJSONArray("data");
 			if (dataList != null) {
-				//	TODO: 插入血压数据库，这部分需要等黄青修改完
-				
+				// 批量插入血压数据库
+				// 重构数据
+				List<PersureHeartRateEntity> persureHeartRateEntities = new ArrayList<>();
+				for (int i = 0; i < dataList.size(); i++) {
+					JSONObject jsonObjectTmp = dataList.getJSONObject(i);
+					PersureHeartRateEntity tmp = new PersureHeartRateEntity();
+					tmp.setPatientUid(patientDevice.getPatientUid());
+					tmp.setSystolic(
+					 Float.valueOf(jsonObjectTmp.getJSONObject("Sbp").getInteger("Int64")));
+					tmp.setDiastolic(Float.valueOf(jsonObjectTmp.getJSONObject("Dbp").getInteger(
+					 "Int64")));
+					// note: 添加特定占位符使用‘x’指定字符串即可
+					DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+					tmp.setUploadTime(LocalDateTime.parse(jsonObjectTmp.getJSONObject(
+					 "Time").getString("Time"), df));
+					persureHeartRateEntities.add(tmp);
+				}
+				persureHeartRateService.AddPressureInBatches(persureHeartRateEntities);	
 			}
 		} catch (Exception e) {
 			// 手动强制回滚事务，这里一定要第一时间处理

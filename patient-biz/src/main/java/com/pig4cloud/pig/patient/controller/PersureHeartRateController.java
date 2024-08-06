@@ -61,17 +61,11 @@ public class PersureHeartRateController {
         return R.ok(); // 返回成功信息
     }
 
-    @Transactional
     @Operation(summary = "批量添加血压数据(不填充时间)", description = "批量添加血压数据")
     @PostMapping("/AddPressureInBatches")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')")
     public R saveInBatches(@RequestBody List<PersureHeartRateEntity> result) {
-        for(PersureHeartRateEntity data : result) {
-            //  设置sdh分类和risk分类
-            persureHeartRateService.setSdhAndRiskClass(data);
-        }
-        //  批量增加
-        persureHeartRateService.saveBatch(result);
+        persureHeartRateService.AddPressureInBatches(result);
         return R.ok();
     }
 

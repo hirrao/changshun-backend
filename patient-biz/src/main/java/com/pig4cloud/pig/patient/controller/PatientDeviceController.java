@@ -106,7 +106,7 @@ public class PatientDeviceController {
 	@PostMapping
 	@PreAuthorize("@pms.hasPermission('patient_patientDevice_add')")
 	public R syncDeviceData(@RequestBody PatientDeviceEntity patientDevice) {
-		return R.ok();
+		return patientDeviceService.syncDeviceData(patientDevice);
 	}
 	
 	/**

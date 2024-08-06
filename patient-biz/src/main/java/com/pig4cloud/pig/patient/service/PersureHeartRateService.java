@@ -12,6 +12,7 @@ import java.util.Map;
 public interface PersureHeartRateService extends IService<PersureHeartRateEntity> {
 
     void addBloodPressure(PersureHeartRateEntity persureHeartRate);
+    void AddPressureInBatches(List<PersureHeartRateEntity> result);
 
     PersureHeartRateEntity setSdhAndRiskClass(PersureHeartRateEntity persureHeartRate);
     JSONObject classifyAllBloodPressure(Long patientUid);
