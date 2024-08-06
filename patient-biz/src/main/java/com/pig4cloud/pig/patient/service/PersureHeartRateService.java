@@ -13,7 +13,7 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     void addBloodPressure(PersureHeartRateEntity persureHeartRate);
 
-
+    PersureHeartRateEntity setSdhAndRiskClass(PersureHeartRateEntity persureHeartRate);
     JSONObject classifyAllBloodPressure(Long patientUid);
     String getCurrentRiskAssessment(Long patientUid);
     String judgeRiskByBloodPressure(float systolic, float diastolic);

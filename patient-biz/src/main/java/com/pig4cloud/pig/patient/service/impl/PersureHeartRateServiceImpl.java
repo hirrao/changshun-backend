@@ -9,17 +9,13 @@ import com.pig4cloud.pig.patient.entity.*;
 import com.pig4cloud.pig.patient.mapper.*;
 import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 /**
  * 血压心率展示
@@ -44,6 +40,17 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
     @Override
     public void addBloodPressure(PersureHeartRateEntity persureHeartRate) {
+        persureHeartRate = this.setSdhAndRiskClass(persureHeartRate);
+        //   如果没有上传时间，再填充
+        if(persureHeartRate.getUploadTime() == null) {
+           persureHeartRate.setUploadTime(LocalDateTime.now());
+        }
+        persureHeartRateMapper.insert(persureHeartRate); // 使用 MyBatis-Plus 的 insert 方法
+    }
+
+    @Override
+    public PersureHeartRateEntity setSdhAndRiskClass(PersureHeartRateEntity persureHeartRate) {
+
         // 查询与患者相关的 AI 预问诊记录
         LambdaQueryWrapper<AiPreDiagnosisEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AiPreDiagnosisEntity::getPatientUid, persureHeartRate.getPatientUid());
@@ -68,8 +75,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         // 设置上传时间并插入血压记录
         persureHeartRate.setSdhClassification(classification);
         persureHeartRate.setRiskAssessment(riskAssessment);
-        persureHeartRate.setUploadTime(LocalDateTime.now());
-        persureHeartRateMapper.insert(persureHeartRate); // 使用 MyBatis-Plus 的 insert 方法
+        return persureHeartRate;
     }
 
     private String determineClassification(PersureHeartRateEntity heartRate, AiPreDiagnosisEntity diagnosis) {
