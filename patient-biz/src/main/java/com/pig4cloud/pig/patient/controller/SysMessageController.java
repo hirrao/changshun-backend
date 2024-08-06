@@ -52,8 +52,8 @@ public class SysMessageController {
 
 
     @GetMapping("/unread/{patientUid}")
-    public List<SysMessageEntity> getUnreadMessages(@PathVariable Long patientUid) {
-        return sysMessageService.getUnreadMessages(patientUid);
+    public R getUnreadMessages(@PathVariable Long patientUid) {
+        return R.ok(sysMessageService.getUnreadMessages(patientUid));
     }
 
     @PostMapping("/read/{notificationId}")

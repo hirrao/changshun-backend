@@ -13,7 +13,6 @@ import java.util.List;
 @Mapper
 public interface SysMessageMapper extends BaseMapper<SysMessageEntity> {
 
-    List<SysMessageEntity> selectUnreadMessages(Long patientUid);
 
 
     @Select("SELECT * FROM sys_message WHERE doctor_uid = #{doctorUid} AND message_type = '医生提醒'" +

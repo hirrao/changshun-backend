@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
@@ -87,7 +88,13 @@ public class SysMessageServiceImpl extends
 	
 	@Override
 	public List<SysMessageEntity> getUnreadMessages(Long patientUid) {
-		return sysMessageMapper.selectUnreadMessages(patientUid);
+		// 条件查询该用户未读的消息
+		SysMessageEntity sysMessageEntity = new SysMessageEntity();
+		sysMessageEntity.setPatientUid(patientUid);
+		sysMessageEntity.setIsRead(false);
+		LambdaQueryWrapper<SysMessageEntity> wrapper = new LambdaQueryWrapper<>();
+		wrapper.setEntity(sysMessageEntity);
+		return this.list(wrapper);
 	}
 	
 	@Override
