@@ -206,4 +206,21 @@ public class EatDrugAlertServiceImpl extends
 		return R.ok(res);
 	}
 	
+	@Transactional
+	@Override
+	public R deleteDrugAlertBatch(List<Long> alertIdList) {
+		
+		// 删除时应该先删除用药提醒时间，不然无法删除，应该去除外键引用部分
+		for (Long alertId : alertIdList) {
+			//	先删除对应的用药时间
+			LambdaQueryWrapper<DrugEatTimeEntity> wrapper = new LambdaQueryWrapper<>();
+			wrapper.eq(DrugEatTimeEntity::getPdeId, alertId);
+			drugEatTimeMapper.delete(wrapper);
+		}
+		//	再删除用药计划
+		this.removeBatchByIds(alertIdList);
+		return R.ok();
+		
+	}
+	
 }

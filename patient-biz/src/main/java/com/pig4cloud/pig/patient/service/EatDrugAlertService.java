@@ -15,4 +15,5 @@ public interface EatDrugAlertService extends IService<EatDrugAlertEntity> {
     void addSysMessage(SysMessageEntity sysMessage);
     R addDrugAlert(AddDrugAlertRequest eatDrugAlert);
     R getDrugList(Long patientUid);
+    R deleteDrugAlertBatch(List<Long> alertIdList);
 }
