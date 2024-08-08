@@ -136,8 +136,8 @@ public class EatDrugAlertController {
     @SysLog("通过id删除用药管理表" )
     @DeleteMapping
     @PreAuthorize("@pms.hasPermission('patient_eatDrugAlert_del')" )
-    public R removeById(@RequestBody Long[] ids) {
-        return R.ok(eatDrugAlertService.removeBatchByIds(CollUtil.toList(ids)));
+    public R removeById(@RequestBody List<Long> ids) {
+        return eatDrugAlertService.deleteDrugAlertBatch(ids);
     }
 
 

@@ -65,6 +65,10 @@ public class PatientDeviceServiceImpl extends
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public R syncDeviceData(PatientDeviceEntity patientDevice) {
+		//  根据设备id和患者id补全字段
+		LambdaQueryWrapper<PatientDeviceEntity> wrapper = new LambdaQueryWrapper<>();
+		wrapper.setEntity(patientDevice);
+		patientDevice = this.getOne(wrapper.last("limit 1"));
 		//	查询从最后一次同步时间到当前时间的 血压数据，心率数据
 		JSONObject data = new JSONObject();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -128,6 +132,10 @@ public class PatientDeviceServiceImpl extends
 			log.error("同步心率数据失败", e);
 			return R.failed("同步心率数据失败");
 		}
+		//	没有错误则需要更新最后一次上传时间
+		patientDevice.setLastUpdateTime(LocalDateTime.now());
+		//	更新
+		this.updateById(patientDevice);
 		return R.ok();
 	}
 	
