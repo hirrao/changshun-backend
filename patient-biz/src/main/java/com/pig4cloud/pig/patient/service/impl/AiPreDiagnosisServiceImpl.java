@@ -179,6 +179,12 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             patientUids.add(patientDoctor.getPatientUid());
         }
 
+        // 总患者人数
+        int totalPatients = patientUids.size();
+        if (totalPatients == 0) {
+            return new StatisticsResult(0, 0, 0, 0, 0); // 如果没有患者，直接返回0
+        }
+
         // 2. 查询所有与患者相关的AI预问诊记录
         QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
         aiPreDiagnosisQuery.in("patient_uid", patientUids);
@@ -224,7 +230,14 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        return new StatisticsResult(earlyCvdFamilyHistoryCount, smokingCount, drinkingCount, infectiousDiseaseCount, foodAllergyCount);
+        // 计算百分比
+        double earlyCvdFamilyHistoryPercentage = (double) earlyCvdFamilyHistoryCount / totalPatients * 100;
+        double smokingPercentage = (double) smokingCount / totalPatients * 100;
+        double drinkingPercentage = (double) drinkingCount / totalPatients * 100;
+        double infectiousDiseasePercentage = (double) infectiousDiseaseCount / totalPatients * 100;
+        double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
+
+        return new StatisticsResult(earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage);
     }
     @Override
     public StatisticsResult getCareStatisticsByDoctor(Long doctorUid) {
@@ -238,6 +251,12 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             patientUids.add(patientDoctor.getPatientUid());
         }
 
+        // 总患者人数
+        int totalPatients = patientUids.size();
+        if (totalPatients == 0) {
+            return new StatisticsResult(0, 0, 0, 0, 0); // 如果没有患者，直接返回0
+        }
+
         // 2. 查询所有与患者相关的AI预问诊记录
         QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
         aiPreDiagnosisQuery.in("patient_uid", patientUids);
@@ -283,7 +302,14 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        return new StatisticsResult(earlyCvdFamilyHistoryCount, smokingCount, drinkingCount, infectiousDiseaseCount, foodAllergyCount);
+        // 计算百分比
+        double earlyCvdFamilyHistoryPercentage = (double) earlyCvdFamilyHistoryCount / totalPatients * 100;
+        double smokingPercentage = (double) smokingCount / totalPatients * 100;
+        double drinkingPercentage = (double) drinkingCount / totalPatients * 100;
+        double infectiousDiseasePercentage = (double) infectiousDiseaseCount / totalPatients * 100;
+        double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
+
+        return new StatisticsResult(earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage);
     }
 
 
