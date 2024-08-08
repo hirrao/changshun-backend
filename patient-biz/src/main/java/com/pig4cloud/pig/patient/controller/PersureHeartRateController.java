@@ -92,22 +92,6 @@ public class PersureHeartRateController {
         return R.ok(result);
     }
 
-//    @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
-//    @GetMapping("/{doctorUid}/patient/heartRate/stats")
-//    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')" )
-//    public R getHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
-//        JSONObject result = persureHeartRateService.getHeartRateStatistics(doctorUid);
-//        return R.ok(result);
-//    }
-
-//    @Operation(summary = "查询特别关系心率类型人数" , description = "查询特别关系心率类型人数" )
-//    @GetMapping("/{doctorUid}/carepatient/heartRate/stats")
-//    @PreAuthorize("@pms.hasPermission('patient_persureHeartCare_view')" )
-//    public R getcareHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
-//        JSONObject result = persureHeartRateService.getcareHeartRateStatistics(doctorUid);
-//        return R.ok(result);
-//    }
-
 
     /**
      * 分页查询

@@ -46,20 +46,8 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
 
-    // int countPatientsWithLowHeartRate(Long doctorUid);
-
-    // int countPatientsWithNormalHeartRate(Long doctorUid);
-
-    // int countPatientsWithHighHeartRate(Long doctorUid);
-
-     // int ccountPatientsWithLowHeartRate(Long doctorUid);
-
-     // int ccountPatientsWithNormalHeartRate(Long doctorUid);
-
-     // int ccountPatientsWithHighHeartRate(Long doctorUid);
-
     void updateSdhClassification(Long sdhId, Long patientUid);
-     boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
+    boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
 
     JSONObject getNewlyPressureData(Long patientUid);
     JSONObject getLatestMeasurementTime(Long patientUid);
@@ -67,9 +55,6 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONObject countSdhClassificationByDoctorAndCare(Long doctorUid);
 
     JSONObject nocountSdhClassificationByDoctorAndCare(Long doctorUid);
-
-    // JSONObject getHeartRateStatistics(Long doctorUid);
-    // JSONObject getcareHeartRateStatistics(Long doctorUid);
 
     Map<String, Long> getDailyStatistics(Long doctorUid);
 

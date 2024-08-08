@@ -416,4 +416,71 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
         result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
         return result;
     }
+
+    @Override
+    public int countPatientsWithLowHeartRate(Long doctorUid) {
+        return heartRateLogsMapper.countPatientsWithLowHeartRate(doctorUid);
+    }
+
+    @Override
+    public int countPatientsWithNormalHeartRate(Long doctorUid) {
+        return heartRateLogsMapper.countPatientsWithNormalHeartRate(doctorUid);
+    }
+
+    @Override
+    public int countPatientsWithHighHeartRate(Long doctorUid) {
+        return heartRateLogsMapper.countPatientsWithHighHeartRate(doctorUid);
+    }
+
+    @Override
+    public int ccountPatientsWithLowHeartRate(Long doctorUid) {
+        return heartRateLogsMapper.ccountPatientsWithLowHeartRate(doctorUid);
+    }
+
+    @Override
+    public int ccountPatientsWithNormalHeartRate(Long doctorUid) {
+        return heartRateLogsMapper.ccountPatientsWithNormalHeartRate(doctorUid);
+    }
+
+    @Override
+    public int ccountPatientsWithHighHeartRate(Long doctorUid) {
+        return heartRateLogsMapper.ccountPatientsWithHighHeartRate(doctorUid);
+    }
+
+
+    @Override
+    public JSONObject getHeartRateStatistics(Long doctorUid) {
+        int normal = 0, low = 0, high = 0, all = 0;
+        normal = countPatientsWithNormalHeartRate(doctorUid);
+        low = countPatientsWithLowHeartRate(doctorUid);
+        high = countPatientsWithHighHeartRate(doctorUid);
+        all = normal + low + high;
+
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("正常", normal);
+        mapData.put("过缓", low);
+        mapData.put("过急", high);
+        mapData.put("累计", all);
+
+        JSONObject result = new JSONObject(mapData);
+        return result;
+    }
+
+    @Override
+    public JSONObject getcareHeartRateStatistics(Long doctorUid) {
+        int normal = 0, low = 0, high = 0, all = 0;
+        normal = ccountPatientsWithNormalHeartRate(doctorUid);
+        low = ccountPatientsWithLowHeartRate(doctorUid);
+        high = ccountPatientsWithHighHeartRate(doctorUid);
+        all = normal + low + high;
+
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("正常", normal);
+        mapData.put("过缓", low);
+        mapData.put("过急", high);
+        mapData.put("累计", all);
+
+        JSONObject result = new JSONObject(mapData);
+        return result;
+    }
 }

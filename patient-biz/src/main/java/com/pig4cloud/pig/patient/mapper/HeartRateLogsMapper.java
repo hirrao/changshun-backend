@@ -17,4 +17,49 @@ public interface HeartRateLogsMapper extends BaseMapper<HeartRateLogsEntity> {
             "LIMIT 1")
     HeartRateLogsEntity getLatestMeasurement(@Param("patientUid") Long patientUid);
 
+    @Select("SELECT COUNT(*) FROM heart_rate_logs " +
+            "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
+            +
+            "AND DATE(upload_time) = CURDATE() " +
+            "AND heart_rate < 60")
+    int countPatientsWithLowHeartRate(@Param("doctorUid") Long doctorUid);
+
+	@Select("SELECT COUNT(*) FROM heart_rate_logs " +
+	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
+	 +
+	 "AND DATE(upload_time) = CURDATE() " +
+	 "AND heart_rate >= 60 AND heart_rate <= 100")
+	int countPatientsWithNormalHeartRate(@Param("doctorUid") Long doctorUid);
+
+	@Select("SELECT COUNT(*) FROM heart_rate_logs " +
+	 "WHERE patient_uid IN (SELECT patient_uid FROM patient_doctor WHERE doctor_uid = #{doctorUid}) "
+	 +
+	 "AND DATE(upload_time) = CURDATE() " +
+	 "AND heart_rate > 100")
+	int countPatientsWithHighHeartRate(@Param("doctorUid") Long doctorUid);
+
+	@Select("SELECT COUNT(*) FROM heart_rate_logs phr " +
+			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND DATE(phr.upload_time) = CURDATE() " +
+			"AND phr.heart_rate < 60 " +
+			"AND pd.care = 1")
+	int ccountPatientsWithLowHeartRate(@Param("doctorUid") Long doctorUid);
+
+	@Select("SELECT COUNT(*) FROM heart_rate_logs phr " +
+			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND DATE(phr.upload_time) = CURDATE() " +
+			"AND phr.heart_rate >= 60 AND phr.heart_rate <= 100 " +
+			"AND pd.care = 1")
+	int ccountPatientsWithNormalHeartRate(@Param("doctorUid") Long doctorUid);
+
+	@Select("SELECT COUNT(*) FROM heart_rate_logs phr " +
+			"INNER JOIN patient_doctor pd ON phr.patient_uid = pd.patient_uid " +
+			"WHERE pd.doctor_uid = #{doctorUid} " +
+			"AND DATE(phr.upload_time) = CURDATE() " +
+			"AND phr.heart_rate > 100 " +
+			"AND pd.care = 1")
+	int ccountPatientsWithHighHeartRate(@Param("doctorUid") Long doctorUid);
+
 }

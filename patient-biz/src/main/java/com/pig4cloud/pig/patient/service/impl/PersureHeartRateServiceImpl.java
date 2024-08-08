@@ -835,36 +835,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return data;
     }
 
-//    @Override
-//    public int countPatientsWithLowHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.countPatientsWithLowHeartRate(doctorUid);
-//    }
-
-//    @Override
-//    public int countPatientsWithNormalHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.countPatientsWithNormalHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int countPatientsWithHighHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.countPatientsWithHighHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int ccountPatientsWithLowHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.ccountPatientsWithLowHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int ccountPatientsWithNormalHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.ccountPatientsWithNormalHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int ccountPatientsWithHighHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.ccountPatientsWithHighHeartRate(doctorUid);
-//    }
-
     @Override
     public void updateSdhClassification(Long sdhId, Long patientUid) {
         persureHeartRateMapper.updateSdhClassification(sdhId, patientUid);
@@ -1021,43 +991,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         return statisticsMap;
     }
-
-
-//    @Override
-//    public JSONObject getHeartRateStatistics(Long doctorUid) {
-//        int normal = 0, low = 0, high = 0, all = 0;
-//        normal = countPatientsWithNormalHeartRate(doctorUid);
-//        low = countPatientsWithLowHeartRate(doctorUid);
-//        high = countPatientsWithHighHeartRate(doctorUid);
-//        all = normal + low + high;
-//
-//        Map<String, Object> mapData = new LinkedHashMap<>();
-//        mapData.put("正常", normal);
-//        mapData.put("过缓", low);
-//        mapData.put("过急", high);
-//        mapData.put("累计", all);
-//
-//        JSONObject result = new JSONObject(mapData);
-//        return result;
-//    }
-
-//    @Override
-//    public JSONObject getcareHeartRateStatistics(Long doctorUid) {
-//        int normal = 0, low = 0, high = 0, all = 0;
-//        normal = ccountPatientsWithNormalHeartRate(doctorUid);
-//        low = ccountPatientsWithLowHeartRate(doctorUid);
-//        high = ccountPatientsWithHighHeartRate(doctorUid);
-//        all = normal + low + high;
-//
-//        Map<String, Object> mapData = new LinkedHashMap<>();
-//        mapData.put("正常", normal);
-//        mapData.put("过缓", low);
-//        mapData.put("过急", high);
-//        mapData.put("累计", all);
-//
-//        JSONObject result = new JSONObject(mapData);
-//        return result;
-//    }
 
     @Override
     public JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date) {
