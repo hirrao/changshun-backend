@@ -46,15 +46,17 @@ public class AiPreDiagnosisController {
     @Operation(summary = "得到特别关心客观病史", description = "得到特别关心客观病史")
     @GetMapping("/count-cpatients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hisccount')")
-    public StatisticsResult getCareStatisticsByDoctor(@PathVariable Long doctorUid) {
-        return aiPreDiagnosisService.getCareStatisticsByDoctor(doctorUid);
+    public R getCareStatisticsByDoctor(@PathVariable Long doctorUid) {
+        StatisticsResult statisticsResult = aiPreDiagnosisService.getCareStatisticsByDoctor(doctorUid);
+        return R.ok(statisticsResult);
     }
 
     @Operation(summary = "得到客观病史", description = "得到客观病史")
     @GetMapping("/newcount-patients-history/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_hiscount')")
-    public StatisticsResult getStatisticsByDoctor(@PathVariable Long doctorUid) {
-        return aiPreDiagnosisService.getStatisticsByDoctor(doctorUid);
+    public R getStatisticsByDoctor(@PathVariable Long doctorUid) {
+        StatisticsResult statisticsResult = aiPreDiagnosisService.getStatisticsByDoctor(doctorUid);
+        return R.ok(statisticsResult);
     }
 
 
