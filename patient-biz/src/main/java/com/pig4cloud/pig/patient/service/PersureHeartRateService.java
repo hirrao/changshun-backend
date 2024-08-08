@@ -44,7 +44,7 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
      JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
      JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
-    // JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
+    JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
 
     // int countPatientsWithLowHeartRate(Long doctorUid);
 

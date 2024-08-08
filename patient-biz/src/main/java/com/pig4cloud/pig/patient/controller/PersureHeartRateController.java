@@ -172,13 +172,13 @@ public class PersureHeartRateController {
         return R.ok(result);
     }
 
-//    @Operation(summary = "统计今天连续高血压和低心率的患者", description = "统计今天所有患者连续高血压或低心率的次数")
-//    @GetMapping("/todayConsecutiveAbnormalities")
-//    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-//    public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
-//        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
-//        return R.ok(result);
-//    }
+    @Operation(summary = "统计今天连续高血压的患者", description = "统计今天所有患者连续高血压的次数")
+    @GetMapping("/todayConsecutiveAbnormalities")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
+        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
+        return R.ok(result);
+    }
 
     @Operation(summary = "统计今天收缩压的最高最低和平均值", description = "统计今天收缩压的最高最低和平均值")
     @GetMapping("/todayMaxMinAvgSystolic")

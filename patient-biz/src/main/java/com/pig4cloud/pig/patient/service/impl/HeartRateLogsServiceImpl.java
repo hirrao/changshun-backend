@@ -5,20 +5,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.patient.entity.HeartRateLogsEntity;
+import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.HeartRateLogsMapper;
+import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
+import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +31,10 @@ import java.util.stream.Collectors;
 public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, HeartRateLogsEntity> implements HeartRateLogsService {
     @Autowired
     private HeartRateLogsMapper heartRateLogsMapper;
+    @Autowired
+    private PatientDoctorMapper patientDoctorMapper;
+    @Autowired
+    private PatientBaseMapper patientBaseMapper;
 
     @Override
     public JSONArray getWeeklyHeartRateData(int weeksAgo, Long patientUid) {
@@ -297,5 +301,119 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
             yearlyPressureData.add(monthlyAverage);
         }
         return yearlyPressureData;
+    }
+
+    @Override
+    public JSONArray getDailyConsecutiveAbnormalities(Long doctorUid) {
+        LocalDate date = LocalDate.now();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+
+        QueryWrapper<PatientDoctorEntity> doctorQueryWrapper = new QueryWrapper<>();
+        doctorQueryWrapper.eq("doctor_uid", doctorUid);
+
+        List<Long> patientUids = patientDoctorMapper.selectList(doctorQueryWrapper)
+                .stream()
+                .map(PatientDoctorEntity::getPatientUid)
+                .toList();
+
+        if (patientUids.isEmpty()) {
+            return new JSONArray();
+        }
+
+        // 根据患者UID列表查询心率记录
+        QueryWrapper<HeartRateLogsEntity> heartRateQueryWrapper = new QueryWrapper<>();
+        heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
+                .in("patient_uid", patientUids);
+
+
+
+        List<HeartRateLogsEntity> todayRecords = heartRateLogsMapper.selectList(heartRateQueryWrapper);
+
+        // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
+        Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
+                .stream()
+                .collect(Collectors.toMap(PatientBaseEntity::getPatientUid, Function.identity()));
+
+        // 建立patient_uid和HeartRateLogsEntity之间的映射，便于后续按患者统计心率血压异常次数
+        Map<Long, List<HeartRateLogsEntity>> recordsByPatient = todayRecords.stream()
+                .collect(Collectors.groupingBy(HeartRateLogsEntity::getPatientUid));
+
+        JSONArray result = new JSONArray();
+
+        for (Map.Entry<Long, List<HeartRateLogsEntity>> entry : recordsByPatient.entrySet()) {
+            Long patientUid = entry.getKey();
+            List<HeartRateLogsEntity> records = entry.getValue();
+            records.sort(Comparator.comparing(HeartRateLogsEntity::getUploadTime));
+
+            List<JSONObject> patientDataList = new ArrayList<>();
+
+            int consecutiveLowHr = 0;
+            LocalDateTime lowHrStart = null;
+            LocalDateTime lowHrEnd = null;
+
+            for (HeartRateLogsEntity record : records) {
+                if (record.getHeartRate() < 60) {
+                    if (consecutiveLowHr == 0) {
+                        lowHrStart = record.getUploadTime();
+                    }
+                    consecutiveLowHr++;
+                    lowHrEnd = record.getUploadTime();
+                } else {
+                    if (consecutiveLowHr > 1) {
+                        JSONObject patientData = new JSONObject();
+                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                        LocalDate birthday = patientBase.getBirthday();
+                        LocalDate current = LocalDate.now();
+                        int age = 0;
+                        if (birthday != null) {
+                            age = Period.between(birthday, current).getYears();
+                        }
+
+                        patientData.put("name", patientBase.getPatientName());
+                        patientData.put("sex", patientBase.getSex());
+                        patientData.put("age", age);
+                        patientData.put("abnormality", "心率低于60次/分钟");
+                        patientData.put("ill", "心率过低");
+                        patientData.put("count", consecutiveLowHr);
+                        patientData.put("duration", String.format("%d小时%d分钟",
+                                Duration.between(lowHrStart, lowHrEnd).toHours(),
+                                Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
+
+                        patientDataList.add(patientData);
+                    }
+                    consecutiveLowHr = 0;
+                }
+            }
+
+            // 处理最后一条记录后的未记录异常情况
+            if (consecutiveLowHr > 1) {
+                JSONObject patientData = new JSONObject();
+                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                LocalDate birthday = patientBase.getBirthday();
+                LocalDate current = LocalDate.now();
+                int age = 0;
+                if (birthday != null) {
+                    age = Period.between(birthday, current).getYears();
+                }
+
+                patientData.put("name", patientBase.getPatientName());
+                patientData.put("sex", patientBase.getSex());
+                patientData.put("age", age);
+                patientData.put("abnormality", "心率低于60次/分钟");
+                patientData.put("ill", "心率过低");
+                patientData.put("count", consecutiveLowHr);
+                patientData.put("duration", String.format("%d小时%d分钟",
+                        Duration.between(lowHrStart, lowHrEnd).toHours(),
+                        Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
+
+                patientDataList.add(patientData);
+            }
+
+            result.addAll(patientDataList);
+        }
+
+        result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
+        return result;
     }
 }
