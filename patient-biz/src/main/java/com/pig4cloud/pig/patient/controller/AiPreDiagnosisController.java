@@ -140,7 +140,7 @@ public class AiPreDiagnosisController {
      */
     @Operation(summary = "新增AI预问诊" , description = "新增AI预问诊" )
     @SysLog("新增AI预问诊" )
-    @PostMapping
+    @PostMapping("/add_diagnosis")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_add')" )
     public R save(@RequestBody AiPreDiagnosisEntity aiPreDiagnosis) {
         return R.ok(aiPreDiagnosisService.saveAiPreDiagnosis(aiPreDiagnosis));

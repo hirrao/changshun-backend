@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -142,9 +143,12 @@ public class SysMessageServiceImpl extends
 				baseMsg.put("time", sentDate.format(formatter));
 			}
 
+			JSONObject jsonObject = JSONObject.parseObject(message.getJsonText());
+
+
 			baseMsg.put("sex", patientBase.getSex());
 			baseMsg.put("name", patientBase.getPatientName());
-			baseMsg.put("message", message.getJsonText());
+			baseMsg.put("message", jsonObject.getString("title"));
 			baseMsg.put("age",
 			 Period.between(patientBase.getBirthday(), LocalDate.now()).getYears());
 

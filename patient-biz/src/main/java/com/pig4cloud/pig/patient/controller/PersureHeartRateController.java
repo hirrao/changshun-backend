@@ -52,6 +52,8 @@ public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
 
+    @Autowired
+    private HeartRateLogsService heartRateLogsService;
 
     @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
     @PostMapping("/add")
@@ -91,22 +93,6 @@ public class PersureHeartRateController {
         JSONObject result = persureHeartRateService.nocountSdhClassificationByDoctorAndCare(doctorUid);
         return R.ok(result);
     }
-
-//    @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
-//    @GetMapping("/{doctorUid}/patient/heartRate/stats")
-//    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')" )
-//    public R getHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
-//        JSONObject result = persureHeartRateService.getHeartRateStatistics(doctorUid);
-//        return R.ok(result);
-//    }
-
-//    @Operation(summary = "查询特别关系心率类型人数" , description = "查询特别关系心率类型人数" )
-//    @GetMapping("/{doctorUid}/carepatient/heartRate/stats")
-//    @PreAuthorize("@pms.hasPermission('patient_persureHeartCare_view')" )
-//    public R getcareHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
-//        JSONObject result = persureHeartRateService.getcareHeartRateStatistics(doctorUid);
-//        return R.ok(result);
-//    }
 
 
     /**
@@ -172,13 +158,28 @@ public class PersureHeartRateController {
         return R.ok(result);
     }
 
-//    @Operation(summary = "统计今天连续高血压和低心率的患者", description = "统计今天所有患者连续高血压或低心率的次数")
-//    @GetMapping("/todayConsecutiveAbnormalities")
-//    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
-//    public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
-//        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
-//        return R.ok(result);
-//    }
+    @Operation(summary = "统计今天连续高血压的患者", description = "统计今天所有患者连续高血压的次数")
+    @GetMapping("/todayConsecutiveAbnormalities")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
+        JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今天异常患者", description = "统计今天所有患者的连续高血压和连续低心率情况")
+    @GetMapping("/today_consecutive_exceptions")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getTodayConsecutiveExceptions(@RequestParam Long doctorUid) {
+        JSONArray highPressureAbnormalities = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
+        JSONArray lowHeartRateAbnormalities = heartRateLogsService.getDailyConsecutiveAbnormalities(doctorUid);
+
+        // 合并两个异常结果
+        JSONArray result = new JSONArray();
+        result.addAll(highPressureAbnormalities);
+        result.addAll(lowHeartRateAbnormalities);
+
+        return R.ok(result);
+    }
 
     @Operation(summary = "统计今天收缩压的最高最低和平均值", description = "统计今天收缩压的最高最低和平均值")
     @GetMapping("/todayMaxMinAvgSystolic")
@@ -329,7 +330,7 @@ public class PersureHeartRateController {
 
     @Operation(summary = "查询某患者指定周的血压异常次数", description = "查询某患者指定周的血压异常次数")
     @GetMapping("/weekAnomalyCount")
-    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getWeekAnomalyCount(@RequestParam Long patientUid, @RequestParam int weeksAgo) {
         JSONObject result = persureHeartRateService.getWeekAnomalyCount(patientUid, weeksAgo);
         return R.ok(result);
@@ -337,7 +338,7 @@ public class PersureHeartRateController {
 
     @Operation(summary = "查询血压和心率的最新时间", description = "查询血压和心率的最新时间")
     @GetMapping("/get_newest_time")
-    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R get_newest_measure_time(@RequestParam Long patientUid) {
         try {
             JSONObject result = persureHeartRateService.getLatestMeasurementTime(patientUid);
@@ -347,12 +348,19 @@ public class PersureHeartRateController {
         }
     }
 
-//    @Operation(summary = "医生端获取特别关心患者的血压异常统计", description = "医生端获取特别关心患者的血压异常统计")
-//    @GetMapping("/getAnomalyStatsByDoctorUidCare")
-//    @PreAuthorize("@pms.hasPermission('patient_pressureAnomaly_view')")
-//    public R getAnomalyStatsByDoctorUidCare(@RequestParam Long doctorUid) {
-//        // JSONArray
-//    }
+    @Operation(summary = "医生端获取特别关心患者的血压异常统计", description = "医生端获取特别关心患者的血压异常统计")
+    @GetMapping("/get_anomaly_stats_by_doctorUid_care")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getAnomalyStatsByDoctorUidCare(@RequestParam Long doctorUid) {
+        return R.ok(persureHeartRateService.getAnomalyCountByDoctorUid(doctorUid, true));
+    }
+
+    @Operation(summary = "医生端获取全部患者的血压异常统计", description = "医生端获取全部患者的血压异常统计")
+    @GetMapping("/get_anomaly_stats_by_doctorUid")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getAnomalyStatsByDoctorUi(@RequestParam Long doctorUid) {
+        return R.ok(persureHeartRateService.getAnomalyCountByDoctorUid(doctorUid, false));
+    }
 
     /**
      * 通过id查询血压心率展示

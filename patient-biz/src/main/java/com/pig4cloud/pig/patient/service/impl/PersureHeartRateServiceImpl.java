@@ -16,8 +16,11 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 血压心率展示
@@ -39,6 +42,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     private HeartRateLogsService heartRateLogsService;
     @Autowired
     private AiPreDiagnosisMapper aiPreDiagnosisMapper;
+    private static final Logger logger = LoggerFactory.getLogger(PersureHeartRateService.class);
 
     @Override
     public void addBloodPressure(PersureHeartRateEntity persureHeartRate) {
@@ -358,178 +362,120 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return persureHeartRateMapper.selectTodayMinHeartRate(patientUid);
     }
 
-//    @Override
-//    public JSONArray getDailyConsecutiveAbnormalities(Long doctorUid) {
-//        LocalDate date = LocalDate.now();
-//        LocalDateTime startOfDay = date.atStartOfDay();
-//        LocalDateTime endOfDay = date.atTime(23, 59, 59);
-//
-//        QueryWrapper<PatientDoctorEntity> doctorQueryWrapper = new QueryWrapper<>();
-//        doctorQueryWrapper.eq("doctor_uid", doctorUid);
-//
-//        List<Long> patientUids = patientDoctorMapper.selectList(doctorQueryWrapper)
-//                .stream()
-//                .map(PatientDoctorEntity::getPatientUid)
-//                .toList();
-//
-//        if (patientUids.isEmpty()) {
-//            return new JSONArray();
-//        }
-//
-//        // 根据患者UID列表查询心率记录
-//        QueryWrapper<PersureHeartRateEntity> heartRateQueryWrapper = new QueryWrapper<>();
-//        heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
-//                .in("patient_uid", patientUids);
-//
-//
-//
-//        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(heartRateQueryWrapper);
-//
-//        // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
-//        Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
-//                .stream()
-//                .collect(Collectors.toMap(PatientBaseEntity::getPatientUid, Function.identity()));
-//
-//        // 建立patient_uid和PersureHeartRateEntity之间的映射，便于后续按患者统计心率血压异常次数
-//        Map<Long, List<PersureHeartRateEntity>> recordsByPatient = todayRecords.stream()
-//                .collect(Collectors.groupingBy(PersureHeartRateEntity::getPatientUid));
-//
-//        JSONArray result = new JSONArray();
-//
-//        for (Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()) {
-//            Long patientUid = entry.getKey();
-//            List<PersureHeartRateEntity> records = entry.getValue();
-//            records.sort(Comparator.comparing(PersureHeartRateEntity::getUploadTime));
-//
-//            List<JSONObject> patientDataList = new ArrayList<>();
-//
-//            int consecutiveHighBp = 0; // 连续高压超过180的次数
-//            LocalDateTime highBpStart = null;
-//            LocalDateTime highBpEnd = null;
-//
-//            int consecutiveLowHr = 0; // 连续低压超过110的次数
-//            LocalDateTime lowHrStart = null;
-//            LocalDateTime lowHrEnd = null;
-//
-//            for (PersureHeartRateEntity record : records) {
-//                if (record.getSystolic() >= 180 || record.getDiastolic() >= 110) {
-//                    if (consecutiveHighBp == 0) {
-//                        highBpStart = record.getUploadTime();
-//                    }
-//                    consecutiveHighBp++;
-//                    highBpEnd = record.getUploadTime();
-//                } else {
-//                    if (consecutiveHighBp > 1) {
-//                        JSONObject patientData = new JSONObject();
-//                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-//                        LocalDate birthday = patientBase.getBirthday();
-//                        LocalDate current = LocalDate.now();
-//                        int age = 0;
-//                        if (birthday != null) {
-//                            age = Period.between(birthday, current).getYears();
-//                        }
-//
-//                        patientData.put("name", patientBase.getPatientName());
-//                        patientData.put("sex", patientBase.getSex());
-//                        patientData.put("age", age);
-//                        patientData.put("abnormality", "血压高于180/110mmHg");
-//                        patientData.put("ill", "高压过高");
-//                        patientData.put("count", consecutiveHighBp);
-//                        patientData.put("duration", String.format("%d小时%d分钟",
-//                                Duration.between(highBpStart, highBpEnd).toHours(),
-//                                Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
-//
-//                        patientDataList.add(patientData);
-//                    }
-//                    consecutiveHighBp = 0;
-//                }
-//
-//                if (record.getHeartRate() < 60) {
-//                    if (consecutiveLowHr == 0) {
-//                        lowHrStart = record.getUploadTime();
-//                    }
-//                    consecutiveLowHr++;
-//                    lowHrEnd = record.getUploadTime();
-//                } else {
-//                    if (consecutiveLowHr > 1) {
-//                        JSONObject patientData = new JSONObject();
-//                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-//                        LocalDate birthday = patientBase.getBirthday();
-//                        LocalDate current = LocalDate.now();
-//                        int age = 0;
-//                        if (birthday != null) {
-//                            age = Period.between(birthday, current).getYears();
-//                        }
-//
-//                        patientData.put("name", patientBase.getPatientName());
-//                        patientData.put("sex", patientBase.getSex());
-//                        patientData.put("age", age);
-//                        patientData.put("abnormality", "心率低于60次/分钟");
-//                        patientData.put("ill", "心率过低");
-//                        patientData.put("count", consecutiveLowHr);
-//                        patientData.put("duration", String.format("%d小时%d分钟",
-//                                Duration.between(lowHrStart, lowHrEnd).toHours(),
-//                                Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
-//
-//                        patientDataList.add(patientData);
-//                    }
-//                    consecutiveLowHr = 0;
-//                }
-//            }
-//
-//            // 处理最后一条记录后的未记录异常情况
-//            if (consecutiveHighBp > 1) {
-//                JSONObject patientData = new JSONObject();
-//                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-//                LocalDate birthday = patientBase.getBirthday();
-//                LocalDate current = LocalDate.now();
-//                int age = 0;
-//                if (birthday != null) {
-//                    age = Period.between(birthday, current).getYears();
-//                }
-//
-//                patientData.put("name", patientBase.getPatientName());
-//                patientData.put("sex", patientBase.getSex());
-//                patientData.put("age", age);
-//                patientData.put("abnormality", "血压高于180/110mmHg");
-//                patientData.put("ill", "高压过高");
-//                patientData.put("count", consecutiveHighBp);
-//                patientData.put("duration", String.format("%d小时%d分钟",
-//                        Duration.between(highBpStart, highBpEnd).toHours(),
-//                        Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
-//
-//                patientDataList.add(patientData);
-//            }
-//
-//            if (consecutiveLowHr > 1) {
-//                JSONObject patientData = new JSONObject();
-//                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
-//                LocalDate birthday = patientBase.getBirthday();
-//                LocalDate current = LocalDate.now();
-//                int age = 0;
-//                if (birthday != null) {
-//                    age = Period.between(birthday, current).getYears();
-//                }
-//
-//                patientData.put("name", patientBase.getPatientName());
-//                patientData.put("sex", patientBase.getSex());
-//                patientData.put("age", age);
-//                patientData.put("abnormality", "心率低于60次/分钟");
-//                patientData.put("ill", "心率过低");
-//                patientData.put("count", consecutiveLowHr);
-//                patientData.put("duration", String.format("%d小时%d分钟",
-//                        Duration.between(lowHrStart, lowHrEnd).toHours(),
-//                        Duration.between(lowHrStart, lowHrEnd).toMinutes() % 60));
-//
-//                patientDataList.add(patientData);
-//            }
-//
-//            result.addAll(patientDataList);
-//        }
-//
-//        result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
-//        return result;
-//    }
+    @Override
+    public JSONArray getDailyConsecutiveAbnormalities(Long doctorUid) {
+        LocalDate date = LocalDate.now();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+
+        QueryWrapper<PatientDoctorEntity> doctorQueryWrapper = new QueryWrapper<>();
+        doctorQueryWrapper.eq("doctor_uid", doctorUid);
+
+        List<Long> patientUids = patientDoctorMapper.selectList(doctorQueryWrapper)
+                .stream()
+                .map(PatientDoctorEntity::getPatientUid)
+                .toList();
+
+        if (patientUids.isEmpty()) {
+            return new JSONArray();
+        }
+
+        // 根据患者UID列表查询心率记录
+        QueryWrapper<PersureHeartRateEntity> heartRateQueryWrapper = new QueryWrapper<>();
+        heartRateQueryWrapper.between("upload_time", startOfDay, endOfDay)
+                .in("patient_uid", patientUids);
+
+
+
+        List<PersureHeartRateEntity> todayRecords = persureHeartRateMapper.selectList(heartRateQueryWrapper);
+
+        // 建立patient_uid和PatientBaseEntity之间的映射，便于后续查询患者基本信息
+        Map<Long, PatientBaseEntity> patientBaseMap = patientBaseMapper.selectList(new QueryWrapper<>())
+                .stream()
+                .collect(Collectors.toMap(PatientBaseEntity::getPatientUid, Function.identity()));
+
+        // 建立patient_uid和PersureHeartRateEntity之间的映射，便于后续按患者统计心率血压异常次数
+        Map<Long, List<PersureHeartRateEntity>> recordsByPatient = todayRecords.stream()
+                .collect(Collectors.groupingBy(PersureHeartRateEntity::getPatientUid));
+
+        JSONArray result = new JSONArray();
+
+        for (Map.Entry<Long, List<PersureHeartRateEntity>> entry : recordsByPatient.entrySet()) {
+            Long patientUid = entry.getKey();
+            List<PersureHeartRateEntity> records = entry.getValue();
+            records.sort(Comparator.comparing(PersureHeartRateEntity::getUploadTime));
+
+            List<JSONObject> patientDataList = new ArrayList<>();
+
+            int consecutiveHighBp = 0; // 连续高压超过180的次数
+            LocalDateTime highBpStart = null;
+            LocalDateTime highBpEnd = null;
+
+
+            for (PersureHeartRateEntity record : records) {
+                if (record.getSystolic() >= 180 || record.getDiastolic() >= 110) {
+                    if (consecutiveHighBp == 0) {
+                        highBpStart = record.getUploadTime();
+                    }
+                    consecutiveHighBp++;
+                    highBpEnd = record.getUploadTime();
+                } else {
+                    if (consecutiveHighBp > 1) {
+                        JSONObject patientData = new JSONObject();
+                        PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                        LocalDate birthday = patientBase.getBirthday();
+                        LocalDate current = LocalDate.now();
+                        int age = 0;
+                        if (birthday != null) {
+                            age = Period.between(birthday, current).getYears();
+                        }
+
+                        patientData.put("name", patientBase.getPatientName());
+                        patientData.put("sex", patientBase.getSex());
+                        patientData.put("age", age);
+                        patientData.put("abnormality", "血压高于180/110mmHg");
+                        patientData.put("ill", "高压过高");
+                        patientData.put("count", consecutiveHighBp);
+                        patientData.put("duration", String.format("%d小时%d分钟",
+                                Duration.between(highBpStart, highBpEnd).toHours(),
+                                Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
+
+                        patientDataList.add(patientData);
+                    }
+                    consecutiveHighBp = 0;
+                }
+            }
+
+            // 处理最后一条记录后的未记录异常情况
+            if (consecutiveHighBp > 1) {
+                JSONObject patientData = new JSONObject();
+                PatientBaseEntity patientBase = patientBaseMap.get(patientUid);
+                LocalDate birthday = patientBase.getBirthday();
+                LocalDate current = LocalDate.now();
+                int age = 0;
+                if (birthday != null) {
+                    age = Period.between(birthday, current).getYears();
+                }
+
+                patientData.put("name", patientBase.getPatientName());
+                patientData.put("sex", patientBase.getSex());
+                patientData.put("age", age);
+                patientData.put("abnormality", "血压高于180/110mmHg");
+                patientData.put("ill", "高压过高");
+                patientData.put("count", consecutiveHighBp);
+                patientData.put("duration", String.format("%d小时%d分钟",
+                        Duration.between(highBpStart, highBpEnd).toHours(),
+                        Duration.between(highBpStart, highBpEnd).toMinutes() % 60));
+
+                patientDataList.add(patientData);
+            }
+
+            result.addAll(patientDataList);
+        }
+
+        result.sort((a, b) -> ((Integer) ((JSONObject) b).get("count")).compareTo((Integer) ((JSONObject) a).get("count")));
+        return result;
+    }
 
 
     public JSONObject getMaxMinAvgSystolic(LocalDateTime start, LocalDateTime end, Long patientUid) {
@@ -892,36 +838,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return data;
     }
 
-//    @Override
-//    public int countPatientsWithLowHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.countPatientsWithLowHeartRate(doctorUid);
-//    }
-
-//    @Override
-//    public int countPatientsWithNormalHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.countPatientsWithNormalHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int countPatientsWithHighHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.countPatientsWithHighHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int ccountPatientsWithLowHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.ccountPatientsWithLowHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int ccountPatientsWithNormalHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.ccountPatientsWithNormalHeartRate(doctorUid);
-//    }
-//
-//    @Override
-//    public int ccountPatientsWithHighHeartRate(Long doctorUid) {
-//        return persureHeartRateMapper.ccountPatientsWithHighHeartRate(doctorUid);
-//    }
-
     @Override
     public void updateSdhClassification(Long sdhId, Long patientUid) {
         persureHeartRateMapper.updateSdhClassification(sdhId, patientUid);
@@ -1079,43 +995,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return statisticsMap;
     }
 
-
-//    @Override
-//    public JSONObject getHeartRateStatistics(Long doctorUid) {
-//        int normal = 0, low = 0, high = 0, all = 0;
-//        normal = countPatientsWithNormalHeartRate(doctorUid);
-//        low = countPatientsWithLowHeartRate(doctorUid);
-//        high = countPatientsWithHighHeartRate(doctorUid);
-//        all = normal + low + high;
-//
-//        Map<String, Object> mapData = new LinkedHashMap<>();
-//        mapData.put("正常", normal);
-//        mapData.put("过缓", low);
-//        mapData.put("过急", high);
-//        mapData.put("累计", all);
-//
-//        JSONObject result = new JSONObject(mapData);
-//        return result;
-//    }
-
-//    @Override
-//    public JSONObject getcareHeartRateStatistics(Long doctorUid) {
-//        int normal = 0, low = 0, high = 0, all = 0;
-//        normal = ccountPatientsWithNormalHeartRate(doctorUid);
-//        low = ccountPatientsWithLowHeartRate(doctorUid);
-//        high = ccountPatientsWithHighHeartRate(doctorUid);
-//        all = normal + low + high;
-//
-//        Map<String, Object> mapData = new LinkedHashMap<>();
-//        mapData.put("正常", normal);
-//        mapData.put("过缓", low);
-//        mapData.put("过急", high);
-//        mapData.put("累计", all);
-//
-//        JSONObject result = new JSONObject(mapData);
-//        return result;
-//    }
-
     @Override
     public JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date) {
         List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByDate(patientUid, date);
@@ -1160,7 +1039,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         }
 
         LocalDate today = LocalDate.now();
-        LocalDate sevenDaysAgo = today.minusDays(7);
+        LocalDate sevenDaysAgo = today.minusDays(6);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
         String dateRange = sevenDaysAgo.format(formatter) + "~" + today.format(formatter);
         result.put("dateRange", dateRange);
@@ -1194,47 +1073,73 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return result;
     }
 
-//    @Override
-//    public JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care) {
-//        QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
-//        if(care){
-//            queryWrapper.eq("doctor_uid", doctorUid)
-//                    .eq("care", true);
-//        } else{
-//            queryWrapper.eq("doctor_uid", doctorUid);
-//        }
-//        List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(queryWrapper);
-//
-//        int severe = 0, moderate = 0, mild = 0, elevated = 0, low = 0, all = 0;
-//
-//        for(PatientDoctorEntity patientDoctorEntity : patientDoctorEntities){
-//            QueryWrapper<PersureHeartRateEntity> queryWrapper1 = new QueryWrapper<>();
-//            LocalDate now = LocalDate.now();
-//            queryWrapper1.eq("patient_uid", patientDoctorEntity.getPatientUid())
-//                    .eq("upload_time", now);
-//            List<PressureAnomalyEntity> anomalyRecords = pressureAnomalyMapper.selectList(queryWrapper1);
-//
-//            for(PressureAnomalyEntity anomalyRecord : anomalyRecords){
-//                severe += anomalyRecord.getSevere();
-//                moderate += anomalyRecord.getModerate();
-//                mild += anomalyRecord.getMild();
-//                elevated += anomalyRecord.getElevated();
-//                low += anomalyRecord.getLow();
-//                all += anomalyRecord.getAllNum();
-//            }
-//        }
-//
-//        int normal = all - severe - moderate - mild - elevated - low;
-//        Map<String, Object> mapData = new LinkedHashMap<>();
-//        mapData.put("重度", severe);
-//        mapData.put("中度", moderate);
-//        mapData.put("轻度", mild);
-//        mapData.put("正常偏高", elevated);
-//        mapData.put("正常", normal);
-//        mapData.put("偏低", low);
-//        mapData.put("累计人次", all);
-//
-//        JSONObject result = new JSONObject(mapData);
-//        return result;
-//    }
+    @Override
+    public JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care) {
+        QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
+        if (care) {
+            queryWrapper.eq("doctor_uid", doctorUid)
+                    .eq("care", true);
+        } else {
+            queryWrapper.eq("doctor_uid", doctorUid);
+        }
+
+        List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(queryWrapper);
+        LocalDate now = LocalDate.now();
+        LocalDateTime startDateTime = now.atStartOfDay();
+        LocalDateTime endDateTime = now.atTime(23, 59, 59);
+
+        logger.info("startDateTime: " + startDateTime);
+        logger.info("endDateTime: " + endDateTime);
+
+        int severe = 0, moderate = 0, mild = 0, elevated = 0, low = 0, all = 0;
+
+        for (PatientDoctorEntity patientDoctorEntity : patientDoctorEntities) {
+            QueryWrapper<PersureHeartRateEntity> queryWrapper1 = new QueryWrapper<>();
+
+            queryWrapper1.eq("patient_uid", patientDoctorEntity.getPatientUid())
+                    .between("upload_time", startDateTime, endDateTime);
+
+            List<PersureHeartRateEntity> anomalyRecords = persureHeartRateMapper.selectList(queryWrapper1);
+
+            for (PersureHeartRateEntity anomalyRecord : anomalyRecords) {
+                all++;
+                String risk_assessment = anomalyRecord.getRiskAssessment();
+                if (risk_assessment != null) {
+                    switch (risk_assessment) {
+                        case "重度":
+                            severe++;
+                            break;
+                        case "中度":
+                            moderate++;
+                            break;
+                        case "轻度":
+                            mild++;
+                            break;
+                        case "正常高值":
+                            elevated++;
+                            break;
+                        case "偏低":
+                            low++;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        int normal = all - severe - moderate - mild - elevated - low;
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        mapData.put("重度", severe);
+        mapData.put("中度", moderate);
+        mapData.put("轻度", mild);
+        mapData.put("正常偏高", elevated);
+        mapData.put("正常", normal);
+        mapData.put("偏低", low);
+        mapData.put("累计人次", all);
+
+        JSONObject result = new JSONObject(mapData);
+        return result;
+    }
+
 }

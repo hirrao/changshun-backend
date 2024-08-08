@@ -19,4 +19,22 @@ public interface HeartRateLogsService extends IService<HeartRateLogsEntity> {
     JSONArray getWeeklyAverageHeartRateByDay(int weeksAgo, Long patientUid);
     JSONArray getMonthlyAverageHeartRateByWeek(int monthsAgo, Long patientUid);
     JSONArray getYearlyAverageHeartRateByMonth(int yearsAgo, Long patientUid);
+
+    JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
+
+     int countPatientsWithLowHeartRate(Long doctorUid);
+
+     int countPatientsWithNormalHeartRate(Long doctorUid);
+
+     int countPatientsWithHighHeartRate(Long doctorUid);
+
+     int ccountPatientsWithLowHeartRate(Long doctorUid);
+
+     int ccountPatientsWithNormalHeartRate(Long doctorUid);
+
+     int ccountPatientsWithHighHeartRate(Long doctorUid);
+
+
+    JSONObject getHeartRateStatistics(Long doctorUid);
+    JSONObject getcareHeartRateStatistics(Long doctorUid);
 }

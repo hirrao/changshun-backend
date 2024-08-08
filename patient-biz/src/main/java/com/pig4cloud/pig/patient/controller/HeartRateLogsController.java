@@ -194,4 +194,28 @@ public class HeartRateLogsController {
     public R getYearlyAverageHeartRateByMonth(@RequestParam int yearsAgo, @RequestParam Long patientUid) {
         return R.ok(heartRateLogsService.getYearlyAverageHeartRateByMonth(yearsAgo, patientUid));
     }
+
+    @Operation(summary = "统计今天连续低心率的患者", description = "统计今天所有患者连续低心率的次数")
+    @GetMapping("/todayConsecutiveAbnormalities")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
+    public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
+        JSONArray result = heartRateLogsService.getDailyConsecutiveAbnormalities(doctorUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询心率类型人数" , description = "查询心率类型人数" )
+    @GetMapping("/{doctorUid}/patient/heartRate/stats")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')" )
+    public R getHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
+        JSONObject result = heartRateLogsService.getHeartRateStatistics(doctorUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "查询特别关系心率类型人数" , description = "查询特别关系心率类型人数" )
+    @GetMapping("/{doctorUid}/carepatient/heartRate/stats")
+    @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')" )
+    public R getcareHeartRateStatistics(@PathVariable("doctorUid") Long doctorUid) {
+        JSONObject result = heartRateLogsService.getcareHeartRateStatistics(doctorUid);
+        return R.ok(result);
+    }
 }

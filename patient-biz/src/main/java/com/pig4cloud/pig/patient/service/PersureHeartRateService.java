@@ -44,22 +44,10 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
      JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
      JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
-    // JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
-
-    // int countPatientsWithLowHeartRate(Long doctorUid);
-
-    // int countPatientsWithNormalHeartRate(Long doctorUid);
-
-    // int countPatientsWithHighHeartRate(Long doctorUid);
-
-     // int ccountPatientsWithLowHeartRate(Long doctorUid);
-
-     // int ccountPatientsWithNormalHeartRate(Long doctorUid);
-
-     // int ccountPatientsWithHighHeartRate(Long doctorUid);
+    JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
 
     void updateSdhClassification(Long sdhId, Long patientUid);
-     boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
+    boolean savePersureHeartRate(PersureHeartRateEntity persureHeartRate);
 
     JSONObject getNewlyPressureData(Long patientUid);
     JSONObject getLatestMeasurementTime(Long patientUid);
@@ -68,13 +56,10 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     JSONObject nocountSdhClassificationByDoctorAndCare(Long doctorUid);
 
-    // JSONObject getHeartRateStatistics(Long doctorUid);
-    // JSONObject getcareHeartRateStatistics(Long doctorUid);
-
     Map<String, Long> getDailyStatistics(Long doctorUid);
 
     JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date);
     JSONObject getLastSevenDayAnomalyNum(Long patientUid);
     JSONObject getWeekAnomalyCount(Long patientUid, int weeksAgo);
-    // JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care);
+    JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care);
 }
