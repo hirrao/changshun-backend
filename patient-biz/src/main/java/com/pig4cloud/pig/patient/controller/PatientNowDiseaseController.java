@@ -61,6 +61,13 @@ public class PatientNowDiseaseController {
         return R.ok(patientNowDiseaseService.list(wrapper));
     }
 
+    @Operation(summary = "查询患者所患疾病及持续时间", description = "查询患者所患疾病及持续时间")
+    @GetMapping("/get_disease_time")
+    @PreAuthorize("@pms.hasPermission('patient_userFeedback_view')")
+    public R getPatientDiseaseAndTime(@RequestParam Long patientUid) {
+        return R.ok(patientNowDiseaseService.getPatientDiseaseAndTime(patientUid));
+    }
+
 /*
     示例
     @Operation(summary= "条件查询", description = "条件查询")
