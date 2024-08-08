@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 血压心率展示
@@ -40,6 +42,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     private HeartRateLogsService heartRateLogsService;
     @Autowired
     private AiPreDiagnosisMapper aiPreDiagnosisMapper;
+    private static final Logger logger = LoggerFactory.getLogger(PersureHeartRateService.class);
 
     @Override
     public void addBloodPressure(PersureHeartRateEntity persureHeartRate) {
@@ -1073,47 +1076,54 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     @Override
     public JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care) {
         QueryWrapper<PatientDoctorEntity> queryWrapper = new QueryWrapper<>();
-        if(care){
+        if (care) {
             queryWrapper.eq("doctor_uid", doctorUid)
                     .eq("care", true);
-        } else{
+        } else {
             queryWrapper.eq("doctor_uid", doctorUid);
         }
+
         List<PatientDoctorEntity> patientDoctorEntities = patientDoctorMapper.selectList(queryWrapper);
+        LocalDate now = LocalDate.now();
+        LocalDateTime startDateTime = now.atStartOfDay();
+        LocalDateTime endDateTime = now.atTime(23, 59, 59);
+
+        logger.info("startDateTime: " + startDateTime);
+        logger.info("endDateTime: " + endDateTime);
 
         int severe = 0, moderate = 0, mild = 0, elevated = 0, low = 0, all = 0;
 
-        for(PatientDoctorEntity patientDoctorEntity : patientDoctorEntities){
+        for (PatientDoctorEntity patientDoctorEntity : patientDoctorEntities) {
             QueryWrapper<PersureHeartRateEntity> queryWrapper1 = new QueryWrapper<>();
-            LocalDate now = LocalDate.now();
-            LocalDateTime startDateTime = now.atStartOfDay();
-            LocalDateTime endDateTime = now.atTime(23, 59, 59);
 
             queryWrapper1.eq("patient_uid", patientDoctorEntity.getPatientUid())
                     .between("upload_time", startDateTime, endDateTime);
+
             List<PersureHeartRateEntity> anomalyRecords = persureHeartRateMapper.selectList(queryWrapper1);
 
-            for(PersureHeartRateEntity anomalyRecord : anomalyRecords){
+            for (PersureHeartRateEntity anomalyRecord : anomalyRecords) {
+                all++;
                 String risk_assessment = anomalyRecord.getRiskAssessment();
-                switch(risk_assessment){
-                    case "重度":
-                        severe++;
-                        break;
-                    case "中度":
-                        moderate++;
-                        break;
-                    case "轻度":
-                        mild++;
-                        break;
-                    case "正常高值":
-                        elevated++;
-                        break;
-                    case "偏低":
-                        low++;
-                        break;
-                    default:
-                        all++;
-                        break;
+                if (risk_assessment != null) {
+                    switch (risk_assessment) {
+                        case "重度":
+                            severe++;
+                            break;
+                        case "中度":
+                            moderate++;
+                            break;
+                        case "轻度":
+                            mild++;
+                            break;
+                        case "正常高值":
+                            elevated++;
+                            break;
+                        case "偏低":
+                            low++;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -1131,4 +1141,5 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         JSONObject result = new JSONObject(mapData);
         return result;
     }
+
 }
