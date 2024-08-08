@@ -83,7 +83,7 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
 
         float bmi = 0;
         if (height > 0) {
-            bmi = weight / (height * height);
+            bmi = weight / ((height / 100) * (height / 100));
         }
 
         JSONObject result = new JSONObject();
