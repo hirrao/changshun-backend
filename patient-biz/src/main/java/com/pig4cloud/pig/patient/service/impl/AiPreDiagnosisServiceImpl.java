@@ -21,6 +21,8 @@ import java.time.Period;
 import java.util.*;
 import java.text.DecimalFormat;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 /**
  * AI预问诊
  *
@@ -230,12 +232,22 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        // 计算百分比
-        double earlyCvdFamilyHistoryPercentage = (double) earlyCvdFamilyHistoryCount / totalPatients * 100;
-        double smokingPercentage = (double) smokingCount / totalPatients * 100;
-        double drinkingPercentage = (double) drinkingCount / totalPatients * 100;
-        double infectiousDiseasePercentage = (double) infectiousDiseaseCount / totalPatients * 100;
-        double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
+        // 计算百分比，并保留2位小数
+        double earlyCvdFamilyHistoryPercentage = BigDecimal.valueOf((double) earlyCvdFamilyHistoryCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double smokingPercentage = BigDecimal.valueOf((double) smokingCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double drinkingPercentage = BigDecimal.valueOf((double) drinkingCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double infectiousDiseasePercentage = BigDecimal.valueOf((double) infectiousDiseaseCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double foodAllergyPercentage = BigDecimal.valueOf((double) foodAllergyCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
 
         return new StatisticsResult(earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage);
     }
@@ -302,12 +314,22 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        // 计算百分比
-        double earlyCvdFamilyHistoryPercentage = (double) earlyCvdFamilyHistoryCount / totalPatients * 100;
-        double smokingPercentage = (double) smokingCount / totalPatients * 100;
-        double drinkingPercentage = (double) drinkingCount / totalPatients * 100;
-        double infectiousDiseasePercentage = (double) infectiousDiseaseCount / totalPatients * 100;
-        double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
+        // 计算百分比，并保留2位小数
+        double earlyCvdFamilyHistoryPercentage = BigDecimal.valueOf((double) earlyCvdFamilyHistoryCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double smokingPercentage = BigDecimal.valueOf((double) smokingCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double drinkingPercentage = BigDecimal.valueOf((double) drinkingCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double infectiousDiseasePercentage = BigDecimal.valueOf((double) infectiousDiseaseCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        double foodAllergyPercentage = BigDecimal.valueOf((double) foodAllergyCount / totalPatients * 100)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
 
         return new StatisticsResult(earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage);
     }
