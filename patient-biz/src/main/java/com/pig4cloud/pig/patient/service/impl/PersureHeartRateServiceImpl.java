@@ -1036,7 +1036,7 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         }
 
         LocalDate today = LocalDate.now();
-        LocalDate sevenDaysAgo = today.minusDays(7);
+        LocalDate sevenDaysAgo = today.minusDays(6);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
         String dateRange = sevenDaysAgo.format(formatter) + "~" + today.format(formatter);
         result.put("dateRange", dateRange);
@@ -1098,16 +1098,22 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                 switch(risk_assessment){
                     case "重度":
                         severe++;
+                        break;
                     case "中度":
                         moderate++;
+                        break;
                     case "轻度":
                         mild++;
+                        break;
                     case "正常高值":
                         elevated++;
+                        break;
                     case "偏低":
                         low++;
+                        break;
                     default:
                         all++;
+                        break;
                 }
             }
         }
