@@ -142,9 +142,12 @@ public class SysMessageServiceImpl extends
 				baseMsg.put("time", sentDate.format(formatter));
 			}
 
+			JSONObject jsonObject = JSONObject.parseObject(message.getJsonText());
+
+
 			baseMsg.put("sex", patientBase.getSex());
 			baseMsg.put("name", patientBase.getPatientName());
-			baseMsg.put("message", message.getJsonText());
+			baseMsg.put("message", jsonObject.getString("title"));
 			baseMsg.put("age",
 			 Period.between(patientBase.getBirthday(), LocalDate.now()).getYears());
 
