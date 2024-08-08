@@ -52,6 +52,8 @@ public class PersureHeartRateController {
 
     private final  PersureHeartRateService persureHeartRateService;
 
+    @Autowired
+    private HeartRateLogsService heartRateLogsService;
 
     @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
     @PostMapping("/add")
@@ -161,6 +163,21 @@ public class PersureHeartRateController {
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getTodayConsecutiveAbnormalities(@RequestParam Long doctorUid) {
         JSONArray result = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
+        return R.ok(result);
+    }
+
+    @Operation(summary = "统计今天异常患者", description = "统计今天所有患者的连续高血压和连续低心率情况")
+    @GetMapping("/today_consecutive_exceptions")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getTodayConsecutiveExceptions(@RequestParam Long doctorUid) {
+        JSONArray highPressureAbnormalities = persureHeartRateService.getDailyConsecutiveAbnormalities(doctorUid);
+        JSONArray lowHeartRateAbnormalities = heartRateLogsService.getDailyConsecutiveAbnormalities(doctorUid);
+
+        // 合并两个异常结果
+        JSONArray result = new JSONArray();
+        result.addAll(highPressureAbnormalities);
+        result.addAll(lowHeartRateAbnormalities);
+
         return R.ok(result);
     }
 
