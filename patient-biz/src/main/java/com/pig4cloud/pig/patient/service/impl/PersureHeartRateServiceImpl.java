@@ -1086,8 +1086,11 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         for(PatientDoctorEntity patientDoctorEntity : patientDoctorEntities){
             QueryWrapper<PersureHeartRateEntity> queryWrapper1 = new QueryWrapper<>();
             LocalDate now = LocalDate.now();
+            LocalDateTime startDateTime = now.atStartOfDay();
+            LocalDateTime endDateTime = now.atTime(23, 59, 59);
+
             queryWrapper1.eq("patient_uid", patientDoctorEntity.getPatientUid())
-                    .eq("upload_time", now);
+                    .between("upload_time", startDateTime, endDateTime);
             List<PersureHeartRateEntity> anomalyRecords = persureHeartRateMapper.selectList(queryWrapper1);
 
             for(PersureHeartRateEntity anomalyRecord : anomalyRecords){
