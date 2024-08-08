@@ -132,6 +132,10 @@ public class PatientDeviceServiceImpl extends
 			log.error("同步心率数据失败", e);
 			return R.failed("同步心率数据失败");
 		}
+		//	没有错误则需要更新最后一次上传时间
+		patientDevice.setLastUpdateTime(LocalDateTime.now());
+		//	更新
+		this.updateById(patientDevice);
 		return R.ok();
 	}
 	
