@@ -25,13 +25,13 @@ public class PatientCaseEntity extends Model<PatientCaseEntity> {
 	*/
     @TableId(type = IdType.ASSIGN_ID)
     @Schema(description="主键，病历id")
-    private Integer caseId;
+    private Long caseId;
 
 	/**
 	* 患者唯一id，外键
 	*/
     @Schema(description="患者唯一id，外键")
-    private Integer patientUid;
+    private Long patientUid;
 
 	/**
 	* 病人类型，是否为居民
