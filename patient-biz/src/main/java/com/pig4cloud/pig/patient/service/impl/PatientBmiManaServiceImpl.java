@@ -77,12 +77,12 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
     @Override
     public JSONObject getNewestHeightWeightBmi(Long patientUid) {
         Map<String, Object> latestData = patientBmiManaMapper.getLatestHeightWeight(patientUid);
-        Double height = (Double) latestData.get("height"); // 单位为米
-        Double weight = (Double) latestData.get("weight"); // 单位为千克
+        float height = (float) latestData.get("height"); // 单位为米
+        float weight = (float) latestData.get("weight"); // 单位为千克
         String measurementDate = (String) latestData.get("bmimeasurement_date");
 
-        double bmi = 0;
-        if (height != null && weight != null && height > 0) {
+        float bmi = 0;
+        if (height > 0) {
             bmi = weight / (height * height);
         }
 
