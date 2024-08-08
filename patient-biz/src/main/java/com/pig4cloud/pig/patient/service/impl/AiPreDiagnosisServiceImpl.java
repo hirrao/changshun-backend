@@ -1,28 +1,23 @@
 package com.pig4cloud.pig.patient.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
+import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.dto.StatisticsResult;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.mapper.AiPreDiagnosisMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
-import com.pig4cloud.pig.patient.service.PatientDoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
-import java.text.DecimalFormat;
-import java.util.stream.Collectors;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 /**
  * AI预问诊
  *
@@ -45,8 +40,8 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
 
 
     @Override
-    public Map<String, Integer> getPatientDiseasesCount(Long doctorUid) {
-        // 获取与医生绑定的患者
+    public R<Map<String, Integer>> getPatientDiseasesCount(Long doctorUid) {
+        // 获取与医生绑定且 care 字段为 1 的患者
         QueryWrapper<PatientDoctorEntity> patientDoctorQuery = new QueryWrapper<>();
         patientDoctorQuery.eq("doctor_uid", doctorUid);
         List<PatientDoctorEntity> patientDoctors = patientDoctorMapper.selectList(patientDoctorQuery);
@@ -56,12 +51,12 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             patientUids.add(patientDoctor.getPatientUid());
         }
 
-        // 查询所有与患者相关的AI预问诊记录
+        // 查询与患者相关的 AI 预问诊记录
         QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
         aiPreDiagnosisQuery.in("patient_uid", patientUids);
         List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
 
-        // 使用 Map 存储每个患者的最新记录
+        // 使用 Set 存储每个患者的最新记录
         Map<Long, AiPreDiagnosisEntity> latestDiagnosisMap = new HashMap<>();
 
         // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
@@ -103,13 +98,12 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-
-        return diseasesCount;
+        return R.ok(diseasesCount);
     }
 
     @Override
-    public Map<String, Integer> getCarePatientDiseasesCount(Long doctorUid) {
-        // 获取与医生绑定且care为1的患者
+    public R<Map<String, Integer>> getCarePatientDiseasesCount(Long doctorUid) {
+        // 获取与医生绑定且 care 字段为 1 的患者
         QueryWrapper<PatientDoctorEntity> patientDoctorQuery = new QueryWrapper<>();
         patientDoctorQuery.eq("doctor_uid", doctorUid).eq("care", 1);
         List<PatientDoctorEntity> patientDoctors = patientDoctorMapper.selectList(patientDoctorQuery);
@@ -119,12 +113,12 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             patientUids.add(patientDoctor.getPatientUid());
         }
 
-        // 查询所有与患者相关的AI预问诊记录
+        // 查询与患者相关的 AI 预问诊记录
         QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
         aiPreDiagnosisQuery.in("patient_uid", patientUids);
         List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
 
-        // 使用 Map 存储每个患者的最新记录
+        // 使用 Set 存储每个患者的最新记录
         Map<Long, AiPreDiagnosisEntity> latestDiagnosisMap = new HashMap<>();
 
         // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
@@ -166,7 +160,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        return diseasesCount;
+        return R.ok(diseasesCount);
     }
 
     @Override
@@ -232,22 +226,12 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        // 计算百分比，并保留2位小数
-        double earlyCvdFamilyHistoryPercentage = BigDecimal.valueOf((double) earlyCvdFamilyHistoryCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double smokingPercentage = BigDecimal.valueOf((double) smokingCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double drinkingPercentage = BigDecimal.valueOf((double) drinkingCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double infectiousDiseasePercentage = BigDecimal.valueOf((double) infectiousDiseaseCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double foodAllergyPercentage = BigDecimal.valueOf((double) foodAllergyCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
+        // 计算百分比
+        double earlyCvdFamilyHistoryPercentage = (double) earlyCvdFamilyHistoryCount / totalPatients * 100;
+        double smokingPercentage = (double) smokingCount / totalPatients * 100;
+        double drinkingPercentage = (double) drinkingCount / totalPatients * 100;
+        double infectiousDiseasePercentage = (double) infectiousDiseaseCount / totalPatients * 100;
+        double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
 
         return new StatisticsResult(earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage);
     }
@@ -261,12 +245,6 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         Set<Long> patientUids = new HashSet<>();
         for (PatientDoctorEntity patientDoctor : patientDoctors) {
             patientUids.add(patientDoctor.getPatientUid());
-        }
-
-        // 总患者人数
-        int totalPatients = patientUids.size();
-        if (totalPatients == 0) {
-            return new StatisticsResult(0, 0, 0, 0, 0); // 如果没有患者，直接返回0
         }
 
         // 2. 查询所有与患者相关的AI预问诊记录
@@ -314,31 +292,14 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             }
         }
 
-        // 计算百分比，并保留2位小数
-        double earlyCvdFamilyHistoryPercentage = BigDecimal.valueOf((double) earlyCvdFamilyHistoryCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double smokingPercentage = BigDecimal.valueOf((double) smokingCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double drinkingPercentage = BigDecimal.valueOf((double) drinkingCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double infectiousDiseasePercentage = BigDecimal.valueOf((double) infectiousDiseaseCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-        double foodAllergyPercentage = BigDecimal.valueOf((double) foodAllergyCount / totalPatients * 100)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-
-        return new StatisticsResult(earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage);
+        return new StatisticsResult(earlyCvdFamilyHistoryCount, smokingCount, drinkingCount, infectiousDiseaseCount, foodAllergyCount);
     }
 
 
     @Override
     public String generateAiPreDiagnosisReport(Long patientUid) {
         QueryWrapper<AiPreDiagnosisEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("patient_uid", patientUid).orderByDesc("ai_id").last("LIMIT 1");
+        queryWrapper.eq("patientUid", patientUid).orderByDesc("aiId").last("LIMIT 1");
         AiPreDiagnosisEntity latestDiagnosis = aiPreDiagnosisMapper.selectOne(queryWrapper);
 
         if (latestDiagnosis == null) {
@@ -368,7 +329,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
                 "否认食物过敏史" :
                 "对" + foodAllergyHistory + "过敏";
 
-        return diseasesStatement + "." + infectiousDiseaseStatement + "." + foodAllergyStatement + ".";
+        return diseasesStatement + "。" + infectiousDiseaseStatement + "。" + foodAllergyStatement + "。";
     }
     @Override
     public String getSmokingAndDrinkingInfo(Long patientUid) {
@@ -401,7 +362,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             drinkingInfo = "自述曾饮酒" + entity.getDrinkingDuration() + "年，每日饮酒量" + entity.getDailyDrinkingAmount() + "ml";
         }
 
-        return smokingInfo + "." + drinkingInfo;
+        return smokingInfo + "；" + drinkingInfo;
     }
 
     @Override

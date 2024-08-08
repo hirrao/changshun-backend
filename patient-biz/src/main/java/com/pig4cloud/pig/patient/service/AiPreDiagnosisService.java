@@ -1,16 +1,15 @@
 package com.pig4cloud.pig.patient.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
+import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.dto.StatisticsResult;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 
 import java.util.Map;
 
 public interface AiPreDiagnosisService extends IService<AiPreDiagnosisEntity> {
-    Map<String, Integer> getPatientDiseasesCount(Long doctorUid);
-    Map<String, Integer> getCarePatientDiseasesCount(Long doctorUid);
+    R<Map<String, Integer>> getPatientDiseasesCount(Long doctorUid);
+    R<Map<String, Integer>> getCarePatientDiseasesCount(Long doctorUid);
 
     StatisticsResult getStatisticsByDoctor(Long doctorUid);
     StatisticsResult getCareStatisticsByDoctor(Long doctorUid);

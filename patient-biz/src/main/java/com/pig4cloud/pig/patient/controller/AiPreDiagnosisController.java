@@ -2,17 +2,14 @@ package com.pig4cloud.pig.patient.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.collection.CollUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
-import com.pig4cloud.pig.patient.dto.DiseasesCountDTO;
 import com.pig4cloud.pig.patient.dto.StatisticsResult;
 import com.pig4cloud.pig.patient.entity.AiPreDiagnosisEntity;
 import com.pig4cloud.pig.patient.service.AiPreDiagnosisService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,10 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * AI预问诊
@@ -65,7 +60,7 @@ public class AiPreDiagnosisController {
     @Operation(summary = "得到特别关心伴随疾病", description = "得到特别关心伴随疾病")
     @GetMapping("/count-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_carecount')")
-    public Map<String, Integer> getPatientDiseasesCount(@PathVariable Long doctorUid) {
+    public R<Map<String, Integer>> getPatientDiseasesCount(@PathVariable Long doctorUid) {
         return aiPreDiagnosisService.getCarePatientDiseasesCount(doctorUid);
     }
 
@@ -73,7 +68,7 @@ public class AiPreDiagnosisController {
     @Operation(summary = "得到伴随疾病1", description = "得到伴随疾病1")
     @GetMapping("/countnocare-patients/{doctorUid}")
     @PreAuthorize("@pms.hasPermission('patient_aiPreDiagnosis_count')")
-    public Map<String, Integer> getDiseaseStats(@PathVariable Long doctorUid) {
+    public R<Map<String, Integer>> getDiseaseStats(@PathVariable Long doctorUid) {
         return aiPreDiagnosisService.getPatientDiseasesCount(doctorUid);
     }
 
