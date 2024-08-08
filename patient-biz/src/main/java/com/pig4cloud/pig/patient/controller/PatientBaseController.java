@@ -83,10 +83,11 @@ public class PatientBaseController {
 	}
 
 	@Operation(summary = "修改患者体力状况", description = "修改患者体力状况")
-	@PutMapping("/edit_physical_strength")
+	@PostMapping("/edit_physical_strength")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_edit')")
-	public R editPhysicalStrength(@RequestParam Long patientUid, @RequestParam int physicalStrength) {
-		String result = patientBaseService.editPhysicalStrength(patientUid, physicalStrength);
+	public R editPhysicalStrength(@RequestBody PatientBaseEntity patientBase) {
+		String result = patientBaseService.editPhysicalStrength(patientBase.getPatientUid(),
+		 patientBase.getPhysicalStrength());
 		if ("success".equals(result)) {
 			return R.ok();
 		} else {
