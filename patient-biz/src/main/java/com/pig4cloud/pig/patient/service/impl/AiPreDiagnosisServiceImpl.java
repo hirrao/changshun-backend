@@ -290,7 +290,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     @Override
     public String generateAiPreDiagnosisReport(Long patientUid) {
         QueryWrapper<AiPreDiagnosisEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("patientUid", patientUid).orderByDesc("aiId").last("LIMIT 1");
+        queryWrapper.eq("patient_uid", patientUid).orderByDesc("ai_id").last("LIMIT 1");
         AiPreDiagnosisEntity latestDiagnosis = aiPreDiagnosisMapper.selectOne(queryWrapper);
 
         if (latestDiagnosis == null) {
@@ -320,7 +320,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
                 "否认食物过敏史" :
                 "对" + foodAllergyHistory + "过敏";
 
-        return diseasesStatement + "。" + infectiousDiseaseStatement + "。" + foodAllergyStatement + "。";
+        return diseasesStatement + "." + infectiousDiseaseStatement + "." + foodAllergyStatement + ".";
     }
     @Override
     public String getSmokingAndDrinkingInfo(Long patientUid) {
@@ -353,7 +353,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
             drinkingInfo = "自述曾饮酒" + entity.getDrinkingDuration() + "年，每日饮酒量" + entity.getDailyDrinkingAmount() + "ml";
         }
 
-        return smokingInfo + "；" + drinkingInfo;
+        return smokingInfo + "." + drinkingInfo;
     }
 
     @Override
