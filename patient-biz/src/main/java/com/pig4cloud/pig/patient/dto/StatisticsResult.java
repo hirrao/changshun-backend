@@ -7,18 +7,24 @@ import lombok.Data;
 @AllArgsConstructor
 public class StatisticsResult {
     private int earlyCvdFamilyHistoryCount;
-    private double earlyCvdFamilyHistoryPercentage;
+
 
     private int smokingCount;
-    private double smokingPercentage;
+
 
     private int drinkingCount;
-    private double drinkingPercentage;
+
 
     private int infectiousDiseaseCount;
-    private double infectiousDiseasePercentage;
+
 
     private int foodAllergyCount;
+
+
+    private double earlyCvdFamilyHistoryPercentage;
+    private double smokingPercentage;
+    private double drinkingPercentage;
+    private double infectiousDiseasePercentage;
     private double foodAllergyPercentage;
     /*private int earlyCvdFamilyHistoryCount; // 家族病史
     private int smokingCount;                // 吸烟人数
