@@ -20,18 +20,24 @@ public class StatisticsResult {
 
     /*private int earlyCvdFamilyHistoryCount;
     private double earlyCvdFamilyHistoryPercentage;
+=======
+    private int earlyCvdFamilyHistoryCount;
+
+>>>>>>> origin/patient_service
 
     private int smokingCount;
-    private double smokingPercentage;
+
 
     private int drinkingCount;
-    private double drinkingPercentage;
+
 
     private int infectiousDiseaseCount;
-    private double infectiousDiseasePercentage;
+
 
     private int foodAllergyCount;
+<<<<<<< HEAD
     private double foodAllergyPercentage;*/
+
     /*private int earlyCvdFamilyHistoryCount; // 家族病史
     private int smokingCount;                // 吸烟人数
     private int drinkingCount;               // 饮酒人数
