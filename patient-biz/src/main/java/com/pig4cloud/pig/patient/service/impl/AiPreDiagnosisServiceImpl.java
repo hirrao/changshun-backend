@@ -324,7 +324,7 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     @Override
     public String generateAiPreDiagnosisReport(Long patientUid) {
         QueryWrapper<AiPreDiagnosisEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("patientUid", patientUid).orderByDesc("aiId").last("LIMIT 1");
+        queryWrapper.eq("patient_uid", patientUid).orderByDesc("ai_id").last("LIMIT 1");
         AiPreDiagnosisEntity latestDiagnosis = aiPreDiagnosisMapper.selectOne(queryWrapper);
 
         if (latestDiagnosis == null) {
