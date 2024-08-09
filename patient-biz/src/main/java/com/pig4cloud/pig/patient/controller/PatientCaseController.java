@@ -137,7 +137,7 @@ public class PatientCaseController {
 	public R getByPatientCaseObject(@RequestBody PatientCaseEntity userFeedback) {
 		LambdaQueryWrapper<PatientCaseEntity> wrapper = Wrappers.lambdaQuery();
 		wrapper.setEntity(userFeedback);
-		wrapper.orderByDesc(PatientCaseEntity::getOnsetDatetime);
+		wrapper.orderByDesc(PatientCaseEntity::getMedicalTime);
 		return R.ok(patientCaseService.list(wrapper));
 	}
 }

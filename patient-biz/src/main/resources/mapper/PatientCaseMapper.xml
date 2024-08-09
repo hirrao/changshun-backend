@@ -36,5 +36,6 @@
         <id property="diagnosisName" column="diagnosis_name"/>
         <id property="otherTreatment" column="other_treatment"/>
         <id property="doctorAdvice" column="doctor_advice"/>
+        <id property="medicalTime" column="medical_time"/>
   </resultMap>
 </mapper>

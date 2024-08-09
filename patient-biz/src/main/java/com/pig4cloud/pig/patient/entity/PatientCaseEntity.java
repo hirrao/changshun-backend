@@ -212,4 +212,10 @@ public class PatientCaseEntity extends Model<PatientCaseEntity> {
 	*/
     @Schema(description="医嘱内容")
     private String doctorAdvice;
+	
+	/**
+	 * 就医时间
+	 */
+	@Schema(description="就医时间")
+	private LocalDate medicalTime;
 }
