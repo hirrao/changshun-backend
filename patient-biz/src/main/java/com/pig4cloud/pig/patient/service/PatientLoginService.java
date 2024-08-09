@@ -159,17 +159,34 @@ public class PatientLoginService {
 		PatientBaseEntity tmp = null;
 		System.out.println("查询条件的用户基本信息" + patientBaseEntity);
 		if (one == null) {
-			//	创建新账户
-			patientBaseEntity.setPhoneNumber(phoneNumber);
-			patientBaseEntity.setUsername(phoneNumber);
-			boolean save = patientBaseService.save(patientBaseEntity);
-			if (save) {
-				tmp = patientBaseEntity;
+			//  为了兼容导入数据的患者，还需要依据手机号进行查询，如果手机号能够查询到，那么也直接登录
+			PatientBaseEntity tmpNumber = new PatientBaseEntity();
+			tmpNumber.setPhoneNumber(phoneNumber);
+			wrapper.clear();
+			wrapper.setEntity(tmpNumber);
+			PatientBaseEntity one1 = patientBaseService.getOne(wrapper.last("limit 1"));
+			if (one1 == null) {
+				//	都没有找到，则需要创建新账户
+				patientBaseEntity.setPhoneNumber(phoneNumber);
+				patientBaseEntity.setUsername(phoneNumber);
+				boolean save = patientBaseService.save(patientBaseEntity);
+				if (save) {
+					tmp = patientBaseEntity;
+				} else {
+					return R.failed("创建新账户失败");
+				}
 			} else {
-				return R.failed("创建新账户失败");
+				//System.out.println("查询得到的用户基本信息:" + one1);
+				//	修改用户信息
+				one1.setWxUid(bindPhoneNumberRequest.getOpenId());
+				one1.setUsername(phoneNumber);
+				//	由于可能对原有数据并没有任何更改，因此不能通过是否有修改来判断
+				patientBaseService.updateById(one1);
+				tmp = one1;
 			}
+			
 		} else {
-			System.out.println("查询得到的用户基本信息:" + one);
+			//System.out.println("查询得到的用户基本信息:" + one);
 			//	修改用户信息
 			one.setPhoneNumber(phoneNumber);
 			one.setUsername(phoneNumber);
