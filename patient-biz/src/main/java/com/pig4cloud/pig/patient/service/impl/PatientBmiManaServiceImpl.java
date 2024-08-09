@@ -99,6 +99,12 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
     @Override
     public JSONArray getLastestSevenBmiRecord(Long patientUid) {
         List<Map<String, Object>> dataset = patientBmiManaMapper.getLastestSevenBmiRecord(patientUid);
+        // 根据日期从早到晚进行排序
+        dataset.sort((a, b) -> {
+            String dateA = a.get("bmimeasurement_date").toString();
+            String dateB = b.get("bmimeasurement_date").toString();
+            return dateA.compareTo(dateB);
+        });
         JSONArray jsonArray = new JSONArray();
 
         for(Map<String, Object> data : dataset) {
