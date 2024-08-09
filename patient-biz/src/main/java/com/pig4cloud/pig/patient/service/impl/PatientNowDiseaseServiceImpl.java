@@ -60,6 +60,7 @@ public class PatientNowDiseaseServiceImpl extends ServiceImpl<PatientNowDiseaseM
             diseaseObject.put("disease_name: ", disease_name);
             diseaseObject.put("year: ", years);
             diseaseObject.put("month: ", months);
+            diseaseObject.put("id: ", disease.getPddId());
             diseaseArray.add(diseaseObject);
         }
 
