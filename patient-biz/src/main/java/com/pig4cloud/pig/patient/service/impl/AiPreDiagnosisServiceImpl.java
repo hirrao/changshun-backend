@@ -234,11 +234,11 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
 
         return new StatisticsResult(
-                earlyCvdFamilyHistoryCount, earlyCvdFamilyHistoryPercentage,
-                smokingCount, smokingPercentage,
-                drinkingCount, drinkingPercentage,
-                infectiousDiseaseCount, infectiousDiseasePercentage,
-                foodAllergyCount, foodAllergyPercentage
+                earlyCvdFamilyHistoryCount,
+                smokingCount,
+                drinkingCount,
+                infectiousDiseaseCount,
+                foodAllergyCount, earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage
         );
     }
     @Override
@@ -312,11 +312,11 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         double foodAllergyPercentage = (double) foodAllergyCount / totalPatients * 100;
 
         return new StatisticsResult(
-                earlyCvdFamilyHistoryCount, earlyCvdFamilyHistoryPercentage,
-                smokingCount, smokingPercentage,
-                drinkingCount, drinkingPercentage,
-                infectiousDiseaseCount, infectiousDiseasePercentage,
-                foodAllergyCount, foodAllergyPercentage
+                earlyCvdFamilyHistoryCount,
+                smokingCount,
+                drinkingCount,
+                infectiousDiseaseCount,
+                foodAllergyCount, earlyCvdFamilyHistoryPercentage, smokingPercentage, drinkingPercentage, infectiousDiseasePercentage, foodAllergyPercentage
         );
     }
 
