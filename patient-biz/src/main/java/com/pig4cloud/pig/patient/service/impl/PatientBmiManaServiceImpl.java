@@ -57,7 +57,14 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
             return null;
         }
 
-        float bmi = result.get("weight") / (result.get("height") * result.get("height"));
+        float height = result.get("height"); // 单位为米
+        float weight = result.get("weight"); // 单位为千克
+
+        float bmi = 0;
+        if (height > 0) {
+            bmi = weight / ((height / 100) * (height / 100));
+        }
+
         int bmiStatus = 0;
         if(bmi < 18.5){
             bmiStatus = 1;
