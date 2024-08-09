@@ -141,4 +141,10 @@ public class PatientBmiManaController {
         return R.ok(patientBmiManaService.getNewestHeightWeightBmi(patientUid));
     }
 
+    @Operation(summary = "查询患者最近7条体重指数记录", description = "查询患者最近7条体重指数记录")
+    @GetMapping("/get_lastest_seven_bmi")
+    @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_view')")
+    public R getLastestSevenBmiRecord(@RequestParam Long patientUid) {
+        return R.ok(patientBmiManaService.getLastestSevenBmiRecord(patientUid));
+    }
 }

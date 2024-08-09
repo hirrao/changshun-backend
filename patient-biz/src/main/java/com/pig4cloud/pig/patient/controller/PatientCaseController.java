@@ -130,4 +130,14 @@ public class PatientCaseController {
 		return patientCaseService.list(Wrappers.lambdaQuery(patientCase)
 		 .in(ArrayUtil.isNotEmpty(ids), PatientCaseEntity::getCaseId, ids));
 	}
+
+	@Operation(summary = "全条件查询患者病历信息", description = "全条件查询患者病历信息")
+	@PostMapping("/get_patient_case")
+	@PreAuthorize("@pms.hasPermission('patient_patientCase_view')")
+	public R getByPatientCaseObject(@RequestBody PatientCaseEntity userFeedback) {
+		LambdaQueryWrapper<PatientCaseEntity> wrapper = Wrappers.lambdaQuery();
+		wrapper.setEntity(userFeedback);
+		wrapper.orderByDesc(PatientCaseEntity::getOnsetDatetime);
+		return R.ok(patientCaseService.list(wrapper));
+	}
 }

@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.patient.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,7 +57,14 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
             return null;
         }
 
-        float bmi = result.get("weight") / (result.get("height") * result.get("height"));
+        float height = result.get("height"); // 单位为米
+        float weight = result.get("weight"); // 单位为千克
+
+        float bmi = 0;
+        if (height > 0) {
+            bmi = weight / ((height / 100) * (height / 100));
+        }
+
         int bmiStatus = 0;
         if(bmi < 18.5){
             bmiStatus = 1;
@@ -92,5 +101,39 @@ public class PatientBmiManaServiceImpl extends ServiceImpl<PatientBmiManaMapper,
         result.put("bmi", bmi);
         result.put("measurementDate", measurementDate);
         return result;
+    }
+
+    @Override
+    public JSONArray getLastestSevenBmiRecord(Long patientUid) {
+        List<Map<String, Object>> dataset = patientBmiManaMapper.getLastestSevenBmiRecord(patientUid);
+        // 根据日期从早到晚进行排序
+        dataset.sort((a, b) -> {
+            String dateA = a.get("bmimeasurement_date").toString();
+            String dateB = b.get("bmimeasurement_date").toString();
+            return dateA.compareTo(dateB);
+        });
+        JSONArray jsonArray = new JSONArray();
+
+        for(Map<String, Object> data : dataset) {
+            float height = (float) data.get("height"); // 单位为米
+            float weight = (float) data.get("weight"); // 单位为千克
+            String measurementDate = data.get("bmimeasurement_date").toString();
+
+            float bmi = 0;
+            if (height > 0) {
+                bmi = weight / ((height / 100) * (height / 100));
+            }
+
+            JSONObject result = new JSONObject();
+            result.put("height", height);
+            result.put("weight", weight);
+            result.put("bmi", bmi);
+            result.put("measurementDate", measurementDate);
+            result.put("id", data.get("bmi_uuid"));
+
+            jsonArray.add(result);
+        }
+
+        return jsonArray;
     }
 }
