@@ -19,4 +19,11 @@ public interface PatientBmiManaMapper extends BaseMapper<PatientBmiManaEntity> {
             "ORDER BY bmimeasurement_date DESC " +
             "LIMIT 1 ")
     Map<String, Object> getLatestHeightWeight(@Param("patientUid") Long patientUid);
+
+    @Select("SELECT height, weight, bmimeasurement_date " +
+            "FROM patient_bmi_mana " +
+            "WHERE patient_uid = #{patientUid} " +
+            "ORDER BY bmimeasurement_date DESC " +
+            "LIMIT 7 ")
+    List<Map<String, Object>> getLastestSevenBmiRecord(@Param("patientUid") Long patientUid);
 }
