@@ -542,10 +542,16 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
     }
 
     private boolean isMaleOver55(AiPreDiagnosisEntity aiPreDiagnosis) {
+        if (aiPreDiagnosis.getBirthday() == null) {
+            return false;
+        }
         return "男性".equals(aiPreDiagnosis.getGender()) && calculateAge(aiPreDiagnosis.getBirthday()) > 55;
     }
 
     private boolean isFemaleOver65(AiPreDiagnosisEntity aiPreDiagnosis) {
+        if (aiPreDiagnosis.getBirthday() == null) {
+            return false;
+        }
         return "女性".equals(aiPreDiagnosis.getGender()) && calculateAge(aiPreDiagnosis.getBirthday()) > 65;
     }
 
