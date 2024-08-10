@@ -500,7 +500,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         result.put("min_systolic", minSystolicRecord.map(PersureHeartRateEntity::getSystolic).orElse(null));
         result.put("min_diastolic", minSystolicRecord.map(PersureHeartRateEntity::getDiastolic).orElse(null));
         result.put("avg_systolic", systolicStats.getAverage());
-
+        result.put("max_syst_risk", maxSystolicRecord.map(PersureHeartRateEntity::getRiskAssessment).orElse(null));
+        result.put("min_syst_risk", minSystolicRecord.map(PersureHeartRateEntity::getRiskAssessment).orElse(null));
         return result;
     }
 
@@ -526,6 +527,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         result.put("min_diastolic", minDiastolicRecord.map(PersureHeartRateEntity::getDiastolic).orElse(null));
         result.put("min_systolic", minDiastolicRecord.map(PersureHeartRateEntity::getSystolic).orElse(null));
         result.put("avg_diastolic", diastolicStats.getAverage());
+        result.put("max_dias_risk", maxDiastolicRecord.map(PersureHeartRateEntity::getRiskAssessment).orElse(null));
+        result.put("min_dias_risk", minDiastolicRecord.map(PersureHeartRateEntity::getRiskAssessment).orElse(null));
 
         return result;
     }
@@ -605,6 +608,18 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return getMaxMinAvgDiastolic(startOfYear, endOfYear, patientUid);
     }
 
+    public String judgePressureDiff(float pressureDiff) {
+        String state;
+        if(pressureDiff < 20) {
+            state = "过小";
+        } else if(pressureDiff < 60) {
+            state = "正常";
+        } else {
+            state = "过大";
+        }
+        return state;
+    }
+
     public JSONObject getMaxMinAvgPressureDiff(LocalDateTime start, LocalDateTime end, Long patientUid) {
         QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("patient_uid", patientUid)
@@ -621,15 +636,25 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         Optional<PersureHeartRateEntity> minPulsePressureRecord = records.stream()
                 .min((record1, record2) -> Float.compare(record1.getSystolic() - record1.getDiastolic(), record2.getSystolic() - record2.getDiastolic()));
 
+
         JSONObject result = new JSONObject();
         result.put("max_pulse_pressure", maxPulsePressureRecord.map(record -> record.getSystolic() - record.getDiastolic()).orElse(null));
         result.put("max_pulse_pressure_systolic", maxPulsePressureRecord.map(PersureHeartRateEntity::getSystolic).orElse(null));
         result.put("max_pulse_pressure_diastolic", maxPulsePressureRecord.map(PersureHeartRateEntity::getDiastolic).orElse(null));
+        maxPulsePressureRecord.ifPresent(record -> {
+            float maxPulsePressure = record.getSystolic() - record.getDiastolic();
+            result.put("max_pulse_pressure_state", judgePressureDiff(maxPulsePressure));
+        });
+
         result.put("min_pulse_pressure", minPulsePressureRecord.map(record -> record.getSystolic() - record.getDiastolic()).orElse(null));
         result.put("min_pulse_pressure_systolic", minPulsePressureRecord.map(PersureHeartRateEntity::getSystolic).orElse(null));
         result.put("min_pulse_pressure_diastolic", minPulsePressureRecord.map(PersureHeartRateEntity::getDiastolic).orElse(null));
-        result.put("avg_pulse_pressure", pulsePressureStats.getAverage());
+        minPulsePressureRecord.ifPresent(record -> {
+            float minPulsePressure = record.getSystolic() - record.getDiastolic();
+            result.put("min_pulse_pressure_state", judgePressureDiff(minPulsePressure));
+        });
 
+        result.put("avg_pulse_pressure", pulsePressureStats.getAverage());
         return result;
     }
 
