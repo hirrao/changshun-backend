@@ -93,6 +93,7 @@ public class SysMessageController {
     @PreAuthorize("@pms.hasPermission('patient_sysMessage_view')")
     public R getByUserFeedbackObject(@RequestBody SysMessageEntity userSysMessage) {
         LambdaQueryWrapper<SysMessageEntity> wrapper = Wrappers.lambdaQuery();
+        userSysMessage.setIsRead(null);
         wrapper.setEntity(userSysMessage);
         return R.ok(sysMessageService.list(wrapper));
     }

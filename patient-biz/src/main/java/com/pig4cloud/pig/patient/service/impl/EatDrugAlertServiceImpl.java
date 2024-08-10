@@ -126,8 +126,8 @@ public class EatDrugAlertServiceImpl extends
 		sysMessage.setPatientUid(alert.getPatientUid());
 		sysMessage.setMessageType("用药提醒");
 		sysMessage.setJsonText(
-		 "{\"drugName\":\"" + alert.getDrugName() + "\",\"dose\":\"" + alert.getDose()
-		  + "\",\"unit\":\"" + alert.getUnit() + "\"," + "\"eatTime:\":" + "\""
+		 "{\"药品名称\":\"" + alert.getDrugName() + "\",\"剂量\":\"" + alert.getDose()
+		  + "\",\"单位\":\"" + alert.getUnit() + "\"," + "\"服用时间:\":" + "\""
 		  + alertTime.toString() + "\"" + "}");
 		sysMessage.setSentDate(now);
 		sysMessage.setIsRead(false);
