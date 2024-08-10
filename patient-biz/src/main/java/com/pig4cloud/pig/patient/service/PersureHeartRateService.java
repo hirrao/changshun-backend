@@ -31,22 +31,22 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     JSONObject getDailyMaxMinAvgSystolic(LocalDate date, Long patientUid);
     JSONObject getWeeklyMaxMinAvgSystolic(LocalDate anyDateInWeek, Long patientUid);
-    JSONObject getMonthlyMaxMinAvgSystolic(YearMonth yearMonth, Long patientUid);
+    JSONObject getMonthlyMaxMinAvgSystolic(YearMonth month, Long patientUid);
     JSONObject getYearlyMaxMinAvgSystolic(Long patientUid);
 
     JSONObject getDailyMaxMinAvgDiastolic(LocalDate date, Long patientUid);
     JSONObject getWeeklyMaxMinAvgDiastolic(LocalDate anyDateInWeek, Long patientUid);
-    JSONObject getMonthlyMaxMinAvgDiastolic(YearMonth yearMonth, Long patientUid);
+    JSONObject getMonthlyMaxMinAvgDiastolic(YearMonth month, Long patientUid);
     JSONObject getYearlyMaxMinAvgDiastolic(Long patientUid);
 
     JSONObject getDailyMaxMinAvgPressureDiff(LocalDate date, Long patientUid);
     JSONObject getWeeklyMaxMinAvgPressureDiff(LocalDate anyDateInWeek, Long patientUid);
-    JSONObject getMonthlyMaxMinAvgPressureDiff(YearMonth yearMonth, Long patientUid);
+    JSONObject getMonthlyMaxMinAvgPressureDiff(YearMonth month, Long patientUid);
     JSONObject getYearlyMaxMinAvgPressureDiff(Long patientUid);
 
      JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid);
      JSONArray getWeeklyAveragePressureHeartRateByDay(LocalDate anyDateInWeek, Long patientUid);
-     JSONArray getMonthlyAveragePressureHeartRateByWeek(YearMonth yearMonth, Long patientUid);
+     JSONArray getMonthlyAveragePressureHeartRateByWeek(YearMonth month, Long patientUid);
      JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
     JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
@@ -67,7 +67,7 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date);
     JSONObject getWeekAnomalyCount(Long patientUid, LocalDate anyDateInWeek);
-    JSONObject getMonthAnomalyCount(Long patientUid, YearMonth yearMonth);
+    JSONObject getMonthAnomalyCount(Long patientUid, YearMonth month);
 
     JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care);
 

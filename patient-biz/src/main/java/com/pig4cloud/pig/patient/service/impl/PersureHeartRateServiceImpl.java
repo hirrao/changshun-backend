@@ -587,9 +587,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getMonthlyMaxMinAvgSystolic(YearMonth yearMonth, Long patientUid) {
-        LocalDate startOfMonth = yearMonth.atDay(1);
-        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+    public JSONObject getMonthlyMaxMinAvgSystolic(YearMonth month, Long patientUid) {
+        LocalDate startOfMonth = month.atDay(1);
+        LocalDate endOfMonth = month.atEndOfMonth();
 
         LocalDateTime startDateTime = startOfMonth.atStartOfDay();
         LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
@@ -598,9 +598,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getMonthlyMaxMinAvgDiastolic(YearMonth yearMonth, Long patientUid) {
-        LocalDate startOfMonth = yearMonth.atDay(1);
-        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+    public JSONObject getMonthlyMaxMinAvgDiastolic(YearMonth month, Long patientUid) {
+        LocalDate startOfMonth = month.atDay(1);
+        LocalDate endOfMonth = month.atEndOfMonth();
 
         LocalDateTime startDateTime = startOfMonth.atStartOfDay();
         LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
@@ -695,10 +695,10 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getMonthlyMaxMinAvgPressureDiff(YearMonth yearMonth, Long patientUid) {
+    public JSONObject getMonthlyMaxMinAvgPressureDiff(YearMonth month, Long patientUid) {
         // 计算给定月份的开始和结束日期
-        LocalDate startOfMonth = yearMonth.atDay(1);
-        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+        LocalDate startOfMonth = month.atDay(1);
+        LocalDate endOfMonth = month.atEndOfMonth();
 
         LocalDateTime startDateTime = startOfMonth.atStartOfDay();
         LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
@@ -818,10 +818,10 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONArray getMonthlyAveragePressureHeartRateByWeek(YearMonth yearMonth, Long patientUid) {
+    public JSONArray getMonthlyAveragePressureHeartRateByWeek(YearMonth month, Long patientUid) {
         // 获取这个月份的开始和结束日期
-        LocalDate startOfMonth = yearMonth.atDay(1);
-        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+        LocalDate startOfMonth = month.atDay(1);
+        LocalDate endOfMonth = month.atEndOfMonth();
 
         JSONArray monthlyPressureData = new JSONArray();
 
@@ -1153,9 +1153,9 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getMonthAnomalyCount(Long patientUid, YearMonth yearMonth) {
-        LocalDate startOfMonth = yearMonth.atDay(1);
-        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+    public JSONObject getMonthAnomalyCount(Long patientUid, YearMonth month) {
+        LocalDate startOfMonth = month.atDay(1);
+        LocalDate endOfMonth = month.atEndOfMonth();
 
         LocalDateTime startDateTime = startOfMonth.atStartOfDay();
         LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
