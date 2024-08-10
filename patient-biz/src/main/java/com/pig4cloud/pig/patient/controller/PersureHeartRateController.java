@@ -147,6 +147,14 @@ public class PersureHeartRateController {
         return R.ok(persureHeartRateService.getCurrentRiskAssessment(patientUid));
     }
 
+    @Operation(summary = "查询某一天的所有高压、低压", description = "查询某一天的所有高压、低压")
+    @GetMapping("/dailyPressureData")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getDailyPressureData(@RequestParam Long patientUid, @RequestParam LocalDate date) {
+        JSONArray result = persureHeartRateService.getDailyPressureDate(patientUid, date);
+        return R.ok(result);
+    }
+
     @Operation(summary = "查询某一周的所有高压、低压", description = "查询某一周的所有高压、低压")
     @GetMapping("/weeklyPressureData")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")

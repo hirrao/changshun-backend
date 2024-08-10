@@ -133,7 +133,24 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return save(persureHeartRate);
     }
 
+    @Override
+    public JSONArray getDailyPressureDate(Long patientUid, LocalDate date) {
+        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("upload_time", date.atStartOfDay(), date.atTime(23, 59, 59))
+                .eq("patient_uid", patientUid)
+                .orderByAsc("upload_time");
+        List<PersureHeartRateEntity> persureHeartRateEntities = persureHeartRateMapper.selectList(queryWrapper);
 
+        JSONArray results = new JSONArray();
+        for(PersureHeartRateEntity entity : persureHeartRateEntities) {
+            JSONObject result = new JSONObject();
+            result.put("time", entity.getUploadTime());
+            result.put("systolic", entity.getSystolic());
+            result.put("diastolic", entity.getDiastolic());
+            results.add(result);
+        }
+        return results;
+    }
 
     @Override
     public String judgeRiskByBloodPressure(float systolic, float diastolic){
