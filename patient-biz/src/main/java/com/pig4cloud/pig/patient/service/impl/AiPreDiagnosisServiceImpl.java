@@ -395,6 +395,9 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         QueryWrapper<AiPreDiagnosisEntity> query = Wrappers.query();
         query.eq("patient_uid", patientUid).orderByDesc("ai_id").last("LIMIT 1");
         AiPreDiagnosisEntity diagnosis = this.baseMapper.selectOne(query);
+        if (diagnosis == null) {
+            return "未找到家族史记录";
+        }
         String earlyCvdHistory = diagnosis.getEarlyCvdFamilyHistory() == 1 ? "自述有早发心血管家族史" : "否认早发心血管家族史";
         String geneticDisease = "无".equals(diagnosis.getGeneticDiseaseInFamily()) ? "否认直系亲属中遗传病史" : "自述" + diagnosis.getGeneticDiseaseInFamily();
         return earlyCvdHistory + ". " + geneticDisease + ".";
