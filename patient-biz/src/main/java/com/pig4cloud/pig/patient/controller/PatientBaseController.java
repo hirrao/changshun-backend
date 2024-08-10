@@ -47,14 +47,9 @@ public class PatientBaseController {
 	@Operation(summary = "查询年龄性别", description = "查询年龄性别")
 	@GetMapping("/{doctorUid}/patient/stats")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
-	public R<Map<String, Integer>> countPatients(@RequestParam Long doctorUid) {
-		Map<String, Integer> result = patientBaseService.countPatientsByAgeAndSex(doctorUid);
-		return R.ok(result);
-	}
-
-	/*public R getPatientStatistics(@PathVariable("doctorUid") Long doctorUid) {
+	public R getPatientStatistics(@PathVariable("doctorUid") Long doctorUid) {
 		return R.ok(patientBaseService.getPatientStatistics(doctorUid));
-	}*/
+	}
 	
 	@Operation(summary = "查询特别关心年龄性别", description = "查询特别关心年龄性别")
 	@GetMapping("/{doctorUid}/patient/bycarestats")

@@ -19,14 +19,6 @@ public interface PatientBaseMapper extends BaseMapper<PatientBaseEntity> {
     @Select("SELECT pb.* FROM patient_base pb INNER JOIN patient_doctor pd ON pb.patient_uid = pd.patient_uid ORDER BY pd.care DESC")
     IPage<PatientBaseEntity> selectPatientBasePageByCare(Page<?> page);
 
-    @Select("<script>" +
-            "SELECT COUNT(*) FROM patient_base WHERE " +
-            "<if test='sex != null'>sex = #{sex} AND </if>" +
-            "<if test='minDate != null'>birthday <= #{maxDate} AND </if>" +
-            "<if test='maxDate != null'>birthday > #{minDate} AND </if>" +
-            "1=1" +
-            "</script>")
-    Integer countPatients(@Param("sex") String sex, @Param("minDate") LocalDate minDate, @Param("maxDate") LocalDate maxDate);
 
     @Select("SELECT COUNT(*) FROM patient_base pb " +
             "INNER JOIN patient_doctor pd ON pb.patient_uid = pd.patient_uid " +
