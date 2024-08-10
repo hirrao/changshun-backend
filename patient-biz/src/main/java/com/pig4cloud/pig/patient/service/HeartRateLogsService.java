@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.HeartRateLogsEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface HeartRateLogsService extends IService<HeartRateLogsEntity> {
+
+    void addHeartRate(Long patientUid, LocalDateTime time, int heartRate);
 
     JSONArray getWeeklyHeartRateData(int weeksAgo, Long patientUid);
     JSONArray getMonthlyHeartRateData(int monthsAgo, Long patientUid);

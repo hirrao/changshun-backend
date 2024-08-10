@@ -37,6 +37,20 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
     private PatientBaseMapper patientBaseMapper;
 
     @Override
+    public void addHeartRate(Long patientUid, LocalDateTime time, int heartRate) {
+        HeartRateLogsEntity heartRateLogs = new HeartRateLogsEntity();
+        heartRateLogs.setHeartRate(heartRate);
+        heartRateLogs.setPatientUid(patientUid);
+        if(time == null) {
+            heartRateLogs.setUploadTime(LocalDateTime.now());
+        } else {
+            heartRateLogs.setUploadTime(time);
+        }
+
+        heartRateLogsMapper.insert(heartRateLogs);
+    }
+
+    @Override
     public JSONArray getWeeklyHeartRateData(int weeksAgo, Long patientUid) {
         LocalDate date = LocalDate.now();
         LocalDate startOfWeek = date.minusWeeks(weeksAgo + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
