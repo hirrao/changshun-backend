@@ -762,8 +762,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         JSONObject result = new JSONObject();
 
         if (records.isEmpty()) {
-            result.put("avg_systolic", null);
-            result.put("avg_diastolic", null);
+            result.put("avg_systolic", 0);
+            result.put("avg_diastolic", 0);
         } else {
             DoubleSummaryStatistics systolicStats = records.stream()
                     .mapToDouble(PersureHeartRateEntity::getSystolic)
@@ -774,8 +774,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
                     .summaryStatistics();
 
 
-            result.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
-            result.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
+            result.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : 0);
+            result.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : 0);
         }
 
         return result;
@@ -836,8 +836,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             JSONObject weeklyAverage = new JSONObject();
             weeklyAverage.put("start_date", startOfWeek.toString());
             weeklyAverage.put("end_date", endOfWeek.toString());
-            weeklyAverage.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : null);
-            weeklyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
+            weeklyAverage.put("avg_systolic", systolicStats.getCount() > 0 ? systolicStats.getAverage() : 0);
+            weeklyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : 0);
             monthlyPressureData.add(weeklyAverage);
 
             // 进入下一周
@@ -1238,7 +1238,8 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     public JSONArray getPressureAndRiskByTimeRange(Long patientUid, LocalDate startDate, LocalDate endDate) {
         QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("patient_uid", patientUid)
-                .between("upload_time", startDate.atStartOfDay(), endDate.atTime(23, 59, 59));
+                .between("upload_time", startDate.atStartOfDay(), endDate.atTime(23, 59, 59))
+                .orderByDesc("upload_time");
         List<PersureHeartRateEntity> persureHeartRateEntities = persureHeartRateMapper.selectList(queryWrapper);
 
         JSONArray results = new JSONArray();
