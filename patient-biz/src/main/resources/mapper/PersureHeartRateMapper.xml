@@ -70,7 +70,7 @@
         patient_base pb
         JOIN
         patient_doctor pd ON pb.patient_uid = pd.patient_uid
-        JOIN
+        LEFT JOIN
         (SELECT
         ph1.patient_uid,
         ph1.systolic,
