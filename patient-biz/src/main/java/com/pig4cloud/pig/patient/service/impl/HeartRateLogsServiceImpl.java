@@ -244,10 +244,9 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
 
     @Override
     // 一个月的开头和结尾几天可能不是完整的一周，也算作一周
-    public JSONArray getMonthlyAverageHeartRateByWeek(int monthsAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
-        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+    public JSONArray getMonthlyAverageHeartRateByWeek(YearMonth yearMonth, Long patientUid) {
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
 
         JSONArray monthlyPressureData = new JSONArray();
 

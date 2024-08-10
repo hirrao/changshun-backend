@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 /**
@@ -184,8 +185,8 @@ public class HeartRateLogsController {
     @Operation(summary = "查询某一个月的某位患者的每周段的心率的平均值", description = "查询某一个月的某位患者的每周段的心率的平均值")
     @GetMapping("/monthly_avg_heart_rate_by_week")
     @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
-    public R getMonthlyAverageHeartRateByWeek(@RequestParam int monthsAgo, @RequestParam Long patientUid) {
-        return R.ok(heartRateLogsService.getMonthlyAverageHeartRateByWeek(monthsAgo, patientUid));
+    public R getMonthlyAverageHeartRateByWeek(@RequestParam YearMonth yearMonth, @RequestParam Long patientUid) {
+        return R.ok(heartRateLogsService.getMonthlyAverageHeartRateByWeek(yearMonth, patientUid));
     }
 
     @Operation(summary = "查询某一年的每个月的心率的平均值", description = "查询某一年的每个月的心率的平均值")
