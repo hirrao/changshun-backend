@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -67,4 +68,6 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONObject getMonthAnomalyCount(Long patientUid, YearMonth yearMonth);
 
     JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care);
+
+    JSONArray getPressureAndRiskByTimeRange(Long patientUid, LocalDate startTime, LocalDate endTime);
 }

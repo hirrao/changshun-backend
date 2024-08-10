@@ -18,9 +18,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -379,6 +382,31 @@ public class PersureHeartRateController {
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
     public R getAnomalyStatsByDoctorUi(@RequestParam Long doctorUid) {
         return R.ok(persureHeartRateService.getAnomalyCountByDoctorUid(doctorUid, false));
+    }
+
+    @Operation(summary = "查询一天的血压异常统计", description = "查询一天的血压异常统计")
+    @GetMapping("/get_daily_anomaly_stats")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getDailyAnomalyStats(@RequestParam Long patientUid, @RequestParam LocalDate date) {
+        return R.ok(persureHeartRateService.getPressureAndRiskByTimeRange(patientUid, date, date));
+    }
+
+    @Operation(summary = "查询一周的血压异常统计", description = "查询一周的血压异常统计")
+    @GetMapping("/get_weekly_anomaly_stats")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getWeeklyAnomalyStats(@RequestParam Long patientUid, @RequestParam LocalDate date) {
+        LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        return R.ok(persureHeartRateService.getPressureAndRiskByTimeRange(patientUid, startOfWeek, endOfWeek));
+    }
+
+    @Operation(summary = "查询一个月的血压异常统计", description = "查询一个月的血压异常统计")
+    @GetMapping("/get_monthly_anomaly_stats")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_view')")
+    public R getMonthlyAnomalyStats(@RequestParam Long patientUid, @RequestParam YearMonth yearMonth) {
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+        return R.ok(persureHeartRateService.getPressureAndRiskByTimeRange(patientUid, startOfMonth, endOfMonth));
     }
 
     /**

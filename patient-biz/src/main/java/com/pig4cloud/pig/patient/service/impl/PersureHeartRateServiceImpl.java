@@ -1234,4 +1234,24 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return result;
     }
 
+    @Override
+    public JSONArray getPressureAndRiskByTimeRange(Long patientUid, LocalDate startDate, LocalDate endDate) {
+        QueryWrapper<PersureHeartRateEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("patient_uid", patientUid)
+                .between("upload_time", startDate.atStartOfDay(), endDate.atTime(23, 59, 59));
+        List<PersureHeartRateEntity> persureHeartRateEntities = persureHeartRateMapper.selectList(queryWrapper);
+
+        JSONArray results = new JSONArray();
+
+        for(PersureHeartRateEntity entity : persureHeartRateEntities) {
+            JSONObject result = new JSONObject();
+            result.put("systolic", entity.getSystolic());
+            result.put("diastolic", entity.getDiastolic());
+            result.put("time", entity.getUploadTime());
+            result.put("risk", entity.getRiskAssessment());
+
+            results.add(result);
+        }
+        return results;
+    }
 }
