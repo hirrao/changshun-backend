@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
@@ -24,24 +25,24 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
     JSONArray getMonthlyPressureData(int monthsAgo, Long patientUid);
     JSONArray getYearlyPressureData(int yearsAgo, Long patientUid);
 
-    JSONObject getDailyMaxMinAvgSystolic(Long patientUid);
-    JSONObject getWeeklyMaxMinAvgSystolic(Long patientUid);
-    JSONObject getMonthlyMaxMinAvgSystolic(Long patientUid);
+    JSONObject getDailyMaxMinAvgSystolic(LocalDate date, Long patientUid);
+    JSONObject getWeeklyMaxMinAvgSystolic(LocalDate anyDateInWeek, Long patientUid);
+    JSONObject getMonthlyMaxMinAvgSystolic(YearMonth yearMonth, Long patientUid);
     JSONObject getYearlyMaxMinAvgSystolic(Long patientUid);
 
-    JSONObject getDailyMaxMinAvgDiastolic(Long patientUid);
-    JSONObject getWeeklyMaxMinAvgDiastolic(Long patientUid);
-    JSONObject getMonthlyMaxMinAvgDiastolic(Long patientUid);
+    JSONObject getDailyMaxMinAvgDiastolic(LocalDate date, Long patientUid);
+    JSONObject getWeeklyMaxMinAvgDiastolic(LocalDate anyDateInWeek, Long patientUid);
+    JSONObject getMonthlyMaxMinAvgDiastolic(YearMonth yearMonth, Long patientUid);
     JSONObject getYearlyMaxMinAvgDiastolic(Long patientUid);
 
-    JSONObject getDailyMaxMinAvgPressureDiff(Long patientUid);
-    JSONObject getWeeklyMaxMinAvgPressureDiff(Long patientUid);
-    JSONObject getMonthlyMaxMinAvgPressureDiff(Long patientUid);
+    JSONObject getDailyMaxMinAvgPressureDiff(LocalDate date, Long patientUid);
+    JSONObject getWeeklyMaxMinAvgPressureDiff(LocalDate anyDateInWeek, Long patientUid);
+    JSONObject getMonthlyMaxMinAvgPressureDiff(YearMonth yearMonth, Long patientUid);
     JSONObject getYearlyMaxMinAvgPressureDiff(Long patientUid);
 
      JSONObject getDailyAveragePressureHeartRate(LocalDate date, Long patientUid);
-     JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid);
-     JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid);
+     JSONArray getWeeklyAveragePressureHeartRateByDay(LocalDate anyDateInWeek, Long patientUid);
+     JSONArray getMonthlyAveragePressureHeartRateByWeek(YearMonth yearMonth, Long patientUid);
      JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid);
 
     JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);
@@ -58,8 +59,11 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     Map<String, Long> getDailyStatistics(Long doctorUid);
 
-    JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date);
     JSONObject getLastSevenDayAnomalyNum(Long patientUid);
-    JSONObject getWeekAnomalyCount(Long patientUid, int weeksAgo);
+
+    JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date);
+    JSONObject getWeekAnomalyCount(Long patientUid, LocalDate anyDateInWeek);
+    JSONObject getMonthAnomalyCount(Long patientUid, YearMonth yearMonth);
+
     JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care);
 }

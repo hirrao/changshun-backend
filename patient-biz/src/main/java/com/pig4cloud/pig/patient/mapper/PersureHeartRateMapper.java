@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.patient.dto.AbnormalBloodDTO;
 import com.pig4cloud.pig.patient.dto.PatientiListDTO;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
@@ -145,7 +147,10 @@ public interface PersureHeartRateMapper extends BaseMapper<PersureHeartRateEntit
 	@Select("SELECT risk_assessment, COUNT(*) AS count " +
 			"FROM persure_heart_rate " +
 			"WHERE patient_uid = #{patientUid} " +
-			"AND YEARWEEK(upload_time, 1) = YEARWEEK(CURDATE() - INTERVAL #{weeksAgo} WEEK, 1) " +
+			"AND upload_time BETWEEN #{startTime} AND #{endTime} " +
 			"GROUP BY risk_assessment")
-	List<Map<String, Object>> getRiskAssessmentCountByWeek(@Param("patientUid") Long patientUid, @Param("weeksAgo") int weeksAgo);
+	List<Map<String, Object>> getRiskAssessmentCountByDataRange(@Param("patientUid") Long patientUid,
+														   @Param("startTime") LocalDateTime startTime,
+														   @Param("endTime") LocalDateTime endTime);
+
 }

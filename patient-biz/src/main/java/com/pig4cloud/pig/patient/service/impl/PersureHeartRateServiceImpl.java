@@ -531,51 +531,63 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getDailyMaxMinAvgSystolic(Long patientUid) {
-        LocalDate date = LocalDate.now();
+    public JSONObject getDailyMaxMinAvgSystolic(LocalDate date, Long patientUid) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return getMaxMinAvgSystolic(startOfDay, endOfDay, patientUid);
     }
 
     @Override
-    public JSONObject getDailyMaxMinAvgDiastolic(Long patientUid) {
-        LocalDate date = LocalDate.now();
+    public JSONObject getDailyMaxMinAvgDiastolic(LocalDate date, Long patientUid) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return getMaxMinAvgDiastolic(startOfDay, endOfDay, patientUid);
     }
 
-    public JSONObject getWeeklyMaxMinAvgSystolic(Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfWeek = date.with(DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime endOfWeek = date.with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
-        return getMaxMinAvgSystolic(startOfWeek, endOfWeek, patientUid);
+    @Override
+    public JSONObject getWeeklyMaxMinAvgSystolic(LocalDate anyDateInWeek, Long patientUid) {
+        LocalDate startOfWeek = anyDateInWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = anyDateInWeek.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        return getMaxMinAvgSystolic(startDateTime, endDateTime, patientUid);
     }
 
     @Override
-    public JSONObject getWeeklyMaxMinAvgDiastolic(Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfWeek = date.with(DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime endOfWeek = date.with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
-        return getMaxMinAvgDiastolic(startOfWeek, endOfWeek, patientUid);
+    public JSONObject getWeeklyMaxMinAvgDiastolic(LocalDate anyDateInWeek, Long patientUid) {
+        LocalDate startOfWeek = anyDateInWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = anyDateInWeek.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        return getMaxMinAvgDiastolic(startDateTime, endDateTime, patientUid);
     }
 
     @Override
-    public JSONObject getMonthlyMaxMinAvgSystolic(Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfMonth = date.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth()).atTime(23, 59, 59);
-        return getMaxMinAvgSystolic(startOfMonth, endOfMonth, patientUid);
+    public JSONObject getMonthlyMaxMinAvgSystolic(YearMonth yearMonth, Long patientUid) {
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
+
+        return getMaxMinAvgSystolic(startDateTime, endDateTime, patientUid);
     }
 
     @Override
-    public JSONObject getMonthlyMaxMinAvgDiastolic(Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfMonth = date.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth()).atTime(23, 59, 59);
-        return getMaxMinAvgDiastolic(startOfMonth, endOfMonth, patientUid);
+    public JSONObject getMonthlyMaxMinAvgDiastolic(YearMonth yearMonth, Long patientUid) {
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
+
+        return getMaxMinAvgDiastolic(startDateTime, endDateTime, patientUid);
     }
+
 
     @Override
     public JSONObject getYearlyMaxMinAvgSystolic(Long patientUid) {
@@ -622,28 +634,36 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getDailyMaxMinAvgPressureDiff(Long patientUid) {
-        LocalDate date = LocalDate.now();
+    public JSONObject getDailyMaxMinAvgPressureDiff(LocalDate date, Long patientUid) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return getMaxMinAvgPressureDiff(startOfDay, endOfDay, patientUid);
     }
 
     @Override
-    public JSONObject getWeeklyMaxMinAvgPressureDiff(Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfWeek = date.with(DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime endOfWeek = date.with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
-        return getMaxMinAvgPressureDiff(startOfWeek, endOfWeek, patientUid);
+    public JSONObject getWeeklyMaxMinAvgPressureDiff(LocalDate anyDateInWeek, Long patientUid) {
+        // 计算给定日期所在的周的开始和结束日期
+        LocalDate startOfWeek = anyDateInWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = anyDateInWeek.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = endOfWeek.atTime(LocalTime.MAX);
+
+        return getMaxMinAvgPressureDiff(startDateTime, endDateTime, patientUid);
     }
 
     @Override
-    public JSONObject getMonthlyMaxMinAvgPressureDiff(Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDateTime startOfMonth = date.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth()).atTime(23, 59, 59);
-        return getMaxMinAvgPressureDiff(startOfMonth, endOfMonth, patientUid);
+    public JSONObject getMonthlyMaxMinAvgPressureDiff(YearMonth yearMonth, Long patientUid) {
+        // 计算给定月份的开始和结束日期
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
+
+        return getMaxMinAvgPressureDiff(startDateTime, endDateTime, patientUid);
     }
+
 
     @Override
     public JSONObject getYearlyMaxMinAvgPressureDiff(Long patientUid) {
@@ -725,13 +745,14 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONArray getWeeklyAveragePressureHeartRateByDay(int weeksAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfWeek = date.minusWeeks(weeksAgo).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    public JSONArray getWeeklyAveragePressureHeartRateByDay(LocalDate anyDateInWeek, Long patientUid) {
+        // 计算给定日期所在的星期的开始和结束日期
+        LocalDate startOfWeek = anyDateInWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
         JSONArray result = new JSONArray();
 
+        // 循环计算这一周的每天的血压平均值
         for (LocalDate currentDate = startOfWeek; !currentDate.isAfter(endOfWeek); currentDate = currentDate.plusDays(1)) {
             JSONObject dailyAverage = getDailyAveragePressureHeartRate(currentDate, patientUid);
             dailyAverage.put("date", currentDate);
@@ -743,16 +764,16 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    // 一个月的开头和结尾几天可能不是完整的一周，也算作一周
-    public JSONArray getMonthlyAveragePressureHeartRateByWeek(int monthsAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfMonth = date.minusMonths(monthsAgo).withDayOfMonth(1);
-        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+    public JSONArray getMonthlyAveragePressureHeartRateByWeek(YearMonth yearMonth, Long patientUid) {
+        // 获取这个月份的开始和结束日期
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
 
         JSONArray monthlyPressureData = new JSONArray();
 
         LocalDate startOfWeek = startOfMonth;
         while (!startOfWeek.isAfter(endOfMonth)) {
+            // 获取当前周的结束日期
             LocalDate endOfWeek = startOfWeek.with(DayOfWeek.SUNDAY);
             if (endOfWeek.isAfter(endOfMonth)) {
                 endOfWeek = endOfMonth;
@@ -782,12 +803,13 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
             weeklyAverage.put("avg_diastolic", diastolicStats.getCount() > 0 ? diastolicStats.getAverage() : null);
             monthlyPressureData.add(weeklyAverage);
 
-            // 下一周
+            // 进入下一周
             startOfWeek = endOfWeek.plusDays(1);
         }
 
         return monthlyPressureData;
     }
+
 
     @Override
     public JSONArray getYearlyAveragePressureHeartRateByMonth(int yearsAgo, Long patientUid) {
@@ -995,28 +1017,6 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
         return statisticsMap;
     }
 
-    @Override
-    public JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date) {
-        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByDate(patientUid, date);
-
-        String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
-        JSONObject result = new JSONObject();
-
-        for (String level : allRiskLevels) {
-            result.put(level, 0);
-        }
-
-        for (Map<String, Object> record : riskAssessmentCounts) {
-            String riskAssessment = (String) record.get("risk_assessment");
-            if (riskAssessment == null) {
-                continue;
-            }
-            Integer count = ((Long) record.get("count")).intValue();
-            result.put(riskAssessment, count);
-        }
-
-        return result;
-    }
 
     @Override
     public JSONObject getLastSevenDayAnomalyNum(Long patientUid) {
@@ -1048,10 +1048,35 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
-    public JSONObject getWeekAnomalyCount(Long patientUid, int weeksAgo) {
-        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByWeek(patientUid, weeksAgo);
+    public JSONObject getRiskAssessmentNum(Long patientUid, LocalDate date) {
+        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByDate(patientUid, date);
 
-        // 预定义所有可能的风险评估等级
+        String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
+        JSONObject result = new JSONObject();
+
+        for (String level : allRiskLevels) {
+            result.put(level, 0);
+        }
+
+        for (Map<String, Object> record : riskAssessmentCounts) {
+            String riskAssessment = (String) record.get("risk_assessment");
+            if (riskAssessment == null) {
+                continue;
+            }
+            Integer count = ((Long) record.get("count")).intValue();
+            result.put(riskAssessment, count);
+        }
+
+        return result;
+    }
+
+    @Override
+    public JSONObject getWeekAnomalyCount(Long patientUid, LocalDate anyDateInWeek) {
+        LocalDateTime startOfWeek = anyDateInWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+        LocalDateTime endOfWeek = anyDateInWeek.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).atTime(LocalTime.MAX);
+
+        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByDataRange(patientUid, startOfWeek, endOfWeek);
+
         String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
         JSONObject result = new JSONObject();
 
@@ -1072,6 +1097,36 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         return result;
     }
+
+    @Override
+    public JSONObject getMonthAnomalyCount(Long patientUid, YearMonth yearMonth) {
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = endOfMonth.atTime(LocalTime.MAX);
+
+        List<Map<String, Object>> riskAssessmentCounts = persureHeartRateMapper.getRiskAssessmentCountByDataRange(patientUid, startDateTime, endDateTime);
+
+        String[] allRiskLevels = {"重度", "中度", "轻度", "正常高值", "正常", "偏低"};
+        JSONObject result = new JSONObject();
+
+        for (String level : allRiskLevels) {
+            result.put(level, 0);
+        }
+
+        for (Map<String, Object> record : riskAssessmentCounts) {
+            String riskAssessment = (String) record.get("risk_assessment");
+            if (riskAssessment == null) {
+                continue;
+            }
+            Integer count = ((Long) record.get("count")).intValue();
+            result.put(riskAssessment, count);
+        }
+
+        return result;
+    }
+
 
     @Override
     public JSONObject getAnomalyCountByDoctorUid(Long doctorUid, boolean care) {
