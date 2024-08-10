@@ -674,6 +674,18 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
     }
 
     @Override
+    public String getWeekRangeByDate(LocalDate date) {
+        LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M月d日");
+        String formattedStart = startOfWeek.format(formatter);
+        String formattedEnd = endOfWeek.format(formatter);
+        String result = formattedStart + "~" + formattedEnd;
+        return result;
+    }
+
+
+    @Override
     public JSONObject getLatestMeasurementTime(Long patientUid) {
         LocalDateTime latestPressureTime = LocalDateTime.parse(getNewlyPressureData(patientUid)
                 .getString("时间"));

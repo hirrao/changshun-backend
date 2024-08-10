@@ -65,6 +65,14 @@ public class PersureHeartRateController {
         return R.ok(); // 返回成功信息
     }
 
+    @Operation(summary = "根据日期确定当周日期范围" , description = "根据日期确定当周日期范围" )
+    @GetMapping("/get_week_range")
+    @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
+    public R getWeekRangeByDate(@RequestParam("date") LocalDate date) {
+        persureHeartRateService.getWeekRangeByDate(date);
+        return R.ok();
+    }
+
     @Operation(summary = "批量添加血压数据(不填充时间)", description = "批量添加血压数据")
     @PostMapping("/AddPressureInBatches")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')")

@@ -14,6 +14,7 @@ public interface PersureHeartRateService extends IService<PersureHeartRateEntity
 
     void addBloodPressure(PersureHeartRateEntity persureHeartRate);
     void AddPressureInBatches(List<PersureHeartRateEntity> result);
+    String getWeekRangeByDate(LocalDate date);
 
     PersureHeartRateEntity setSdhAndRiskClass(PersureHeartRateEntity persureHeartRate);
     JSONObject classifyAllBloodPressure(Long patientUid);

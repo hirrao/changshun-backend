@@ -17,6 +17,7 @@ import lombok.EqualsAndHashCode;
  * @description <p>添加用药计划</p>
  * @date 2024-08-05 21:29
  **/
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AddDrugAlertRequest extends EatDrugAlertEntity {
