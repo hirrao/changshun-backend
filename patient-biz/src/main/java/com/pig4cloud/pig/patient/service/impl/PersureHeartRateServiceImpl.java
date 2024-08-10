@@ -1245,11 +1245,12 @@ public class PersureHeartRateServiceImpl extends ServiceImpl<PersureHeartRateMap
 
         for(PersureHeartRateEntity entity : persureHeartRateEntities) {
             JSONObject result = new JSONObject();
-            result.put("systolic", entity.getSystolic());
-            result.put("diastolic", entity.getDiastolic());
-            result.put("time", entity.getUploadTime());
-            result.put("risk", entity.getRiskAssessment());
-
+            if(entity.getRiskAssessment() != null) {
+                result.put("systolic", entity.getSystolic());
+                result.put("diastolic", entity.getDiastolic());
+                result.put("time", entity.getUploadTime());
+                result.put("risk", entity.getRiskAssessment());
+            }
             results.add(result);
         }
         return results;
