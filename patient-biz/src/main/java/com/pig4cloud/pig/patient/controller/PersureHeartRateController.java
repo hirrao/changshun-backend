@@ -59,7 +59,7 @@ public class PersureHeartRateController {
     @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
     @PostMapping("/add")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
-    public R<Void> addBloodPressure(@RequestBody PersureHeartRateEntity persureHeartRate, @RequestParam("heartRate") int heartRate ) {
+    public R addBloodPressure(@RequestParam("heartRate") int heartRate, @RequestBody PersureHeartRateEntity persureHeartRate) {
         persureHeartRateService.addBloodPressure(persureHeartRate);
         heartRateLogsService.addHeartRate(persureHeartRate.getPatientUid(), persureHeartRate.getUploadTime(), heartRate);
         return R.ok(); // 返回成功信息
