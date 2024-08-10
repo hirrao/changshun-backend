@@ -19,9 +19,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -44,9 +47,14 @@ public class PatientBaseController {
 	@Operation(summary = "查询年龄性别", description = "查询年龄性别")
 	@GetMapping("/{doctorUid}/patient/stats")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_view')")
-	public R getPatientStatistics(@PathVariable("doctorUid") Long doctorUid) {
-		return R.ok(patientBaseService.getPatientStatistics(doctorUid));
+	public R<Map<String, Integer>> countPatients(@RequestParam Long doctorUid) {
+		Map<String, Integer> result = patientBaseService.countPatientsByAgeAndSex(doctorUid);
+		return R.ok(result);
 	}
+
+	/*public R getPatientStatistics(@PathVariable("doctorUid") Long doctorUid) {
+		return R.ok(patientBaseService.getPatientStatistics(doctorUid));
+	}*/
 	
 	@Operation(summary = "查询特别关心年龄性别", description = "查询特别关心年龄性别")
 	@GetMapping("/{doctorUid}/patient/bycarestats")
