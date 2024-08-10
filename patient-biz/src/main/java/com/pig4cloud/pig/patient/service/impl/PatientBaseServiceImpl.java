@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
+import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
@@ -19,6 +20,7 @@ import com.pig4cloud.plugin.excel.vo.ErrorMessage;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,8 +49,41 @@ public class PatientBaseServiceImpl extends
 	
 	@Autowired
 	private PatientDoctorMapper patientDoctorMapper;
-	
+
 	@Override
+	public Map<String, Integer> countPatientsByAgeAndSex(Long doctorUid) {
+		LocalDate now = LocalDate.now();
+		LocalDate fiftyFiveYearsAgo = now.minusYears(55);
+		LocalDate sixtyFiveYearsAgo = now.minusYears(65);
+
+		// Fetch patient IDs linked to the given doctor
+		List<Long> patientIds = patientDoctorMapper.selectList(
+				new LambdaQueryWrapper<PatientDoctorEntity>().eq(PatientDoctorEntity::getDoctorUid, doctorUid)
+		).stream().map(PatientDoctorEntity::getPatientUid).collect(Collectors.toList());
+
+		// Query counts based on criteria
+		Integer male55Plus = patientBaseMapper.countPatients("male", fiftyFiveYearsAgo, null);
+		Integer maleUnder55 = patientBaseMapper.countPatients("male", null, fiftyFiveYearsAgo);
+		Integer female65Plus = patientBaseMapper.countPatients("female", sixtyFiveYearsAgo, null);
+		Integer femaleUnder65 = patientBaseMapper.countPatients("female", null, sixtyFiveYearsAgo);
+
+		// Handle null values for counts
+		male55Plus = (male55Plus != null) ? male55Plus : 0;
+		maleUnder55 = (maleUnder55 != null) ? maleUnder55 : 0;
+		female65Plus = (female65Plus != null) ? female65Plus : 0;
+		femaleUnder65 = (femaleUnder65 != null) ? femaleUnder65 : 0;
+
+		Map<String, Integer> result = new HashMap<>();
+		result.put("male55Plus", male55Plus);
+		result.put("maleUnder55", maleUnder55);
+		result.put("female65Plus", female65Plus);
+		result.put("femaleUnder65", femaleUnder65);
+
+		return result;
+	}
+
+	
+	/*@Override
 	public int countMalePatientsOver55(Long doctorUid) {
 		return patientBaseMapper.countMalePatientsOver55(doctorUid);
 	}
@@ -66,7 +101,7 @@ public class PatientBaseServiceImpl extends
 	@Override
 	public int countFemalePatientsUnderEqual66(Long doctorUid) {
 		return patientBaseMapper.countFemalePatientsUnderEqual66(doctorUid);
-	}
+	}*/
 	
 	@Override
 	public int ccountMalePatientsOver55(Long doctorUid) {
@@ -135,7 +170,7 @@ public class PatientBaseServiceImpl extends
 		return R.ok();
 	}
 
-	@Override
+	/*@Override
 	public JSONObject getPatientStatistics(Long doctorUid) {
 		Map<String, Object> mapData = new LinkedHashMap<>();
 		mapData.put("male1", countMalePatientsOver55(doctorUid));
@@ -144,7 +179,7 @@ public class PatientBaseServiceImpl extends
 		mapData.put("female2", countFemalePatientsUnderEqual66(doctorUid));
 		JSONObject data = new JSONObject(mapData);
 		return data;
-	}
+	}*/
 
 	@Override
 	public JSONObject getPatientbycareStatistics(Long doctorUid) {
