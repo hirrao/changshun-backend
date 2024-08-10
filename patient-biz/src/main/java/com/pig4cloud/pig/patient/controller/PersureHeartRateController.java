@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
+import com.pig4cloud.pig.patient.request.PressureHeartRateRequest;
 import com.pig4cloud.pig.patient.service.HeartRateLogsService;
 import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
@@ -59,9 +60,9 @@ public class PersureHeartRateController {
     @Operation(summary = "新增血压心率展示" , description = "新增血压心率展示" )
     @PostMapping("/add")
     @PreAuthorize("@pms.hasPermission('patient_persureHeartRate_add')" )
-    public R addBloodPressure(@RequestParam("heartRate") int heartRate, @RequestBody PersureHeartRateEntity persureHeartRate) {
-        persureHeartRateService.addBloodPressure(persureHeartRate);
-        heartRateLogsService.addHeartRate(persureHeartRate.getPatientUid(), persureHeartRate.getUploadTime(), heartRate);
+    public R addBloodPressure(@RequestBody PressureHeartRateRequest request) {
+        persureHeartRateService.addBloodPressure(request);
+        heartRateLogsService.addHeartRate(request.getPatientUid(), request.getUploadTime(), request.getHeartRate());
         return R.ok(); // 返回成功信息
     }
 
