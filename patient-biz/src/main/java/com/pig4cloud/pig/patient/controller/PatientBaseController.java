@@ -150,7 +150,7 @@ public class PatientBaseController {
 	 */
 	@Operation(summary = "修改患者基本信息", description = "修改患者基本信息")
 	@SysLog("修改患者基本信息")
-	@PutMapping
+	@PostMapping("/update_patient_base")
 	@PreAuthorize("@pms.hasPermission('patient_patientBase_edit')")
 	public R updateById(@RequestBody PatientBaseEntity patientBase) {
 		return R.ok(patientBaseService.updateById(patientBase));

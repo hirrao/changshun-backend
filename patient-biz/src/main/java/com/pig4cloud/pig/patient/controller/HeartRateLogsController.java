@@ -177,8 +177,8 @@ public class HeartRateLogsController {
     @Operation(summary = "查询某一周的某位患者的心率的平均值", description = "查询某一周的某位患者的心率的平均值")
     @GetMapping("/weekly_avg_heart_rate")
     @PreAuthorize("@pms.hasPermission('patient_heartRateLogs_view')")
-    public R getWeeklyAverageHeartRateByDay(@RequestParam int weeksAgo, @RequestParam Long patientUid) {
-        return R.ok(heartRateLogsService.getWeeklyAverageHeartRateByDay(weeksAgo, patientUid));
+    public R getWeeklyAverageHeartRateByDay(@RequestParam LocalDate anyDateInWeek, @RequestParam Long patientUid) {
+        return R.ok(heartRateLogsService.getWeeklyAverageHeartRateByDay(anyDateInWeek, patientUid));
     }
 
     @Operation(summary = "查询某一个月的某位患者的每周段的心率的平均值", description = "查询某一个月的某位患者的每周段的心率的平均值")

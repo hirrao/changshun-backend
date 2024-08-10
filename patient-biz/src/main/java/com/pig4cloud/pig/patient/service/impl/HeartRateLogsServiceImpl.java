@@ -225,9 +225,9 @@ public class HeartRateLogsServiceImpl extends ServiceImpl<HeartRateLogsMapper, H
     }
 
     @Override
-    public JSONArray getWeeklyAverageHeartRateByDay(int weeksAgo, Long patientUid) {
-        LocalDate date = LocalDate.now();
-        LocalDate startOfWeek = date.minusWeeks(weeksAgo).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    public JSONArray getWeeklyAverageHeartRateByDay(LocalDate anyDateInWeek, Long patientUid) {
+        // 计算给定日期所在的星期的开始和结束日期
+        LocalDate startOfWeek = anyDateInWeek.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
         JSONArray result = new JSONArray();
