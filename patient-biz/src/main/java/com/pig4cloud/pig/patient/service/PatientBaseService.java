@@ -16,14 +16,13 @@ public interface PatientBaseService extends IService<PatientBaseEntity> {
     // 分页查询并按care字段降序排序
     IPage<PatientBaseEntity> pageByCare(Page<?> page);
 
-    Map<String, Integer> countPatientsByAgeAndSex(Long doctorUid);
-    /*int countMalePatientsOver55(Long doctorUid);
+    int countMalePatientsOver55(Long doctorUid);
 
     int countMalePatientsUnderEqual55(Long doctorUid);
 
     int countFemalePatientsOver65(Long doctorUid);
 
-    int countFemalePatientsUnderEqual66(Long doctorUid);*/
+    int countFemalePatientsUnderEqual66(Long doctorUid);
 
     int ccountMalePatientsOver55(Long doctorUid);
 
@@ -36,7 +35,7 @@ public interface PatientBaseService extends IService<PatientBaseEntity> {
     R importPatientBaseList(List<ImportPatientBaseListRequest> excelVOList,
      BindingResult bindingResult);
 
-    //JSONObject getPatientStatistics(Long doctorUid);
+    JSONObject getPatientStatistics(Long doctorUid);
     JSONObject getPatientbycareStatistics(Long doctorUid);
 
     String editPhysicalStrength(Long patientUid, int physicalStrength);

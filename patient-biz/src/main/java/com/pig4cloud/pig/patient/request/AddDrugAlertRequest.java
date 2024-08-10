@@ -21,8 +21,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AddDrugAlertRequest extends EatDrugAlertEntity {
-	
-	
+
 	@JsonSerialize(using = LocalTimeListSerializer.class)
 	@JsonDeserialize(using = LocalTimeListDeserializer.class)
 	private List<LocalTime> eatTime;

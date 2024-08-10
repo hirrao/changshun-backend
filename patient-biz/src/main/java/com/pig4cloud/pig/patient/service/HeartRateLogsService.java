@@ -7,6 +7,7 @@ import com.pig4cloud.pig.patient.entity.HeartRateLogsEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 public interface HeartRateLogsService extends IService<HeartRateLogsEntity> {
 
@@ -19,8 +20,8 @@ public interface HeartRateLogsService extends IService<HeartRateLogsEntity> {
     JSONObject getNewlyHeartRateData(Long patientUid);
 
     JSONObject getDailyAverageHeartRate(LocalDate date, Long patientUid);
-    JSONArray getWeeklyAverageHeartRateByDay(int weeksAgo, Long patientUid);
-    JSONArray getMonthlyAverageHeartRateByWeek(int monthsAgo, Long patientUid);
+    JSONArray getWeeklyAverageHeartRateByDay(LocalDate anyDateInWeek, Long patientUid);
+    JSONArray getMonthlyAverageHeartRateByWeek(YearMonth yearMonth, Long patientUid);
     JSONArray getYearlyAverageHeartRateByMonth(int yearsAgo, Long patientUid);
 
     JSONArray getDailyConsecutiveAbnormalities(Long doctorUid);

@@ -9,8 +9,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
-import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
-import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
 import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
 import com.pig4cloud.pig.patient.mapper.PatientDoctorMapper;
 import com.pig4cloud.pig.patient.request.ImportPatientBaseListRequest;
@@ -50,7 +48,7 @@ public class PatientBaseServiceImpl extends
 	@Autowired
 	private PatientDoctorMapper patientDoctorMapper;
 
-	@Override
+	/*@Override
 	public Map<String, Integer> countPatientsByAgeAndSex(Long doctorUid) {
 		LocalDate now = LocalDate.now();
 		LocalDate fiftyFiveYearsAgo = now.minusYears(55);
@@ -80,10 +78,10 @@ public class PatientBaseServiceImpl extends
 		result.put("femaleUnder65", femaleUnder65);
 
 		return result;
-	}
+	}*/
 
 	
-	/*@Override
+	@Override
 	public int countMalePatientsOver55(Long doctorUid) {
 		return patientBaseMapper.countMalePatientsOver55(doctorUid);
 	}
@@ -101,7 +99,7 @@ public class PatientBaseServiceImpl extends
 	@Override
 	public int countFemalePatientsUnderEqual66(Long doctorUid) {
 		return patientBaseMapper.countFemalePatientsUnderEqual66(doctorUid);
-	}*/
+	}
 	
 	@Override
 	public int ccountMalePatientsOver55(Long doctorUid) {
@@ -170,7 +168,7 @@ public class PatientBaseServiceImpl extends
 		return R.ok();
 	}
 
-	/*@Override
+	@Override
 	public JSONObject getPatientStatistics(Long doctorUid) {
 		Map<String, Object> mapData = new LinkedHashMap<>();
 		mapData.put("male1", countMalePatientsOver55(doctorUid));
@@ -179,7 +177,7 @@ public class PatientBaseServiceImpl extends
 		mapData.put("female2", countFemalePatientsUnderEqual66(doctorUid));
 		JSONObject data = new JSONObject(mapData);
 		return data;
-	}*/
+	}
 
 	@Override
 	public JSONObject getPatientbycareStatistics(Long doctorUid) {
