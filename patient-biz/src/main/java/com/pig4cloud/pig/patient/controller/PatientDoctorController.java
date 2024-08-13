@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import com.pig4cloud.pig.common.security.annotation.Inner;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
@@ -183,5 +184,12 @@ public class PatientDoctorController {
 	public List<PatientDoctorEntity> export(PatientDoctorEntity patientDoctor, Long[] ids) {
 		return patientDoctorService.list(Wrappers.lambdaQuery(patientDoctor)
 		 .in(ArrayUtil.isNotEmpty(ids), PatientDoctorEntity::getPdId, ids));
+	}
+	// 根据医生ID删除所有与其绑定的患者信息
+	@Inner(value = false)
+	@PostMapping("/delete_patient_doctor")
+	@PreAuthorize("@pms.hasPermission('patient_patientDoctor_del')")
+	public R deletePatientMsgByDoctorUid(@RequestParam Long doctorUid) {
+		return R.ok(patientDoctorService.removeByDoctorUid(doctorUid));
 	}
 }

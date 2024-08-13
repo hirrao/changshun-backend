@@ -25,4 +25,6 @@ public interface PatientDoctorService extends IService<PatientDoctorEntity> {
 	long countBloodPressureRecordsByDoctorId(Long doctorUid);
 
 	long countYesterdayAbnormalBloodPressureRecordsByDoctorId(Long doctorUid);
+
+	boolean removeByDoctorUid(Long doctorUid);
 }

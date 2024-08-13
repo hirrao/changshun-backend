@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pig4cloud.pig.patient.dto.HeartRateStatsDTO;
 import com.pig4cloud.pig.patient.entity.PatientDoctorEntity;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,8 +31,7 @@ public interface PatientDoctorMapper extends BaseMapper<PatientDoctorEntity> {
     @Select("SELECT COUNT(*) FROM patient_doctor WHERE doctor_uid = #{doctorUid} AND care = 1")
     int getDoctorCountByCare(@Param("doctorUid") Long doctorUid);
 
-
-
-
+    @Delete("DELETE FROM patient_doctor WHERE doctor_uid = #{doctorUid}")
+    int deleteByDoctorUid(@Param("doctorUid") Long doctorUid);
 
 }

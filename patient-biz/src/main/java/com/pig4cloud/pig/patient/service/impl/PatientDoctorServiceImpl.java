@@ -152,4 +152,9 @@ public class PatientDoctorServiceImpl extends
 
 		return persureHeartRateMapper.selectCount(bpQuery);
 	}
+
+	@Override
+	public boolean removeByDoctorUid(Long doctorUid) {
+		return patientDoctorMapper.deleteByDoctorUid(doctorUid);
+	}
 }

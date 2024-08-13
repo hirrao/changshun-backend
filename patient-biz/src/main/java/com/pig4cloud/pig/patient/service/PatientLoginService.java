@@ -223,7 +223,6 @@ public class PatientLoginService {
 			return R.failed("绑定手机号并完成登录失败");
 		}
 	}
-	
 	// 手机号换绑
 	public R changeBindPhoneNumber(BindPhoneNumberRequest bindPhoneNumberRequest) {
 		//	根据openId查询对应的患者
