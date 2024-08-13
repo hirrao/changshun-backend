@@ -188,7 +188,6 @@ public class PatientDoctorController {
 	// 根据医生ID删除所有与其绑定的患者信息
 	@Inner(value = false)
 	@PostMapping("/delete_patient_doctor")
-	@PreAuthorize("@pms.hasPermission('patient_patientDoctor_del')")
 	public R deletePatientMsgByDoctorUid(@RequestBody PatientDoctorEntity patientDoctor) {
 		return R.ok(patientDoctorService.removeByDoctorUid(patientDoctor.getDoctorUid()));
 	}
