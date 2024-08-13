@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authorization.method.AuthorizeReturnObject;
@@ -30,6 +31,7 @@ import org.springframework.validation.BindingResult;
  * @date 2024-07-03 17:17:03
  */
 @Service
+@Slf4j
 public class DoctorBaseServiceImpl extends
  ServiceImpl<DoctorBaseMapper, DoctorBaseEntity> implements DoctorBaseService {
 	@Value("${web.patient-url}")
@@ -97,6 +99,7 @@ public class DoctorBaseServiceImpl extends
 			try {
 				JSONObject post = httpUtils.post(url, params);
 			} catch (Exception e) {
+				log.error("請求失敗",e);
 				return false;
 			}
 		}

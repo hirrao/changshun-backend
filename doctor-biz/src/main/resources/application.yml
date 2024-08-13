@@ -3,7 +3,7 @@ server:
 
 web:
   qrcode: /home/test/pig-data/qrcode
-  patient-url: http://114.116.237.85/patient
+  patient-url: http://114.116.237.85:9999/patient
 
 spring:
   web:
