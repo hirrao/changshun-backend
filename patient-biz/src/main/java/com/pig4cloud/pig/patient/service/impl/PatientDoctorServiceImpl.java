@@ -154,7 +154,7 @@ public class PatientDoctorServiceImpl extends
 	}
 
 	@Override
-	public boolean removeByDoctorUid(Long doctorUid) {
+	public int removeByDoctorUid(Long doctorUid) {
 		return patientDoctorMapper.deleteByDoctorUid(doctorUid);
 	}
 }
