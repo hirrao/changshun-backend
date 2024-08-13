@@ -110,4 +110,5 @@ public class DoctorBaseServiceImpl extends
 	public boolean updateBatch(List<DoctorBaseEntity> doctors) {
 		return this.updateBatchById(doctors);
 	}
+	
 }

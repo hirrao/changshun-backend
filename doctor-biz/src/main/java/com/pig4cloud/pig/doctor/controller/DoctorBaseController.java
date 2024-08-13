@@ -53,6 +53,13 @@ public class DoctorBaseController {
 		return success ? R.ok() : R.failed("删除失败");
 	}
 	
+	@Operation(summary = "批量增加", description = "批量增加")
+	@PostMapping("/batchadd")
+	@PreAuthorize("@pms.hasPermission('doctor_doctorBase_add')")
+	public R addBatch(@RequestBody List<DoctorBaseEntity> result) {
+		return R.ok(doctorBaseService.saveBatch(result));
+	}
+	
 	
 	@Operation(summary = "批量修改", description = "批量修改")
 	@PutMapping("/batchupd")
