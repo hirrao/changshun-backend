@@ -189,7 +189,7 @@ public class PatientDoctorController {
 	@Inner(value = false)
 	@PostMapping("/delete_patient_doctor")
 	@PreAuthorize("@pms.hasPermission('patient_patientDoctor_del')")
-	public R deletePatientMsgByDoctorUid(@RequestParam Long doctorUid) {
-		return R.ok(patientDoctorService.removeByDoctorUid(doctorUid));
+	public R deletePatientMsgByDoctorUid(@RequestBody PatientDoctorEntity patientDoctor) {
+		return R.ok(patientDoctorService.removeByDoctorUid(patientDoctor.getDoctorUid()));
 	}
 }
