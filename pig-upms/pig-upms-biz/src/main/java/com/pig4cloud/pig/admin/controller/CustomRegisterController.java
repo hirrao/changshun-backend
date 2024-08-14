@@ -1,13 +1,18 @@
 package com.pig4cloud.pig.admin.controller;
 
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
+import com.pig4cloud.pig.admin.api.vo.DoctorExcelVO;
+import com.pig4cloud.pig.admin.api.vo.UserExcelVO;
 import com.pig4cloud.pig.admin.service.CustomRegisterService;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.Inner;
+import com.pig4cloud.plugin.excel.annotation.RequestExcel;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +41,14 @@ public class CustomRegisterController {
 	public R registerUser(@RequestBody UserDTO userDto) {
 		return customRegisterService.customRegisterUser(userDto);
 	}
+	
+	@Inner(value = false)
+	@SysLog("批量导入医生用户")
+	@PostMapping("/import_doctor")
+	public R importDoctor(@RequestExcel List<DoctorExcelVO> excelVOList,
+			BindingResult bindingResult) {
+		return customRegisterService.importDoctor(excelVOList,bindingResult);
+	}
+		
 	
 }

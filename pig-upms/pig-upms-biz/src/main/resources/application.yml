@@ -17,4 +17,5 @@ spring:
       - nacos:application-@profiles.active@.yml
       - nacos:${spring.application.name}-@profiles.active@.yml
 
-
+web:
+  doctor_url: http://114.116.237.85:9999/doctor

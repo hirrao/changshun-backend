@@ -1,13 +1,39 @@
 package com.pig4cloud.pig.admin.service;
 
+import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONPOJOBuilder;
+import com.alibaba.nacos.api.naming.pojo.healthcheck.impl.Http;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
+import com.pig4cloud.pig.admin.api.entity.SysDept;
+import com.pig4cloud.pig.admin.api.entity.SysPost;
+import com.pig4cloud.pig.admin.api.entity.SysRole;
+import com.pig4cloud.pig.admin.api.entity.SysUser;
+import com.pig4cloud.pig.admin.api.vo.DoctorExcelVO;
+import com.pig4cloud.pig.admin.api.vo.UserExcelVO;
+import com.pig4cloud.pig.common.core.exception.ErrorCodes;
+import com.pig4cloud.pig.common.core.util.MsgUtils;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.plugin.excel.vo.ErrorMessage;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * <h3>changshun-backend</h3>
@@ -26,7 +52,19 @@ public class CustomRegisterService {
 	@Autowired
 	private RestTemplate restTemplate;
 	
-	// TODO: 新建库之后将患者角色信息和普通医生id写在下面
+	@Autowired
+	private SysRoleService sysRoleService;
+	
+	@Autowired
+	private SysDeptService sysDeptService;
+	
+	@Autowired
+	private SysPostService sysPostService;
+	
+	@Value("${web.doctor_url}")
+	private String doctorUrl;
+	
+	// 新建库之后将患者角色信息和普通医生id写在下面
 	// 患者角色id
 	private static final Long PATIENT_ROLE_ID = 1811326313985011714L;
 	// 普通医生id
@@ -87,6 +125,93 @@ public class CustomRegisterService {
 		} catch (Exception e) {
 			log.error("注册用户失败", e);
 			return R.failed("注册用户失败");
+		}
+	}
+	
+	public R importDoctor(List<DoctorExcelVO> excelVOList,
+			BindingResult bindingResult) {
+		// 通用校验获取失败的数据
+		List<ErrorMessage> errorMessageList = (List<ErrorMessage>) bindingResult.getTarget();
+		
+		// 执行数据插入操作 组装 UserDto
+		for (DoctorExcelVO excel : excelVOList) {
+			// 个性化校验逻辑
+			List<SysUser> userList = sysUserService.list();
+			Set<String> errorMsg = new HashSet<>();
+			// 校验用户名/手机是否存在，医生以手机号作为用户名
+			boolean exsitUserName = userList.stream()
+					.anyMatch(sysUser -> excel.getPhone().equals(sysUser.getUsername()));
+			if (exsitUserName) {
+				errorMsg.add(MsgUtils.getMessage(ErrorCodes.SYS_USER_USERNAME_EXISTING,
+						excel.getPhone()));
+			}
+			
+			// 数据合法情况
+			if (CollUtil.isEmpty(errorMsg)) {
+				insertExcelDoctor(excel);
+			}
+			else {
+				// 数据不合法情况
+				errorMessageList.add(new ErrorMessage(excel.getLineNum(), errorMsg));
+			}
+			
+		}
+		if (CollUtil.isNotEmpty(errorMessageList)) {
+			return R.failed(errorMessageList);
+		}
+		return R.ok();
+	}
+	
+	public void insertExcelDoctor(DoctorExcelVO excel) {
+		// 设置角色列表只有医生角色一个人
+		List<Long> roleCollList = new ArrayList<>();
+		LambdaQueryWrapper<SysRole> sysRoleLambdaQueryWrapper = Wrappers.lambdaQuery();
+		sysRoleLambdaQueryWrapper.eq(SysRole::getRoleId,DOCTOR_ROLE_ID);
+		SysRole doctorRole = sysRoleService.getOne(sysRoleLambdaQueryWrapper.last("limit 1"));
+		if (doctorRole == null) {
+			throw new RuntimeException("医生RoleId不存在");
+		}
+		roleCollList.add(doctorRole.getRoleId());
+		// 设置pig登录账号中部门和岗位都是默认的
+		LambdaQueryWrapper<SysDept> deptLambdaQueryWrapper = Wrappers.lambdaQuery();
+		deptLambdaQueryWrapper.eq(SysDept::getDeptId,1);
+		SysDept dept = sysDeptService.getOne(deptLambdaQueryWrapper.last("limit 1"));
+		LambdaQueryWrapper<SysPost> postLambdaQueryWrapper = Wrappers.lambdaQuery();
+		postLambdaQueryWrapper.eq(SysPost::getPostId,1);
+		SysPost sysPost = sysPostService.getOne(postLambdaQueryWrapper.last("limit 1"));
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername(excel.getPhone());
+		userDTO.setPhone(excel.getPhone());
+		userDTO.setName(excel.getName());
+		// 批量导入初始密码为手机号
+		userDTO.setPassword(userDTO.getPhone());
+		userDTO.setDeptId(dept.getDeptId());
+		List<Long> postIdList = new ArrayList<>();
+		postIdList.add(sysPost.getPostId());
+		userDTO.setPost(postIdList);
+		userDTO.setRole(roleCollList);
+		//	插入用户
+		sysUserService.saveUser(userDTO);
+		
+		//	插入doctor_base表格当中
+		String url = doctorUrl + "/batchadd";
+		JSONObject doctorBase = new JSONObject();
+		doctorBase.put("doctorName",excel.getName());
+		doctorBase.put("doctorPhonenumber",excel.getPhone());
+		doctorBase.put("position",excel.getPosition());
+		doctorBase.put("affiliatedHospital",excel.getAffiliatedHospital());
+		doctorBase.put("department",excel.getDepartment());
+		doctorBase.put("username",excel.getPhone());
+		JSONArray params = new JSONArray();
+		params.add(doctorBase);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<JSONArray> request = new HttpEntity<>(params, headers);
+		ResponseEntity<JSONObject> response = restTemplate.postForEntity(url, request,
+				JSONObject.class);
+		if (response.getStatusCode() != HttpStatus.OK) {
+			throw new ResponseStatusException(response.getStatusCode(), "插入医生请求出错");
 		}
 	}
 }
