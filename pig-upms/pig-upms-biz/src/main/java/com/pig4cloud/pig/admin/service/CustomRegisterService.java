@@ -3,8 +3,6 @@ package com.pig4cloud.pig.admin.service;
 import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONPOJOBuilder;
-import com.alibaba.nacos.api.naming.pojo.healthcheck.impl.Http;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
@@ -13,7 +11,6 @@ import com.pig4cloud.pig.admin.api.entity.SysPost;
 import com.pig4cloud.pig.admin.api.entity.SysRole;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.vo.DoctorExcelVO;
-import com.pig4cloud.pig.admin.api.vo.UserExcelVO;
 import com.pig4cloud.pig.common.core.exception.ErrorCodes;
 import com.pig4cloud.pig.common.core.util.MsgUtils;
 import com.pig4cloud.pig.common.core.util.R;
@@ -148,9 +145,12 @@ public class CustomRegisterService {
 			
 			// 数据合法情况
 			if (CollUtil.isEmpty(errorMsg)) {
-				insertExcelDoctor(excel);
-			}
-			else {
+				try {
+					insertExcelDoctor(excel);
+				} catch (Exception e) {
+					return R.failed("插入医生失败: " + e.getMessage());
+				}
+			} else {
 				// 数据不合法情况
 				errorMessageList.add(new ErrorMessage(excel.getLineNum(), errorMsg));
 			}
@@ -166,7 +166,7 @@ public class CustomRegisterService {
 		// 设置角色列表只有医生角色一个人
 		List<Long> roleCollList = new ArrayList<>();
 		LambdaQueryWrapper<SysRole> sysRoleLambdaQueryWrapper = Wrappers.lambdaQuery();
-		sysRoleLambdaQueryWrapper.eq(SysRole::getRoleId,DOCTOR_ROLE_ID);
+		sysRoleLambdaQueryWrapper.eq(SysRole::getRoleId, DOCTOR_ROLE_ID);
 		SysRole doctorRole = sysRoleService.getOne(sysRoleLambdaQueryWrapper.last("limit 1"));
 		if (doctorRole == null) {
 			throw new RuntimeException("医生RoleId不存在");
@@ -174,10 +174,10 @@ public class CustomRegisterService {
 		roleCollList.add(doctorRole.getRoleId());
 		// 设置pig登录账号中部门和岗位都是默认的
 		LambdaQueryWrapper<SysDept> deptLambdaQueryWrapper = Wrappers.lambdaQuery();
-		deptLambdaQueryWrapper.eq(SysDept::getDeptId,1);
+		deptLambdaQueryWrapper.eq(SysDept::getDeptId, 1);
 		SysDept dept = sysDeptService.getOne(deptLambdaQueryWrapper.last("limit 1"));
 		LambdaQueryWrapper<SysPost> postLambdaQueryWrapper = Wrappers.lambdaQuery();
-		postLambdaQueryWrapper.eq(SysPost::getPostId,1);
+		postLambdaQueryWrapper.eq(SysPost::getPostId, 1);
 		SysPost sysPost = sysPostService.getOne(postLambdaQueryWrapper.last("limit 1"));
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUsername(excel.getPhone());
@@ -196,12 +196,12 @@ public class CustomRegisterService {
 		//	插入doctor_base表格当中
 		String url = doctorUrl + "/doctorBase/batchadd";
 		JSONObject doctorBase = new JSONObject();
-		doctorBase.put("doctorName",excel.getName());
-		doctorBase.put("doctorPhonenumber",excel.getPhone());
-		doctorBase.put("position",excel.getPosition());
-		doctorBase.put("affiliatedHospital",excel.getAffiliatedHospital());
-		doctorBase.put("department",excel.getDepartment());
-		doctorBase.put("username",excel.getPhone());
+		doctorBase.put("doctorName", excel.getName());
+		doctorBase.put("doctorPhonenumber", excel.getPhone());
+		doctorBase.put("position", excel.getPosition());
+		doctorBase.put("affiliatedHospital", excel.getAffiliatedHospital());
+		doctorBase.put("department", excel.getDepartment());
+		doctorBase.put("username", excel.getPhone());
 		JSONArray params = new JSONArray();
 		params.add(doctorBase);
 		
