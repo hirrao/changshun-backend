@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
+import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.doctor.entity.DoctorBaseEntity;
 import com.pig4cloud.pig.doctor.request.ImportDoctorBaseListRequest;
 import com.pig4cloud.pig.doctor.service.DoctorBaseService;
@@ -53,9 +54,9 @@ public class DoctorBaseController {
 		return success ? R.ok() : R.failed("删除失败");
 	}
 	
+	@Inner(value = false)
 	@Operation(summary = "批量增加", description = "批量增加")
 	@PostMapping("/batchadd")
-	@PreAuthorize("@pms.hasPermission('doctor_doctorBase_add')")
 	public R addBatch(@RequestBody List<DoctorBaseEntity> result) {
 		return R.ok(doctorBaseService.saveBatch(result));
 	}
