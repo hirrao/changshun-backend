@@ -194,7 +194,7 @@ public class CustomRegisterService {
 		sysUserService.saveUser(userDTO);
 		
 		//	插入doctor_base表格当中
-		String url = doctorUrl + "/batchadd";
+		String url = doctorUrl + "/doctorBase/batchadd";
 		JSONObject doctorBase = new JSONObject();
 		doctorBase.put("doctorName",excel.getName());
 		doctorBase.put("doctorPhonenumber",excel.getPhone());
