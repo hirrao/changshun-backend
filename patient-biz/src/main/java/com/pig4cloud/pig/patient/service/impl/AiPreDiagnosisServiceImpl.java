@@ -46,69 +46,73 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         patientDoctorQuery.eq("doctor_uid", doctorUid);
         List<PatientDoctorEntity> patientDoctors = patientDoctorMapper.selectList(patientDoctorQuery);
 
+        // 初始化疾病统计结果
+        Map<String, Integer> diseasesCount = new HashMap<String, Integer>() {{
+            put("血脂异常", 0);
+            put("脑血管病", 0);
+            put("心脏疾病", 0);
+            put("肾脏疾病", 0);
+            put("周围血管病", 0);
+            put("视网膜病变", 0);
+            put("糖尿病", 0);
+            put("其他", 0);
+        }};
+
         Set<Long> patientUids = new HashSet<>();
-        if(patientDoctors != null) {
+        if (patientDoctors != null) {
             for (PatientDoctorEntity patientDoctor : patientDoctors) {
                 patientUids.add(patientDoctor.getPatientUid());
             }
         }
 
+        // 如果没有找到与医生关联的患者，直接返回疾病计数
+        if (patientUids.isEmpty()) {
+            return R.ok(diseasesCount);
+        }
+
         // 使用 Set 存储每个患者的最新记录
         Map<Long, AiPreDiagnosisEntity> latestDiagnosisMap = new HashMap<>();
 
-        if(!patientUids.isEmpty()) {
-            // 查询与患者相关的 AI 预问诊记录
-            QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
-            aiPreDiagnosisQuery.in("patient_uid", patientUids);
-            List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
+        // 查询与患者相关的 AI 预问诊记录
+        QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
+        aiPreDiagnosisQuery.in("patient_uid", patientUids);
+        List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
 
-            if(aiPreDiagnosisList != null) {
-                // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
-                for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
-                    Long patientUid = diagnosis.getPatientUid();
-                    // 如果当前患者没有记录，或当前记录比已存储的记录新，则更新
-                    if (!latestDiagnosisMap.containsKey(patientUid) ||
-                            diagnosis.getAiId() > latestDiagnosisMap.get(patientUid).getAiId()) {
-                        latestDiagnosisMap.put(patientUid, diagnosis);
+        // 如果没有找到AI预问诊记录，直接返回疾病计数
+        if (aiPreDiagnosisList == null || aiPreDiagnosisList.isEmpty()) {
+            return R.ok(diseasesCount);
+        }
+
+        // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            Long patientUid = diagnosis.getPatientUid();
+            if (!latestDiagnosisMap.containsKey(patientUid) ||
+                    diagnosis.getAiId() > latestDiagnosisMap.get(patientUid).getAiId()) {
+                latestDiagnosisMap.put(patientUid, diagnosis);
+            }
+        }
+
+        // 统计每个患者最新AI预问诊记录中的疾病
+        for (AiPreDiagnosisEntity diagnosis : latestDiagnosisMap.values()) {
+            String diseasesList = diagnosis.getDiseasesList(); // 获取疾病列表
+
+            // 在调用 split 前进行空值检查
+            if (diseasesList != null && !diseasesList.isEmpty()) {
+                String[] diseases = diseasesList.split(",");
+                for (String disease : diseases) {
+                    disease = disease.trim(); // 去除多余空格
+                    if (diseasesCount.containsKey(disease)) {
+                        diseasesCount.put(disease, diseasesCount.get(disease) + 1);
+                    } else {
+                        diseasesCount.put("其他", diseasesCount.get("其他") + 1);
                     }
                 }
             }
         }
 
-
-        // 初始化疾病统计结果
-        Map<String, Integer> diseasesCount = new HashMap<>();
-        diseasesCount.put("血脂异常", 0);
-        diseasesCount.put("脑血管病", 0);
-        diseasesCount.put("心脏疾病", 0);
-        diseasesCount.put("肾脏疾病", 0);
-        diseasesCount.put("周围血管病", 0);
-        diseasesCount.put("视网膜病变", 0);
-        diseasesCount.put("糖尿病", 0);
-        diseasesCount.put("其他", 0);
-
-        if(latestDiagnosisMap != null) {
-            // 统计每个患者最新AI预问诊记录中的疾病
-            for (AiPreDiagnosisEntity diagnosis : latestDiagnosisMap.values()) {
-                String diseasesList = diagnosis.getDiseasesList(); // 获取疾病列表
-
-                // 在调用 split 前进行空值检查
-                if (diseasesList != null && !diseasesList.isEmpty()) {
-                    String[] diseases = diseasesList.split(",");
-                    for (String disease : diseases) {
-                        disease = disease.trim(); // 去除多余空格
-                        if (diseasesCount.containsKey(disease)) {
-                            diseasesCount.put(disease, diseasesCount.get(disease) + 1);
-                        } else {
-                            diseasesCount.put("其他", diseasesCount.get("其他") + 1);
-                        }
-                    }
-                }
-            }
-
-        }
         return R.ok(diseasesCount);
     }
+
 
     @Override
     public R<Map<String, Integer>> getCarePatientDiseasesCount(Long doctorUid) {
@@ -117,69 +121,73 @@ public class AiPreDiagnosisServiceImpl extends ServiceImpl<AiPreDiagnosisMapper,
         patientDoctorQuery.eq("doctor_uid", doctorUid).eq("care", 1);
         List<PatientDoctorEntity> patientDoctors = patientDoctorMapper.selectList(patientDoctorQuery);
 
+        // 初始化疾病统计结果
+        Map<String, Integer> diseasesCount = new HashMap<String, Integer>() {{
+            put("血脂异常", 0);
+            put("脑血管病", 0);
+            put("心脏疾病", 0);
+            put("肾脏疾病", 0);
+            put("周围血管病", 0);
+            put("视网膜病变", 0);
+            put("糖尿病", 0);
+            put("其他", 0);
+        }};
+
         Set<Long> patientUids = new HashSet<>();
-        if(patientDoctors != null) {
+        if (patientDoctors != null) {
             for (PatientDoctorEntity patientDoctor : patientDoctors) {
                 patientUids.add(patientDoctor.getPatientUid());
             }
         }
 
+        // 如果没有找到与医生关联的患者，直接返回疾病计数
+        if (patientUids.isEmpty()) {
+            return R.ok(diseasesCount);
+        }
+
         // 使用 Set 存储每个患者的最新记录
         Map<Long, AiPreDiagnosisEntity> latestDiagnosisMap = new HashMap<>();
 
-        if(!patientUids.isEmpty()) {
-            // 查询与患者相关的 AI 预问诊记录
-            QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
-            aiPreDiagnosisQuery.in("patient_uid", patientUids);
-            List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
+        // 查询与患者相关的 AI 预问诊记录
+        QueryWrapper<AiPreDiagnosisEntity> aiPreDiagnosisQuery = new QueryWrapper<>();
+        aiPreDiagnosisQuery.in("patient_uid", patientUids);
+        List<AiPreDiagnosisEntity> aiPreDiagnosisList = aiPreDiagnosisMapper.selectList(aiPreDiagnosisQuery);
 
-            if(aiPreDiagnosisList != null) {
-                // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
-                for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
-                    Long patientUid = diagnosis.getPatientUid();
-                    // 如果当前患者没有记录，或当前记录比已存储的记录新，则更新
-                    if (!latestDiagnosisMap.containsKey(patientUid) ||
-                            diagnosis.getAiId() > latestDiagnosisMap.get(patientUid).getAiId()) {
-                        latestDiagnosisMap.put(patientUid, diagnosis);
+        // 如果没有找到AI预问诊记录，直接返回疾病计数
+        if (aiPreDiagnosisList == null || aiPreDiagnosisList.isEmpty()) {
+            return R.ok(diseasesCount);
+        }
+
+        // 遍历所有 AI 预问诊记录，选择每个患者的最新记录
+        for (AiPreDiagnosisEntity diagnosis : aiPreDiagnosisList) {
+            Long patientUid = diagnosis.getPatientUid();
+            if (!latestDiagnosisMap.containsKey(patientUid) ||
+                    diagnosis.getAiId() > latestDiagnosisMap.get(patientUid).getAiId()) {
+                latestDiagnosisMap.put(patientUid, diagnosis);
+            }
+        }
+
+        // 统计每个患者最新AI预问诊记录中的疾病
+        for (AiPreDiagnosisEntity diagnosis : latestDiagnosisMap.values()) {
+            String diseasesList = diagnosis.getDiseasesList(); // 获取疾病列表
+
+            // 在调用 split 前进行空值检查
+            if (diseasesList != null && !diseasesList.isEmpty()) {
+                String[] diseases = diseasesList.split(",");
+                for (String disease : diseases) {
+                    disease = disease.trim(); // 去除多余空格
+                    if (diseasesCount.containsKey(disease)) {
+                        diseasesCount.put(disease, diseasesCount.get(disease) + 1);
+                    } else {
+                        diseasesCount.put("其他", diseasesCount.get("其他") + 1);
                     }
                 }
             }
         }
 
-
-        // 初始化疾病统计结果
-        Map<String, Integer> diseasesCount = new HashMap<>();
-        diseasesCount.put("血脂异常", 0);
-        diseasesCount.put("脑血管病", 0);
-        diseasesCount.put("心脏疾病", 0);
-        diseasesCount.put("肾脏疾病", 0);
-        diseasesCount.put("周围血管病", 0);
-        diseasesCount.put("视网膜病变", 0);
-        diseasesCount.put("糖尿病", 0);
-        diseasesCount.put("其他", 0);
-
-        if(latestDiagnosisMap != null) {
-            // 统计每个患者最新AI预问诊记录中的疾病
-            for (AiPreDiagnosisEntity diagnosis : latestDiagnosisMap.values()) {
-                String diseasesList = diagnosis.getDiseasesList(); // 获取疾病列表
-
-                // 在调用 split 前进行空值检查
-                if (diseasesList != null && !diseasesList.isEmpty()) {
-                    String[] diseases = diseasesList.split(",");
-                    for (String disease : diseases) {
-                        disease = disease.trim(); // 去除多余空格
-                        if (diseasesCount.containsKey(disease)) {
-                            diseasesCount.put(disease, diseasesCount.get(disease) + 1);
-                        } else {
-                            diseasesCount.put("其他", diseasesCount.get("其他") + 1);
-                        }
-                    }
-                }
-            }
-
-        }
         return R.ok(diseasesCount);
     }
+
 
     @Override
     public StatisticsResult getStatisticsByDoctor(Long doctorUid) {
