@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -67,8 +68,24 @@ public class HTTPUtils {
 		}
 		return response.getBody();
 	}
-	
-	
+
+	public JSONObject post(String url, Map<String, Object> params,
+						   MultiValueMap<String,String> headersMap) {
+		HttpHeaders headers = new HttpHeaders(headersMap);
+		// 默认是JSON格式
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		// SpringBoot3 需要变为字符串才行，不然会没有body
+		HttpEntity<String> request = new HttpEntity<>(JSON.toJSONString(params), headers);
+		ResponseEntity<JSONObject> response = restTemplate.postForEntity(url, request,
+																		 JSONObject.class);
+		if (response.getStatusCode() != HttpStatus.OK) {
+			throw new ResponseStatusException(response.getStatusCode(), "请求出错");
+		}
+		return response.getBody();
+	}
+
+
+
 	/**
 	 * @param url:    访问地址
 	 * @param params: 请求参数，需要是一个Object类的对象，自己定义好成员属性
