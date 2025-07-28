@@ -11,3 +11,5 @@ wxchat:
   enc_key: thanks,pig4cloud
 hardware:
   url: http://8.147.235.227:12345/api/users # 硬件设备请求数据接口
+  appid: bp_ezjsiejrziojwieo
+  sec: ${APP_SECRET}
