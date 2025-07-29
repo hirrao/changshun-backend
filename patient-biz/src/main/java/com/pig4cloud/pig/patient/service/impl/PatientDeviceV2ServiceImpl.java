@@ -43,6 +43,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
     private final HTTPUtils httpUtils;
     private final String appid;
     private final String secret;
+    private final String callbackUrl;
     private String token;
 
     @Autowired
@@ -52,7 +53,8 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                                       HeartRateLogsMapper heartRateLogsMapper,
                                       HTTPUtils httpUtils,
                                       @Value("${hardware.appid}") String appid,
-                                      @Value("${hardware.sec}") String secret) {
+                                      @Value("${hardware.sec}") String secret,
+                                      @Value("${hardware.callback_url}") String callbackUrl) {
         this.patientDeviceMapper = patientDeviceMapper;
         this.patientBaseMapper = patientBaseMapper;
         this.persureHeartRateMapper = persureHeartRateMapper;
@@ -60,14 +62,29 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         this.httpUtils = httpUtils;
         this.appid = appid;
         this.secret = secret;
+        this.callbackUrl = callbackUrl;
     }
 
     @PostConstruct
     public void init() {
         this.token = getAuthToken();
+        registerCallBack();
     }
 
-    public String getAuthToken() {
+    private void registerCallBack() {
+        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.add("access_token", token);
+        Map<String, Object> params = new HashMap<>();
+        params.put("url", callbackUrl);
+        JSONObject jsonObject = httpUtils.post(
+                "https://open.heart-forever.com/api/ext/callbackUrl", params,
+                header);
+        if (jsonObject.getInteger("code") != 0) {
+            throw new RuntimeException("回调接口注册错误");
+        }
+    }
+
+    private String getAuthToken() {
         Map<String, Object> params = new HashMap<>();
         String nonce = UUID.randomUUID()
                            .toString();
