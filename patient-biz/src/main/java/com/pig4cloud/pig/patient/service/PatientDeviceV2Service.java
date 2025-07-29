@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.PatientDeviceEntity;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.IPatientDeviceCallback;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface PatientDeviceV2Service extends IService<PatientDeviceEntity> {
     R getByUid(long uid);
 
