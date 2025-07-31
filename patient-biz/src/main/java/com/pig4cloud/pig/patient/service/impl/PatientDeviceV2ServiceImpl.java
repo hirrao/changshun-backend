@@ -71,14 +71,21 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         registerCallBack();
     }
 
-    private void registerCallBack() {
+    private JSONObject post(String url, Map<String, Object> params) {
         MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
         header.add("access_token", token);
+        JSONObject response = httpUtils.post(url, params, header);
+        if (response.getInteger("code") == 10007) {
+            token = getAuthToken();
+        }
+        return response;
+    }
+
+    private void registerCallBack() {
         Map<String, Object> params = new HashMap<>();
         params.put("url", callbackUrl);
-        JSONObject jsonObject = httpUtils.post(
-                "https://open.heart-forever.com/api/ext/callbackUrl", params,
-                header);
+        JSONObject jsonObject = post(
+                "https://open.heart-forever.com/api/ext/callbackUrl", params);
         if (jsonObject.getInteger("code") != 0) {
             throw new RuntimeException("回调接口注册错误");
         }
@@ -137,8 +144,6 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         else {
             device = entity;
         }
-        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        header.add("access_token", token);
         Map<String, Object> params = new HashMap<>();
         params.put("extUserId", String.valueOf(device.getPddId()));
         params.put("birthday", user.getBirthday()
@@ -148,9 +153,8 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         params.put("sex", user.getSex()
                               .equals("男性") ? "m" : "f");
         params.put("nickname", user.getUsername());
-        JSONObject jsonObject = httpUtils.post(
-                "https://open.heart-forever.com/api/ext/extUser", params,
-                header);
+        JSONObject jsonObject = post(
+                "https://open.heart-forever.com/api/ext/extUser", params);
         if (jsonObject.getInteger("code")
                       .equals(0)) {
             return R.ok();
@@ -189,13 +193,10 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         if (device == null) {
             return R.failed("未注册");
         }
-        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-        header.add("access_token", token);
         Map<String, Object> params = new HashMap<>();
         params.put("extUserId", String.valueOf(device.getPddId()));
-        JSONObject jsonObject = httpUtils.post(
-                "https://open.heart-forever.com/api/ext/getUserToken", params,
-                header);
+        JSONObject jsonObject = post(
+                "https://open.heart-forever.com/api/ext/getUserToken", params);
         if (jsonObject.getInteger("code")
                       .equals(0)) {
             return R.ok(jsonObject.getString("data"));
