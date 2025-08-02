@@ -190,6 +190,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                             PatientDeviceEntity::getPatientUid, uid));
         }
         device.setDeviceUid(imei);
+        device.setDeviceBrand("xy");
         device.setLastUpdateTime(LocalDateTime.now());
         return R.ok();
     }
