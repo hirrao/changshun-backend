@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 
+ *
  *
  * @author wangwenche
  * @date 2024-07-04 20:47:58
@@ -26,7 +26,7 @@ public class PatientDeviceEntity extends Model<PatientDeviceEntity> {
     @TableId(type = IdType.ASSIGN_ID)
     @Schema(description="表唯一id")
     private Long pddId;
- 
+
 	/**
 	* deviceUid
 	*/
@@ -38,13 +38,20 @@ public class PatientDeviceEntity extends Model<PatientDeviceEntity> {
 	*/
     @Schema(description="绑定设备名称")
     private String deviceName;
- 
+
 	/**
 	* patientUid
 	*/
     @Schema(description="patientUid")
     private Long patientUid;
-	
+
+    /**
+     * 设备品牌, 汉语拼音首字母
+     * 比如xy
+     */
+	@Schema(description = "设备品牌")
+	private String deviceBrand;
+
 	/**
 	 * 最后一次同步数据时间
 	 */

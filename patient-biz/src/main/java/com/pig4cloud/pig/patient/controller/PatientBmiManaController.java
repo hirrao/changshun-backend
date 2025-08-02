@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
-import com.pig4cloud.pig.patient.entity.DrugEatTimeEntity;
 import com.pig4cloud.pig.patient.entity.PatientBmiManaEntity;
 import com.pig4cloud.pig.patient.service.PatientBmiManaService;
+import com.pig4cloud.pig.patient.service.PatientDeviceV2Service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 患者身高体重
@@ -36,7 +35,9 @@ import java.util.Objects;
 @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
 public class PatientBmiManaController {
 
-    private final  PatientBmiManaService patientBmiManaService;
+    private final PatientBmiManaService patientBmiManaService;
+
+    private final PatientDeviceV2Service patientDeviceV2Service;
 
     /**
      * 分页查询
@@ -75,6 +76,9 @@ public class PatientBmiManaController {
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_add')" )
     public R save(@RequestBody PatientBmiManaEntity patientBmiMana) {
+        if(!patientDeviceV2Service.addPatientDevice(patientBmiMana.getPatientUid())){
+            return R.failed("患者设备更新失败，请稍后再试");
+        }
         return R.ok(patientBmiManaService.save(patientBmiMana));
     }
 

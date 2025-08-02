@@ -3,7 +3,6 @@ package com.pig4cloud.pig.patient.controller;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.Inner;
-import com.pig4cloud.pig.patient.request.PatientDeviceAddRequest;
 import com.pig4cloud.pig.patient.request.PatientDeviceBindRequest;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.PatientDeviceCallbackRequest;
 import com.pig4cloud.pig.patient.service.PatientDeviceV2Service;
@@ -27,16 +26,6 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
 public class PatientDeviceV2Controller {
     private final PatientDeviceV2Service patientDeviceV2Service;
-
-    @Operation(summary = "注册用户", description = "注册用户")
-    @SysLog("新增设备用户")
-    @PostMapping("/add_user")
-    @PreAuthorize("@pms.hasPermission('patient_patientDevice_add')")
-    public R save(@RequestBody PatientDeviceAddRequest request) {
-        return patientDeviceV2Service.addPatientDevice(request.getUid(),
-                                                       request.getWeight(),
-                                                       request.getHeight());
-    }
 
     @Operation(summary = "绑定设备", description = "绑定设备")
     @SysLog("绑定设备")

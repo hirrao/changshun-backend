@@ -8,7 +8,7 @@ import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.IPatientDe
 public interface PatientDeviceV2Service extends IService<PatientDeviceEntity> {
     R getByUid(long uid);
 
-    R addPatientDevice(long uid, int weight, int height);
+    boolean addPatientDevice(long uid);
 
     R bindPatientDevice(String imei, long uid);
 

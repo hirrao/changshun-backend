@@ -4,14 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.patient.entity.HeartRateLogsEntity;
-import com.pig4cloud.pig.patient.entity.PatientBaseEntity;
-import com.pig4cloud.pig.patient.entity.PatientDeviceEntity;
-import com.pig4cloud.pig.patient.entity.PersureHeartRateEntity;
-import com.pig4cloud.pig.patient.mapper.HeartRateLogsMapper;
-import com.pig4cloud.pig.patient.mapper.PatientBaseMapper;
-import com.pig4cloud.pig.patient.mapper.PatientDeviceMapper;
-import com.pig4cloud.pig.patient.mapper.PersureHeartRateMapper;
+import com.pig4cloud.pig.patient.entity.*;
+import com.pig4cloud.pig.patient.mapper.*;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.BloodPressureCallback;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.HeartRateCallback;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.IPatientDeviceCallback;
@@ -40,6 +34,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
     private final PatientBaseMapper patientBaseMapper;
     private final PersureHeartRateMapper persureHeartRateMapper;
     private final HeartRateLogsMapper heartRateLogsMapper;
+    private final PatientBmiManaMapper patientBmiManaMapper;
     private final HTTPUtils httpUtils;
     private final String appid;
     private final String secret;
@@ -51,6 +46,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                                       PatientBaseMapper patientBaseMapper,
                                       PersureHeartRateMapper persureHeartRateMapper,
                                       HeartRateLogsMapper heartRateLogsMapper,
+                                      PatientBmiManaMapper patientBmiManaMapper,
                                       HTTPUtils httpUtils,
                                       @Value("${hardware.appid}") String appid,
                                       @Value("${hardware.sec}") String secret,
@@ -59,6 +55,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         this.patientBaseMapper = patientBaseMapper;
         this.persureHeartRateMapper = persureHeartRateMapper;
         this.heartRateLogsMapper = heartRateLogsMapper;
+        this.patientBmiManaMapper = patientBmiManaMapper;
         this.httpUtils = httpUtils;
         this.appid = appid;
         this.secret = secret;
@@ -125,13 +122,17 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         return R.ok(entity);
     }
 
-    @Override
-    @Transactional
-    public R addPatientDevice(long uid, int weight, int height) {
+    public boolean addPatientDevice(long uid) {
         PatientDeviceEntity device = new PatientDeviceEntity();
+        PatientBmiManaEntity bmiMana = patientBmiManaMapper.selectOne(
+                new LambdaQueryWrapper<PatientBmiManaEntity>().eq(
+                        PatientBmiManaEntity::getPatientUid, uid));
         PatientBaseEntity user = patientBaseMapper.selectById(uid);
         if (user == null) {
-            return R.failed("用户不存在");
+            return false;
+        }
+        if (bmiMana == null) {
+            return false;
         }
         PatientDeviceEntity entity = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
@@ -148,8 +149,10 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         params.put("extUserId", String.valueOf(device.getPddId()));
         params.put("birthday", user.getBirthday()
                                    .format(DateTimeFormatter.ISO_LOCAL_DATE));
-        params.put("weight", String.valueOf(weight));
-        params.put("height", String.valueOf(height));
+        params.put("weight", String.valueOf(bmiMana.getWeight()
+                                                   .intValue()));
+        params.put("height", String.valueOf(bmiMana.getHeight()
+                                                   .intValue()));
         params.put("sex", user.getSex()
                               .equals("男性") ? "m" : "f");
         params.put("nickname", user.getUsername());
@@ -157,16 +160,17 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                 "https://open.heart-forever.com/api/ext/extUser", params);
         if (jsonObject.getInteger("code")
                       .equals(0)) {
-            return R.ok();
+            return true;
         }
         else {
             TransactionAspectSupport.currentTransactionStatus()
                                     .setRollbackOnly();
-            return R.failed("绑定设备失败: " + jsonObject.getString("message"));
+            return false;
         }
     }
 
     @Override
+    @Transactional
     public R bindPatientDevice(String imei, long uid) {
         PatientDeviceEntity entity = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
@@ -178,7 +182,12 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
                         PatientDeviceEntity::getPatientUid, uid));
         if (device == null) {
-            return R.failed("未注册");
+            if (!addPatientDevice(uid)) {
+                return R.failed("添加设备失败，请稍后再试");
+            }
+            device = patientDeviceMapper.selectOne(
+                    new LambdaQueryWrapper<PatientDeviceEntity>().eq(
+                            PatientDeviceEntity::getPatientUid, uid));
         }
         device.setDeviceUid(imei);
         device.setLastUpdateTime(LocalDateTime.now());
