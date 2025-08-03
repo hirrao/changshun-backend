@@ -201,6 +201,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         device.setDeviceUid(imei);
         device.setDeviceBrand("xy");
         device.setLastUpdateTime(LocalDateTime.now());
+        patientDeviceMapper.updateById(device);
         return R.ok();
     }
 
