@@ -12,8 +12,6 @@ public interface PatientDeviceV2Service extends IService<PatientDeviceEntity> {
 
     R bindPatientDevice(String imei, long uid);
 
-    R generateUserAuthToken(long uid);
-
     /**
      * 手表消息回调处理
      *

@@ -202,6 +202,22 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                     new LambdaQueryWrapper<PatientDeviceEntity>().eq(
                             PatientDeviceEntity::getPatientUid, uid));
         }
+        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        Object obj = generateUserAuthToken(uid);
+        if (obj instanceof String userAccessToken) {
+            header.add("user_access_token", userAccessToken);
+        }
+        else {
+            return (R) obj;
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("imei", imei);
+        JSONObject jsonObject = httpUtils.post(
+                "https://open.heart-forever.com/api/ext/binding", params,
+                header);
+        if (jsonObject.getInteger("code") != 0) {
+            return R.failed(jsonObject, "绑定设备失败");
+        }
         device.setDeviceUid(imei);
         device.setDeviceBrand("xy");
         device.setLastUpdateTime(LocalDateTime.now());
@@ -209,8 +225,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         return R.ok();
     }
 
-    @Override
-    public R generateUserAuthToken(long uid) {
+    public Object generateUserAuthToken(long uid) {
         PatientDeviceEntity device = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
                         PatientDeviceEntity::getPatientUid, uid));
@@ -223,7 +238,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                 "https://open.heart-forever.com/api/ext/getUserToken", params);
         if (jsonObject.getInteger("code")
                       .equals(0)) {
-            return R.ok(jsonObject.getString("data"));
+            return jsonObject.getString("data");
         }
         else {
             return R.failed(jsonObject, "获取用户授权失败");
@@ -262,6 +277,22 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                         PatientDeviceEntity::getPatientUid, uid));
         if (device == null || device.getDeviceUid() == null) {
             return R.failed("用户未注册");
+        }
+        MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        Object obj = generateUserAuthToken(uid);
+        if (obj instanceof String userAccessToken) {
+            header.add("user_access_token", userAccessToken);
+        }
+        else {
+            return (R) obj;
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("imei", device.getDeviceUid());
+        JSONObject jsonObject = httpUtils.post(
+                "https://open.heart-forever.com/api/ext/unbinding", params,
+                header);
+        if (jsonObject.getInteger("code") != 0) {
+            return R.failed(jsonObject, "解绑设备失败");
         }
         device.setDeviceBrand(null);
         device.setDeviceUid(null);
