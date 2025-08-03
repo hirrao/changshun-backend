@@ -73,7 +73,8 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
         header.add("access_token", token);
         JSONObject response = httpUtils.post(url, params, header);
-        if (response.getInteger("code") == 10007) {
+        if (response.getInteger("code") == 10007 || response.getInteger(
+                "code") == 10020) {
             token = getAuthToken();
             log.warn("token失效刷新");
             // 刷新token后重新请求
