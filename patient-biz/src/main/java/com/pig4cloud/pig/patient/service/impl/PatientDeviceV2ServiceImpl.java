@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -180,6 +181,9 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
     @Override
     @Transactional
     public R bindPatientDevice(String imei, long uid) {
+        if (!StringUtils.hasText(imei)) {
+            return R.failed("无效的Imei");
+        }
         PatientDeviceEntity entity = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
                         PatientDeviceEntity::getDeviceUid, imei));
