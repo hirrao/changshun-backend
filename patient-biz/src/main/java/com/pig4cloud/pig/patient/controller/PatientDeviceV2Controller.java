@@ -38,8 +38,8 @@ public class PatientDeviceV2Controller {
 
     @Operation(summary = "获取User Token", description = "获取User Token")
     @SysLog("获取Token")
-    @PostMapping("/refresh_token")
-    public R refreshToken(@RequestParam long uid) {
+    @GetMapping("/refresh_token/{uid}")
+    public R refreshToken(@PathVariable Long uid) {
         return patientDeviceV2Service.generateUserAuthToken(uid);
     }
 
