@@ -21,4 +21,6 @@ public interface PatientDeviceV2Service extends IService<PatientDeviceEntity> {
      */
     R callback(String eventType, Long pddId, Integer timestamp,
                IPatientDeviceCallback eventData);
+
+    R unbindPatientDevice(Long uid);
 }

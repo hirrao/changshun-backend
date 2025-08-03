@@ -36,6 +36,14 @@ public class PatientDeviceV2Controller {
                                                         request.getUid());
     }
 
+    @Operation(summary = "解绑设备", description = "解绑设备")
+    @SysLog("解绑设备")
+    @PostMapping("/unbind_device")
+    @PreAuthorize("@pms.hasPermission('patient_patientDevice_add')")
+    public R unbindDevice(@RequestBody PatientDeviceBindRequest request) {
+        return patientDeviceV2Service.unbindPatientDevice(request.getUid());
+    }
+
     @Operation(summary = "获取User Token", description = "获取User Token")
     @SysLog("获取Token")
     @GetMapping("/refresh_token/{uid}")

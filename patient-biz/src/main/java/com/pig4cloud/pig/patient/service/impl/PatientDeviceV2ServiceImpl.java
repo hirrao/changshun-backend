@@ -255,6 +255,21 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         };
     }
 
+    @Override
+    public R unbindPatientDevice(Long uid) {
+        PatientDeviceEntity device = patientDeviceMapper.selectOne(
+                new LambdaQueryWrapper<PatientDeviceEntity>().eq(
+                        PatientDeviceEntity::getPatientUid, uid));
+        if (device == null || device.getDeviceUid() == null) {
+            return R.failed("用户未注册");
+        }
+        device.setDeviceBrand(null);
+        device.setDeviceUid(null);
+        device.setLastUpdateTime(LocalDateTime.now());
+        patientDeviceMapper.updateById(device);
+        return R.ok("解绑成功");
+    }
+
     private R handlePressureHeartRateEvent(float systolic, float diastolic,
                                            int heartRate, Long pddId,
                                            Integer timestamp) {
