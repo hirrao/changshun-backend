@@ -74,6 +74,11 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         JSONObject response = httpUtils.post(url, params, header);
         if (response.getInteger("code") == 10007) {
             token = getAuthToken();
+            log.warn("token失效刷新");
+            // 刷新token后重新请求
+            MultiValueMap<String, String> newHeader = new LinkedMultiValueMap<>();
+            newHeader.add("access_token", token);
+            response = httpUtils.post(url, params, newHeader);
         }
         return response;
     }
@@ -122,17 +127,20 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         return R.ok(entity);
     }
 
-    public boolean addPatientDevice(long uid) {
+    public Object addPatientDevice(long uid) {
         PatientDeviceEntity device = new PatientDeviceEntity();
         PatientBmiManaEntity bmiMana = patientBmiManaMapper.selectOne(
                 new LambdaQueryWrapper<PatientBmiManaEntity>().eq(
-                        PatientBmiManaEntity::getPatientUid, uid));
+                                                                      PatientBmiManaEntity::getPatientUid, uid)
+                                                              .orderByDesc(
+                                                                      PatientBmiManaEntity::getBmimeasurementDate)
+                                                              .last("LIMIT 1"));
         PatientBaseEntity user = patientBaseMapper.selectById(uid);
         if (user == null) {
-            return false;
+            return "用户不存在";
         }
         if (bmiMana == null) {
-            return false;
+            return "未查询到BMI记录";
         }
         PatientDeviceEntity entity = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
@@ -160,12 +168,12 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                 "https://open.heart-forever.com/api/ext/extUser", params);
         if (jsonObject.getInteger("code")
                       .equals(0)) {
-            return true;
+            return Boolean.TRUE;
         }
         else {
             TransactionAspectSupport.currentTransactionStatus()
                                     .setRollbackOnly();
-            return false;
+            return jsonObject;
         }
     }
 
@@ -182,8 +190,9 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
                         PatientDeviceEntity::getPatientUid, uid));
         if (device == null) {
-            if (!addPatientDevice(uid)) {
-                return R.failed("添加设备失败，请稍后再试");
+            Object response = addPatientDevice(uid);
+            if (!response.equals(Boolean.TRUE)) {
+                return R.failed(response, "注册失败, 请稍后重试");
             }
             device = patientDeviceMapper.selectOne(
                     new LambdaQueryWrapper<PatientDeviceEntity>().eq(
@@ -212,8 +221,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
             return R.ok(jsonObject.getString("data"));
         }
         else {
-            return R.failed(
-                    "获取用户Token失败: " + jsonObject.getString("message"));
+            return R.failed(jsonObject, "获取用户授权失败");
         }
     }
 
