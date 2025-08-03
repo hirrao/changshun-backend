@@ -191,7 +191,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                         PatientDeviceEntity::getPatientUid, uid));
         if (device == null) {
             Object response = addPatientDevice(uid);
-            if (!response.equals(Boolean.TRUE)) {
+            if (!Boolean.TRUE.equals(response)) {
                 return R.failed(response, "注册失败, 请稍后重试");
             }
             device = patientDeviceMapper.selectOne(
