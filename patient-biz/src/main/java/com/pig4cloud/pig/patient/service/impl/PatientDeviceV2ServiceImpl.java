@@ -300,15 +300,14 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         if (jsonObject.getInteger("code") != 0) {
             return R.failed(jsonObject, "解绑设备失败");
         }
-        device.setLastUpdateTime(LocalDateTime.now());
-        patientDeviceMapper.update(device,
-                                   new LambdaUpdateWrapper<>(device).eq(
-                                                                                         PatientDeviceEntity::getPatientUid,
-                                                                                         uid)
-                                                                    .set(PatientDeviceEntity::getDeviceBrand,
-                                                                                      null)
-                                                                    .set(PatientDeviceEntity::getDeviceUid,
-                                                                                      null));
+        patientDeviceMapper.update(null, new LambdaUpdateWrapper<>(device).eq(
+                                                                                  PatientDeviceEntity::getPatientUid, uid)
+                                                                          .set(PatientDeviceEntity::getDeviceBrand,
+                                                                               null)
+                                                                          .set(PatientDeviceEntity::getDeviceUid,
+                                                                               null)
+                                                                          .set(PatientDeviceEntity::getLastUpdateTime,
+                                                                               LocalDateTime.now()));
         return R.ok("解绑成功");
     }
 
