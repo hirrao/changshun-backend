@@ -13,7 +13,7 @@ public class PatientDeviceCallbackRequest {
     private Long userId;
     private Integer timestamp;
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "event_type")
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "event_type", defaultImpl = UnknownEventCallback.class)
     @JsonSubTypes({@JsonSubTypes.Type(value = BloodPressureCallback.class, name = "bp_event"), @JsonSubTypes.Type(value = HeartRateCallback.class, name = "hr_event"),})
     private IPatientDeviceCallback eventData;
 }
