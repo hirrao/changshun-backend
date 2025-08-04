@@ -10,6 +10,7 @@ import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.BloodPress
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.HeartRateCallback;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.IPatientDeviceCallback;
 import com.pig4cloud.pig.patient.service.PatientDeviceV2Service;
+import com.pig4cloud.pig.patient.service.PersureHeartRateService;
 import com.pig4cloud.pig.patient.utils.HTTPUtils;
 import com.pig4cloud.pig.patient.utils.SignUtils;
 import jakarta.annotation.PostConstruct;
@@ -36,6 +37,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
     private final PersureHeartRateMapper persureHeartRateMapper;
     private final HeartRateLogsMapper heartRateLogsMapper;
     private final PatientBmiManaMapper patientBmiManaMapper;
+    private final PersureHeartRateService persureHeartRateService;
     private final HTTPUtils httpUtils;
     private final String appid;
     private final String secret;
@@ -48,6 +50,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
                                       PersureHeartRateMapper persureHeartRateMapper,
                                       HeartRateLogsMapper heartRateLogsMapper,
                                       PatientBmiManaMapper patientBmiManaMapper,
+                                      PersureHeartRateService persureHeartRateService,
                                       HTTPUtils httpUtils,
                                       @Value("${hardware.appid}") String appid,
                                       @Value("${hardware.sec}") String secret,
@@ -57,6 +60,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         this.persureHeartRateMapper = persureHeartRateMapper;
         this.heartRateLogsMapper = heartRateLogsMapper;
         this.patientBmiManaMapper = patientBmiManaMapper;
+        this.persureHeartRateService = persureHeartRateService;
         this.httpUtils = httpUtils;
         this.appid = appid;
         this.secret = secret;
@@ -316,6 +320,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         pressure.setPatientUid(uid);
         pressure.setDiastolic(diastolic);
         pressure.setSystolic(systolic);
+        pressure = persureHeartRateService.setSdhAndRiskClass(pressure);
         pressure.setUploadTime(time);
         persureHeartRateMapper.insert(pressure);
         HeartRateLogsEntity heartRateLogs = new HeartRateLogsEntity();
