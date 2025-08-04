@@ -2,6 +2,7 @@ package com.pig4cloud.pig.patient.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.patient.entity.*;
@@ -299,10 +300,15 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         if (jsonObject.getInteger("code") != 0) {
             return R.failed(jsonObject, "解绑设备失败");
         }
-        device.setDeviceBrand(null);
-        device.setDeviceUid(null);
         device.setLastUpdateTime(LocalDateTime.now());
-        patientDeviceMapper.updateById(device);
+        patientDeviceMapper.update(device,
+                                   new LambdaUpdateWrapper<>(device).eq(
+                                                                                         PatientDeviceEntity::getPatientUid,
+                                                                                         uid)
+                                                                    .set(PatientDeviceEntity::getDeviceBrand,
+                                                                                      null)
+                                                                    .set(PatientDeviceEntity::getDeviceUid,
+                                                                                      null));
         return R.ok("解绑成功");
     }
 
