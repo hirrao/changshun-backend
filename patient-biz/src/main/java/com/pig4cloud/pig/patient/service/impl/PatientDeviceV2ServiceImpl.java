@@ -311,7 +311,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         }
         long uid = device.getPatientUid();
         LocalDateTime time = LocalDateTime.ofEpochSecond(timestamp, 0,
-                                                         ZoneOffset.UTC);
+                                                         ZoneOffset.ofHours(8));
         PersureHeartRateEntity pressure = new PersureHeartRateEntity();
         pressure.setPatientUid(uid);
         pressure.setDiastolic(diastolic);
@@ -334,7 +334,7 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         }
         long uid = device.getPatientUid();
         LocalDateTime time = LocalDateTime.ofEpochSecond(timestamp, 0,
-                                                         ZoneOffset.UTC);
+                                                         ZoneOffset.ofHours(8));
         HeartRateLogsEntity heartRateLogs = new HeartRateLogsEntity();
         heartRateLogs.setPatientUid(uid);
         heartRateLogs.setHeartRate(heartRate);
