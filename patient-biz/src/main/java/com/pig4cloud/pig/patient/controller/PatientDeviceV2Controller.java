@@ -44,14 +44,19 @@ public class PatientDeviceV2Controller {
         return patientDeviceV2Service.unbindPatientDevice(request.getUid());
     }
 
-    /*
     @Operation(summary = "获取User Token", description = "获取User Token")
     @SysLog("获取Token")
     @GetMapping("/refresh_token/{uid}")
     public R refreshToken(@PathVariable Long uid) {
-        return patientDeviceV2Service.generateUserAuthToken(uid);
+        Object obj = patientDeviceV2Service.generateUserAuthToken(uid);
+        if (obj instanceof String str) {
+            return R.ok(str);
+        }
+        if (obj instanceof R r) {
+            return r;
+        }
+        return R.failed(obj, "未知错误");
     }
-     */
 
     @Operation(summary = "通过id查询", description = "通过id查询")
     @GetMapping("/{uid}")

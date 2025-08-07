@@ -21,4 +21,6 @@ public interface PatientDeviceV2Service extends IService<PatientDeviceEntity> {
                IPatientDeviceCallback eventData);
 
     R unbindPatientDevice(Long uid);
+
+    Object generateUserAuthToken(Long uid);
 }

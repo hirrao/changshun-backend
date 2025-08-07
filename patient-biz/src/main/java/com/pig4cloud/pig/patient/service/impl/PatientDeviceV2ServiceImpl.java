@@ -231,7 +231,8 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
         return R.ok();
     }
 
-    public Object generateUserAuthToken(long uid) {
+    @Override
+    public Object generateUserAuthToken(Long uid) {
         PatientDeviceEntity device = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(
                         PatientDeviceEntity::getPatientUid, uid));
