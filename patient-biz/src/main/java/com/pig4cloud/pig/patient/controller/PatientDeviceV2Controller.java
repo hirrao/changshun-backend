@@ -5,6 +5,7 @@ import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.patient.request.PatientDeviceBindRequest;
 import com.pig4cloud.pig.patient.request.PatientDeviceCallbackRequest.PatientDeviceCallbackRequest;
+import com.pig4cloud.pig.patient.request.PatientDeviceUpdateRequest;
 import com.pig4cloud.pig.patient.service.PatientDeviceV2Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,6 +35,16 @@ public class PatientDeviceV2Controller {
     public R bindDevice(@RequestBody PatientDeviceBindRequest request) {
         return patientDeviceV2Service.bindPatientDevice(request.getImei(),
                                                         request.getUid());
+    }
+
+    @Operation(summary = "更新设备", description = "更新设备")
+    @SysLog("更新设备")
+    @PostMapping("/update_device")
+    @PreAuthorize("@pms.hasPermission('patient_patientDevice_add')")
+    public R updateDevice(@RequestBody PatientDeviceUpdateRequest request) {
+        return patientDeviceV2Service.updatePatientDevice(request.getUid(),
+                                                          request.getHeight(),
+                                                          request.getWeight());
     }
 
     @Operation(summary = "解绑设备", description = "解绑设备")

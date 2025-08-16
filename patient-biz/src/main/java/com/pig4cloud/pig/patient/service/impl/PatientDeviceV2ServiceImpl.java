@@ -232,6 +232,38 @@ public class PatientDeviceV2ServiceImpl extends ServiceImpl<PatientDeviceMapper,
     }
 
     @Override
+    public R updatePatientDevice(long uid, int height, int weight) {
+        PatientDeviceEntity device = patientDeviceMapper.selectOne(
+                new LambdaQueryWrapper<PatientDeviceEntity>().eq(
+                        PatientDeviceEntity::getPatientUid, uid));
+        PatientBaseEntity user = patientBaseMapper.selectById(uid);
+        if (user == null) {
+            return R.failed("用户不存在");
+        }
+        if (device == null) {
+            return R.failed("用户未注册");
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("extUserId", String.valueOf(device.getPddId()));
+        params.put("birthday", user.getBirthday()
+                                   .format(DateTimeFormatter.ISO_LOCAL_DATE));
+        params.put("weight", String.valueOf(height));
+        params.put("height", String.valueOf(weight));
+        params.put("sex", user.getSex()
+                              .equals("男性") ? "m" : "f");
+        params.put("nickname", user.getUsername());
+        JSONObject jsonObject = post(
+                "https://open.heart-forever.com/api/ext/extUser", params);
+        if (jsonObject.getInteger("code")
+                      .equals(0)) {
+            return R.ok();
+        }
+        else {
+            return R.failed(jsonObject, "更新用户信息失败");
+        }
+    }
+
+    @Override
     public Object generateUserAuthToken(Long uid) {
         PatientDeviceEntity device = patientDeviceMapper.selectOne(
                 new LambdaQueryWrapper<PatientDeviceEntity>().eq(

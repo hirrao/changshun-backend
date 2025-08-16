@@ -80,11 +80,6 @@ public class PatientBmiManaController {
     @PostMapping
     @PreAuthorize("@pms.hasPermission('patient_patientBmiMana_add')")
     public R save(@RequestBody PatientBmiManaEntity patientBmiMana) {
-        Object object = patientDeviceV2Service.addPatientDevice(
-                patientBmiMana.getPatientUid());
-        if (!Boolean.TRUE.equals(object)) {
-            return R.failed("患者设备更新失败，请稍后再试");
-        }
         return R.ok(patientBmiManaService.save(patientBmiMana));
     }
 
