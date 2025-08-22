@@ -65,7 +65,7 @@ services:
     restart: always
     container_name: pig-upms
     environment:
-      - SERVER_ADDRESS
+      - SERVICE_ADDRESS
     hostname: pig-upms
     image: pig-upms
     networks:
