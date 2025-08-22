@@ -7,10 +7,12 @@ services:
     container_name: doctor
     hostname: doctor
     image: doctor
+    environment:
+      - SERVER_ADDRESS
     networks:
       - spring_cloud_default
     volumes:
-      - /home/test/pig-data:/home/test/pig-data
+      - /home/changshun/pig-data:/home/test/pig-data
 
 networks:
   spring_cloud_default:
