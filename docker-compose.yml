@@ -8,7 +8,8 @@ services:
     hostname: doctor
     image: doctor
     environment:
-      - SERVER_ADDRESS
+      - PATIENT_ADDRESS
+      - QRCODE_ADDRESS
     networks:
       - spring_cloud_default
     volumes:
