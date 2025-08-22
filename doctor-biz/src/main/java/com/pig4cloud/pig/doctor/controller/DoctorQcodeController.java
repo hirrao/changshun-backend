@@ -34,6 +34,8 @@ public class DoctorQcodeController {
     @Value("${web.qrcode}")
     private String qrcodePath;
 
+    @Value("${web.qrcode-address}")
+    private String qrcodeAddress;
 
     @Inner(value = false)
     @Operation(summary = "生成医生二维码", description = "生成医生二维码")
@@ -43,7 +45,7 @@ public class DoctorQcodeController {
         Long doctorUid = jsonObject.getLong("doctorUid");
         // 验证静态资源是否存在
         String path = qrcodePath + '/' + doctorUid + ".jpg";
-        String returnPath = "http://114.116.237.85:80/static/qrcode/" + doctorUid + ".jpg";
+        String returnPath = qrcodeAddress + doctorUid + ".jpg";
         File file = new File(path);
         if (file.exists()) {
             return R.ok(returnPath);
